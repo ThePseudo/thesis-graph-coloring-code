@@ -15,8 +15,6 @@
 int detectConflicts(struct graph&);
 void detectConflictsParallel(struct graph&, const int);
 void sortGraphVerts(struct graph&);
-int colorGraph(struct graph&, int);
-int colorGraphParallel(struct graph&, int, int&);
 void printColors(struct graph&);
 void printDotFile(struct graph&);
 
@@ -37,6 +35,12 @@ int main(int argc, char** argv) {
 	std::cout << "Size: V: " << G.nV << ", E: " << G.nE << std::endl;
 
 	int n_cols = 0;
+
+#ifdef SEQUENTIAL_GRAPH_COLOR
+	sortGraphVerts(G);
+	n_cols = colorGraph(G, n_cols);
+#endif
+#ifdef PARALLEL_GRAPH_COLOR
 	int n_iters = 0;
 	int n_confs = 0;
 
@@ -75,12 +79,15 @@ int main(int argc, char** argv) {
 		++n_iters;
 	}
 #endif
+#endif
 
 	//printColors(G);
 	//printDotFile(G);
 
+#ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Solution converged to in " << n_iters << " iterations." << std::endl;
 	std::cout << "Detected a total of " << n_confs << " conflicts." << std::endl;
+#endif
 	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
 
 #ifdef COMPUTE_ELAPSED_TIME
@@ -89,7 +96,9 @@ int main(int argc, char** argv) {
 	std::cout << "File load:\t\t" << loadTime << " s" << std::endl;
 	std::cout << "Vertex sort:\t\t" << sortTime << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << colorTime << " s" << std::endl;
+#ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Conflict search:\t" << conflictsTime << " s" << std::endl;
+#endif
 	std::cout << "Total:\t\t" << loadTime + sortTime + colorTime + conflictsTime << " s" << std::endl;
 #endif
 
@@ -174,72 +183,6 @@ void sortGraphVerts(struct graph& G) {
 	sampleTime();
 	sortTime += getElapsedTime();
 #endif
-}
-
-int colorGraph(struct graph& G, int n_cols) {
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-#endif
-
-	std::vector<std::thread> threadPool;
-	int parallelIdx = 0;
-	for (int i = 0; i < MAX_THREADS; ++i) {
-		threadPool.emplace_back([&G, n_cols, &parallelIdx] { colorGraphParallel(G, n_cols, parallelIdx); });
-	}
-
-	for (auto& t : threadPool) {
-		t.join();
-	}
-
-	int cols = *std::max_element(G.col.begin(), G.col.end()) + 1;
-
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	colorTime += getElapsedTime();
-#endif
-
-	return cols;
-}
-
-int colorGraphParallel(struct graph& G, int n_cols, int& i) {
-	G.mutex.lock();
-	while (i < G.recolor.size()) {
-		int v = G.recolor[i];
-		++i;
-		G.mutex.unlock();
-
-		auto neighIt = G.adj[v].begin();
-		auto forbidden = std::vector<bool>(n_cols);
-		std::fill(forbidden.begin(), forbidden.end(), false);
-		while (neighIt != G.adj[v].end()) {
-			int w = *neighIt;
-			int c = G.col[w];
-
-			if (c != INVALID_COLOR) {
-				if (c >= n_cols) {
-					n_cols = c + 1;
-					forbidden.resize(n_cols, false);
-				}
-				forbidden[c] = true;
-			}
-			++neighIt;
-		}
-		auto targetIt = std::find(forbidden.begin(), forbidden.end(), false);
-		int targetCol;
-		if (targetIt == forbidden.end()) {
-			// All forbidden. Add new color
-			targetCol = n_cols++;
-		} else {
-			targetCol = targetIt - forbidden.begin();
-		}
-
-		G.col[v] = targetCol;
-
-		G.mutex.lock();
-	}
-	G.mutex.unlock();
-
-	return n_cols;
 }
 
 void printColors(struct graph& G) {

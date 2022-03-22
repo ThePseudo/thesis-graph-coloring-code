@@ -19,4 +19,9 @@ struct graph {
 	std::mutex mutex;
 };
 
+int colorGraph(struct graph&, int);
+#ifdef PARALLEL_GRAPH_COLOR
+int colorGraphParallel(struct graph&, int, int&);
+#endif
+
 #endif // !_GRAPH_H

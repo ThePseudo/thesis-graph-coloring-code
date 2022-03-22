@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,9 @@
     <ClInclude Include="graph.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
+      <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Configuration\Configuration.vcxproj">
       <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
     </ProjectReference>

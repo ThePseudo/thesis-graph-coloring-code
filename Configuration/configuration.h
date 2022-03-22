@@ -9,6 +9,9 @@
 //#define SORT_VERTEX_ORDER
 //#define SORT_VERTEX_ORDER_REVERSED
 
+#define PARALLEL_GRAPH_COLOR
+//#define SEQUENTIAL_GRAPH_COLOR
+
 //#define PARALLEL_RECOLOR
 #define SEQUENTIAL_RECOLOR
 
@@ -17,6 +20,14 @@
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+
+#ifdef PARALLEL_INPUT_LOAD
+#undef SEQUENTIAL_INPUT_LOAD
+#endif
+
+#ifdef SEQUENTIAL_INPUT_LOAD
+#undef PARALLEL_INPUT_LOAD
+#endif
 
 #ifdef SORT_LARGEST_DEGREE_FIRST
 #undef SORT_SMALLEST_DEGREE_FIRST
@@ -42,20 +53,20 @@
 #undef SORT_VERTEX_ORDER
 #endif
 
+#ifdef PARALLEL_GRAPH_COLOR
+#undef SEQUENTIAL_GRAPH_COLOR
+#endif
+
+#ifdef SEQUENTIAL_GRAPH_COLOR
+#undef PARALLEL_GRAPH_COLOR
+#endif
+
 #ifdef PARALLEL_RECOLOR
 #undef SEQUENTIAL_RECOLOR
 #endif
 
 #ifdef SEQUENTIAL_RECOLOR
 #undef PARALLEL_RECOLOR
-#endif
-
-#ifdef PARALLEL_INPUT_LOAD
-#undef SEQUENTIAL_INPUT_LOAD
-#endif
-
-#ifdef SEQUENTIAL_INPUT_LOAD
-#undef PARALLEL_INPUT_LOAD
 #endif
 
 #endif // !_CONFIGURATION_H
