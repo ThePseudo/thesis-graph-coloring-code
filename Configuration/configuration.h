@@ -1,0 +1,61 @@
+#ifndef _CONFIGURATION_H
+#define _CONFIGURATION_H
+
+#define PARALLEL_INPUT_LOAD
+//#define SEQUENTIAL_INPUT_LOAD
+
+#define SORT_LARGEST_DEGREE_FIRST
+//#define SORT_SMALLEST_DEGREE_FIRST
+//#define SORT_VERTEX_ORDER
+//#define SORT_VERTEX_ORDER_REVERSED
+
+//#define PARALLEL_RECOLOR
+#define SEQUENTIAL_RECOLOR
+
+#define COMPUTE_ELAPSED_TIME
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+#ifdef SORT_LARGEST_DEGREE_FIRST
+#undef SORT_SMALLEST_DEGREE_FIRST
+#undef SORT_VERTEX_ORDER
+#undef SORT_VERTEX_ORDER_REVERSED 
+#endif
+
+#ifdef SORT_SMALLEST_DEGREE_FIRST
+#undef SORT_LARGEST_DEGREE_FIRST
+#undef SORT_VERTEX_ORDER
+#undef SORT_VERTEX_ORDER_REVERSED 
+#endif
+
+#ifdef SORT_VERTEX_ORDER
+#undef SORT_LARGEST_DEGREE_FIRST
+#undef SORT_SMALLEST_DEGREE_FIRST
+#undef SORT_VERTEX_ORDER_REVERSED 
+#endif
+
+#ifdef SORT_VERTEX_ORDER_REVERSED 
+#undef SORT_LARGEST_DEGREE_FIRST
+#undef SORT_SMALLEST_DEGREE_FIRST
+#undef SORT_VERTEX_ORDER
+#endif
+
+#ifdef PARALLEL_RECOLOR
+#undef SEQUENTIAL_RECOLOR
+#endif
+
+#ifdef SEQUENTIAL_RECOLOR
+#undef PARALLEL_RECOLOR
+#endif
+
+#ifdef PARALLEL_INPUT_LOAD
+#undef SEQUENTIAL_INPUT_LOAD
+#endif
+
+#ifdef SEQUENTIAL_INPUT_LOAD
+#undef PARALLEL_INPUT_LOAD
+#endif
+
+#endif // !_CONFIGURATION_H
