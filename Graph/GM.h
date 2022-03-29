@@ -4,7 +4,6 @@
 #include "configuration.h"
 
 #include <vector>
-
 #include <mutex>
 
 const auto MAX_THREADS = std::thread::hardware_concurrency();
@@ -19,9 +18,11 @@ struct graph {
 	std::mutex mutex;
 };
 
-int colorGraph(struct graph&, int);
 #ifdef PARALLEL_GRAPH_COLOR
-int colorGraphParallel(struct graph&, int, int&);
+std::vector<int> solve(struct graph&, int&, int&);
+#endif
+#ifdef SEQUENTIAL_GRAPH_COLOR
+std::vector<int> solve(struct graph&);
 #endif
 
 #endif // !_GRAPH_H

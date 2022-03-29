@@ -1,6 +1,6 @@
 #include "benchmark.h"
 #include "loader.h"
-#include "graph.h"
+#include "GM.h"
 
 #include <algorithm>
 #include <array>
@@ -147,15 +147,15 @@ void parseInputParallel(struct graph& G, std::ifstream& file) {
 			// XXX: Terminate thread with error status
 			break;
 		}
-		G.mutex.lock();
-		G.recolor[vert.v] = vert.v;
-		++G.nV;
 
+		G.recolor[vert.v] = vert.v;
 		for (auto w : vert.adj) {
 			G.adj[vert.v].push_back(w);
 			//G.adj[w].push_back(v);
 		}
 
+		G.mutex.lock();
+		++G.nV;
 		G.nE += vert.adj.size();
 		G.mutex.unlock();
 	}
@@ -212,15 +212,14 @@ void parseInputParallel(struct graph& G, std::string& const fileContents, int co
 			break;
 		}
 
-		G.mutex.lock();
 		G.recolor[vert.v] = vert.v;
-		++G.nV;
-
 		for (auto w : vert.adj) {
 			G.adj[vert.v].push_back(w);
 			//G.adj[w].push_back(v);
 		}
 
+		G.mutex.lock();
+		++G.nV;
 		G.nE += vert.adj.size();
 		G.mutex.unlock();
 

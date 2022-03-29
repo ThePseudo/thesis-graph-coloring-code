@@ -1,6 +1,6 @@
 #include "configuration.h"
 #include "loader.h"
-#include "graph.h"
+#include "GM.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
@@ -12,9 +12,6 @@
 #include <string>
 #include <vector>
 
-int detectConflicts(struct graph&);
-void detectConflictsParallel(struct graph&, const int);
-void sortGraphVerts(struct graph&);
 void printColors(struct graph&);
 void printDotFile(struct graph&);
 
@@ -33,53 +30,19 @@ int main(int argc, char** argv) {
 	}
 	std::cout << "Graph succesfully loaded from file." << std::endl;
 	std::cout << "Size: V: " << G.nV << ", E: " << G.nE << std::endl;
-
-	int n_cols = 0;
-
-#ifdef SEQUENTIAL_GRAPH_COLOR
-	sortGraphVerts(G);
-	n_cols = colorGraph(G, n_cols);
+#ifndef SEQUENTIAL_GRAPH_COLOR
+	std::cout << "Performing computation using " << MAX_THREADS << " threads." << std::endl;
 #endif
+
 #ifdef PARALLEL_GRAPH_COLOR
 	int n_iters = 0;
 	int n_confs = 0;
-
-#ifdef PARALLEL_RECOLOR
-	int partial_confs;
-	do {
-		sortGraphVerts(G);
-		n_cols = colorGraph(G, n_cols);
-
-		++n_iters;
-
-		partial_confs = detectConflicts(G);
-		n_confs += partial_confs;
-	} while (partial_confs > 0);
+	auto cols = solve(G, n_iters, n_confs);
 #endif
-#ifdef SEQUENTIAL_RECOLOR
-	sortGraphVerts(G);
-	n_cols = colorGraph(G, n_cols);
-	++n_iters;
-	n_confs = detectConflicts(G);
-
-	if (n_confs > 0) {
-		sortGraphVerts(G);
-		int index = 0;
-
-#ifdef COMPUTE_ELAPSED_TIME
-		sampleTime();
+#ifdef SEQUENTIAL_GRAPH_COLOR
+	auto cols = solve(G);
 #endif
-
-		n_cols = colorGraphParallel(G, n_cols, index);
-
-#ifdef COMPUTE_ELAPSED_TIME
-		sampleTime();
-		colorTime += getElapsedTime();
-#endif
-		++n_iters;
-	}
-#endif
-#endif
+	int n_cols = cols.size();
 
 	//printColors(G);
 	//printDotFile(G);
@@ -103,86 +66,6 @@ int main(int argc, char** argv) {
 #endif
 
 	return 0;
-}
-
-int detectConflicts(struct graph& G) {
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-#endif
-
-	G.recolor.erase(G.recolor.begin(), G.recolor.end());
-	std::vector<std::thread> threadPool;
-	for (int i = 0; i < MAX_THREADS; ++i) {
-		threadPool.emplace_back([&G, i] { detectConflictsParallel(G, i); });
-	}
-
-	for (auto& t : threadPool) {
-		t.join();
-	}
-
-	int recolorSize = G.recolor.size();
-
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	conflictsTime += getElapsedTime();
-#endif
-
-	return recolorSize;
-}
-
-void detectConflictsParallel(struct graph& G, const int i) {
-	for (int v = i; v < G.nV; v += MAX_THREADS) {
-		if (G.col[v] == INVALID_COLOR) {
-			G.mutex.lock();
-			G.recolor.push_back(v);
-			G.mutex.unlock();
-			continue;
-		}
-
-		for (
-			auto neighIt = G.adj[v].begin();
-			neighIt != G.adj[v].end();
-			++neighIt
-			) {
-			int w = *neighIt;
-			//if (v < w) continue;
-
-			if (G.col[v] == G.col[w]) {
-				G.mutex.lock();
-				G.recolor.push_back(v);
-				G.mutex.unlock();
-				break;
-			}
-		}
-	}
-
-	return;
-}
-
-void sortGraphVerts(struct graph& G) {
-#ifdef SORT_LARGEST_DEGREE_FIRST
-	auto sort_lambda = [&G](const int v, const int w) { return G.adj[v].size() > G.adj[w].size(); };
-#endif
-#ifdef SORT_SMALLEST_DEGREE_FIRST
-	auto sort_lambda = [&G](const int v, const int w) { return G.adj[v].size() < G.adj[w].size(); };
-#endif
-#ifdef SORT_VERTEX_ORDER
-	auto sort_lambda = [&G](const int v, const int w) { return v < w; };
-#endif
-#ifdef SORT_VERTEX_ORDER_REVERSED
-	auto sort_lambda = [&G](const int v, const int w) { return v > w; };
-#endif
-
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-#endif
-
-	std::sort(G.recolor.begin(), G.recolor.end(), sort_lambda);
-
-#ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	sortTime += getElapsedTime();
-#endif
 }
 
 void printColors(struct graph& G) {
