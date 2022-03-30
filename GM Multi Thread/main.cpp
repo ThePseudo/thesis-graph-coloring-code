@@ -1,9 +1,17 @@
 #include "configuration.h"
-#include "loader.h"
+//#include "loader.h"
 #include "GM.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
+#endif
+
+#include "GraphRepresentation.h"
+#ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
+#include "AdjacencyMatrix.h";
+#endif
+#ifdef GRAPH_REPRESENTATION_CSR
+#include "CompressedSparseRow.h";
 #endif
 
 #include <algorithm>
@@ -16,7 +24,15 @@ void printColors(struct graph&);
 void printDotFile(struct graph&);
 
 int main(int argc, char** argv) {
-	graph G = { std::vector<std::vector<int>>(), std::vector<int>(), std::vector<int>(), 0, 0 };
+#ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
+	AdjacencyMatrix* const _adj = new AdjacencyMatrix();
+#endif
+#ifdef GRAPH_REPRESENTATION_CSR
+	CompressedSparseRow* const _adj = new CompressedSparseRow();
+#endif
+	auto& adj = *_adj;
+
+	GM* _G;
 
 	if (argc <= 1) {
 		std::cout << "Usage: " << argv[0] << " <graph_path>" << std::endl;
@@ -24,25 +40,41 @@ int main(int argc, char** argv) {
 	}
 
 	std::cout << "Loading graph from " << argv[1] << std::endl;
-	if (!parseInput(G, argv[1])) {
+
+	std::ifstream fileIS;
+	try {
+		fileIS.open(argv[1]);
+		std::istream& is = fileIS;
+		is >> adj;
+		_G = new GM(adj);
+	} catch (const std::exception& e) {
 		std::cout << "An error occurred while loading the file." << std::endl << "The program will stop." << std::endl;
+		if (fileIS.is_open()) {
+			fileIS.close();
+		}
 		return 0;
 	}
+	if (fileIS.is_open()) {
+		fileIS.close();
+	}
+
+	GM& G = *_G;
+
 	std::cout << "Graph succesfully loaded from file." << std::endl;
-	std::cout << "Size: V: " << G.nV << ", E: " << G.nE << std::endl;
+	std::cout << "Size: V: " << adj.nV() << ", E: " << adj.nE() << std::endl;
 #ifndef SEQUENTIAL_GRAPH_COLOR
-	std::cout << "Performing computation using " << MAX_THREADS << " threads." << std::endl;
+	std::cout << "Performing computation using " << G.MAX_THREADS_SOLVE << " threads." << std::endl;
 #endif
 
 #ifdef PARALLEL_GRAPH_COLOR
 	int n_iters = 0;
 	int n_confs = 0;
-	auto cols = solve(G, n_iters, n_confs);
+	int n_cols = G.solve(n_iters, n_confs);
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
-	auto cols = solve(G);
+	int n_cols = G.solve();
 #endif
-	int n_cols = cols.size();
+	//int n_cols = cols.size();
 
 	//printColors(G);
 	//printDotFile(G);
@@ -68,33 +100,33 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-void printColors(struct graph& G) {
-	auto p = G.col.begin();
-	for (int v = 0; v < G.nV; ++v) {
-		std::cout << v << ": " << G.col[v] << std::endl;
-	}
-}
-
-void printDotFile(struct graph& G) {
-	std::ofstream file;
-	file.open("output.dot");
-
-	file << "strict graph {" << std::endl;
-	file << "\tnode [colorscheme=pastel19]" << std::endl;
-	// Write vertexes
-	for (int v = 0; v < G.adj.size(); ++v) {
-		file << "\t" << v << "[style=filled, color=" << G.col[v] + 1 << "]" << std::endl;
-	}
-	// Write edges
-	for (int v = 0; v < G.adj.size(); ++v) {
-		auto adjIt = G.adj[v].begin();
-		while (adjIt != G.adj[v].end()) {
-			int w = *adjIt;
-			if (v <= w) {
-				file << "\t" << v << " -- " << w << std::endl;
-			}
-			++adjIt;
-		}
-	}
-	file << "}" << std::endl;
-}
+//void printColors(GM& G) {
+//	auto p = G.col.begin();
+//	for (int v = 0; v < G.adj.nV(); ++v) {
+//		std::cout << v << ": " << G.col[v] << std::endl;
+//	}
+//}
+//
+//void printDotFile(struct graph& G) {
+//	std::ofstream file;
+//	file.open("output.dot");
+//
+//	file << "strict graph {" << std::endl;
+//	file << "\tnode [colorscheme=pastel19]" << std::endl;
+//	// Write vertexes
+//	for (int v = 0; v < G.adj.nV(); ++v) {
+//		file << "\t" << v << "[style=filled, color=" << G.col[v] + 1 << "]" << std::endl;
+//	}
+//	// Write edges
+//	for (int v = 0; v < G.adj.nV(); ++v) {
+//		auto adjIt = G.adj.beginNeighs(v);
+//		while (adjIt != G.adj.endNeighs(v)) {
+//			int w = *adjIt;
+//			if (v <= w) {
+//				file << "\t" << v << " -- " << w << std::endl;
+//			}
+//			++adjIt;
+//		}
+//	}
+//	file << "}" << std::endl;
+//}

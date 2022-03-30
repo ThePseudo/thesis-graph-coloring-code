@@ -1,6 +1,9 @@
 #ifndef _CONFIGURATION_H
 #define _CONFIGURATION_H
 
+#define GRAPH_REPRESENTATION_ADJ_MATRIX
+//#define GRAPH_REPRESENTATION_CSR
+
 //#define PARALLEL_INPUT_LOAD
 #define PARTITIONED_INPUT_LOAD
 //#define SEQUENTIAL_INPUT_LOAD
@@ -21,6 +24,14 @@
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+
+#ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
+#undef GRAPH_REPRESENTATION_CSR
+#endif
+
+#ifdef GRAPH_REPRESENTATION_CSR
+#undef GRAPH_REPRESENTATION_ADJ_MATRIX
+#endif
 
 #ifdef PARALLEL_INPUT_LOAD
 #undef PARTITIONED_INPUT_LOAD

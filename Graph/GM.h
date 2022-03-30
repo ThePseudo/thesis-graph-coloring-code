@@ -6,23 +6,38 @@
 #include <vector>
 #include <mutex>
 
-const auto MAX_THREADS = std::thread::hardware_concurrency();
+#include "GraphRepresentation.h"
 
-constexpr auto INVALID_COLOR = -1;
+class GM {
+private:
+	constexpr static int INVALID_COLOR = -1;
 
-struct graph {
-	std::vector<std::vector<int>> adj;
+	GraphRepresentation* _adj;
 	std::vector<int> col;
 	std::vector<int> recolor;
-	size_t nV, nE;
 	std::mutex mutex;
-};
+
+	int colorGraph(int);
+	void sortGraphVerts();
+#ifdef PARALLEL_GRAPH_COLOR
+	int colorGraphParallel(int, int&);
+	int detectConflicts();
+	void detectConflictsParallel(const int);
+#endif
+
+public:
+	const int MAX_THREADS_SOLVE = std::thread::hardware_concurrency();
+
+	GM(GraphRepresentation& adj);
+
+	const GraphRepresentation& adj();
 
 #ifdef PARALLEL_GRAPH_COLOR
-std::vector<int> solve(struct graph&, int&, int&);
+	const int solve(int&, int&);
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
-std::vector<int> solve(struct graph&);
+	const int solve();
 #endif
+};
 
 #endif // !_GRAPH_H

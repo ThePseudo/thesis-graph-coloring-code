@@ -7,15 +7,21 @@
 
 #include <algorithm>
 
-int colorGraph(struct graph&, int);
-void sortGraphVerts(struct graph&);
-#ifdef PARALLEL_GRAPH_COLOR
-int colorGraphParallel(struct graph&, int, int&);
-int detectConflicts(struct graph&);
-void detectConflictsParallel(struct graph&, const int);
-#endif
+GM::GM(GraphRepresentation& gr) {
+	this->_adj = &gr;
+	this->col = std::vector<int>(this->adj().nV());
+	this->recolor = std::vector<int>(this->adj().nV());
+	for (int i = 0; i < this->adj().nV(); ++i) {
+		this->col[i] = GM::INVALID_COLOR;
+		this->recolor[i] = i;
+	}
+}
 
-int colorGraph(struct graph& G, int n_cols) {
+const GraphRepresentation& GM::adj() {
+	return *this->_adj;
+}
+
+int GM::colorGraph(int n_cols) {
 #ifdef COMPUTE_ELAPSED_TIME
 	sampleTime();
 #endif
@@ -23,31 +29,31 @@ int colorGraph(struct graph& G, int n_cols) {
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
 	int parallelIdx = 0;
-	for (int i = 0; i < MAX_THREADS; ++i) {
-		threadPool.emplace_back([&G, n_cols, &parallelIdx] { colorGraphParallel(G, n_cols, parallelIdx); });
+	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
+		threadPool.emplace_back([&, n_cols] { this->colorGraphParallel(n_cols, parallelIdx); });
 	}
 
 	for (auto& t : threadPool) {
 		t.join();
 	}
 
-	n_cols = *std::max_element(G.col.begin(), G.col.end()) + 1;
+	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	for (
-		auto it = G.recolor.begin();
-		it != G.recolor.end();
+		auto it = this->recolor.begin();
+		it != this->recolor.end();
 		++it
 		) {
 		int v = *it;
-		auto neighIt = G.adj[v].begin();
+		auto neighIt = this->adj().beginNeighs(v);
 		auto forbidden = std::vector<bool>(n_cols);
 		std::fill(forbidden.begin(), forbidden.end(), false);
-		while (neighIt != G.adj[v].end()) {
+		while (neighIt != this->adj().endNeighs(v)) {
 			int w = *neighIt;
-			int c = G.col[w];
+			int c = this->col[w];
 
-			if (c != INVALID_COLOR) forbidden[c] = true;
+			if (c != GM::INVALID_COLOR) forbidden[c] = true;
 			++neighIt;
 		}
 		auto targetIt = std::find(forbidden.begin(), forbidden.end(), false);
@@ -59,7 +65,7 @@ int colorGraph(struct graph& G, int n_cols) {
 			targetCol = targetIt - forbidden.begin();
 		}
 
-		G.col[v] = targetCol;
+		this->col[v] = targetCol;
 	}
 #endif
 
@@ -72,21 +78,21 @@ int colorGraph(struct graph& G, int n_cols) {
 }
 
 #ifdef PARALLEL_GRAPH_COLOR
-int colorGraphParallel(struct graph& G, int n_cols, int& i) {
-	G.mutex.lock();
-	while (i < G.recolor.size()) {
-		int v = G.recolor[i];
+int GM::colorGraphParallel(int n_cols, int& i) {
+	this->mutex.lock();
+	while (i < this->recolor.size()) {
+		int v = this->recolor[i];
 		++i;
-		G.mutex.unlock();
+		this->mutex.unlock();
 
-		auto neighIt = G.adj[v].begin();
+		auto neighIt = this->adj().beginNeighs(v);
 		auto forbidden = std::vector<bool>(n_cols);
 		std::fill(forbidden.begin(), forbidden.end(), false);
-		while (neighIt != G.adj[v].end()) {
+		while (neighIt != this->adj().endNeighs(v)) {
 			int w = *neighIt;
-			int c = G.col[w];
+			int c = this->col[w];
 
-			if (c != INVALID_COLOR) {
+			if (c != GM::INVALID_COLOR) {
 				if (c >= n_cols) {
 					n_cols = c + 1;
 					forbidden.resize(n_cols, false);
@@ -104,31 +110,31 @@ int colorGraphParallel(struct graph& G, int n_cols, int& i) {
 			targetCol = targetIt - forbidden.begin();
 		}
 
-		G.col[v] = targetCol;
+		this->col[v] = targetCol;
 
-		G.mutex.lock();
+		this->mutex.lock();
 	}
-	G.mutex.unlock();
+	this->mutex.unlock();
 
 	return n_cols;
 }
 
-int detectConflicts(struct graph& G) {
+int GM::detectConflicts() {
 #ifdef COMPUTE_ELAPSED_TIME
 	sampleTime();
 #endif
 
-	G.recolor.erase(G.recolor.begin(), G.recolor.end());
+	this->recolor.erase(this->recolor.begin(), this->recolor.end());
 	std::vector<std::thread> threadPool;
-	for (int i = 0; i < MAX_THREADS; ++i) {
-		threadPool.emplace_back([&G, i] { detectConflictsParallel(G, i); });
+	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
+		threadPool.emplace_back([&, i] { this->detectConflictsParallel(i); });
 	}
 
 	for (auto& t : threadPool) {
 		t.join();
 	}
 
-	int recolorSize = G.recolor.size();
+	int recolorSize = this->recolor.size();
 
 #ifdef COMPUTE_ELAPSED_TIME
 	sampleTime();
@@ -138,27 +144,27 @@ int detectConflicts(struct graph& G) {
 	return recolorSize;
 }
 
-void detectConflictsParallel(struct graph& G, const int i) {
-	for (int v = i; v < G.nV; v += MAX_THREADS) {
-		if (G.col[v] == INVALID_COLOR) {
-			G.mutex.lock();
-			G.recolor.push_back(v);
-			G.mutex.unlock();
+void GM::detectConflictsParallel(const int i) {
+	for (int v = i; v < this->adj().nV(); v += this->MAX_THREADS_SOLVE) {
+		if (this->col[v] == GM::INVALID_COLOR) {
+			this->mutex.lock();
+			this->recolor.push_back(v);
+			this->mutex.unlock();
 			continue;
 		}
 
 		for (
-			auto neighIt = G.adj[v].begin();
-			neighIt != G.adj[v].end();
+			auto neighIt = this->adj().beginNeighs(v);
+			neighIt != this->adj().endNeighs(v);
 			++neighIt
 			) {
 			int w = *neighIt;
-			//if (v < w) continue;
+			if (v < w) continue;
 
-			if (G.col[v] == G.col[w]) {
-				G.mutex.lock();
-				G.recolor.push_back(v);
-				G.mutex.unlock();
+			if (this->col[v] == this->col[w]) {
+				this->mutex.lock();
+				this->recolor.push_back(v);
+				this->mutex.unlock();
 				break;
 			}
 		}
@@ -168,25 +174,25 @@ void detectConflictsParallel(struct graph& G, const int i) {
 }
 #endif
 
-void sortGraphVerts(struct graph& G) {
+void GM::sortGraphVerts() {
 #ifdef SORT_LARGEST_DEGREE_FIRST
-	auto sort_lambda = [&G](const int v, const int w) { return G.adj[v].size() > G.adj[w].size(); };
+	auto sort_lambda = [&](const int v, const int w) { return this->adj().countNeighs(v) > this->adj().countNeighs(w); };
 #endif
 #ifdef SORT_SMALLEST_DEGREE_FIRST
-	auto sort_lambda = [&G](const int v, const int w) { return G.adj[v].size() < G.adj[w].size(); };
+	auto sort_lambda = [&](const int v, const int w) { return this->adj().countNeighs(v) < this->adj().countNeighs(w); };
 #endif
 #ifdef SORT_VERTEX_ORDER
-	auto sort_lambda = [&G](const int v, const int w) { return v < w; };
+	auto sort_lambda = [&](const int v, const int w) { return v < w; };
 #endif
 #ifdef SORT_VERTEX_ORDER_REVERSED
-	auto sort_lambda = [&G](const int v, const int w) { return v > w; };
+	auto sort_lambda = [&](const int v, const int w) { return v > w; };
 #endif
 
 #ifdef COMPUTE_ELAPSED_TIME
 	sampleTime();
 #endif
 
-	std::sort(G.recolor.begin(), G.recolor.end(), sort_lambda);
+	std::sort(this->recolor.begin(), this->recolor.end(), sort_lambda);
 
 #ifdef COMPUTE_ELAPSED_TIME
 	sampleTime();
@@ -195,16 +201,16 @@ void sortGraphVerts(struct graph& G) {
 }
 
 #ifdef PARALLEL_GRAPH_COLOR
-std::vector<int> solve(struct graph& G, int& n_iters, int& n_confs) {
+const int GM::solve(int& n_iters, int& n_confs) {
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
-std::vector<int> solve(struct graph& G) {
+const int GM::solve() {
 #endif
 	int n_cols = 0;
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
-	sortGraphVerts(G);
-	n_cols = colorGraph(G, n_cols);
+	this->sortGraphVerts();
+	n_cols = this->colorGraph(n_cols);
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
 	n_iters = 0;
@@ -213,30 +219,30 @@ std::vector<int> solve(struct graph& G) {
 #ifdef PARALLEL_RECOLOR
 	int partial_confs;
 	do {
-		sortGraphVerts(G);
-		n_cols = colorGraph(G, n_cols);
+		this->sortGraphVerts();
+		n_cols = this->colorGraph(n_cols);
 
 		++n_iters;
 
-		partial_confs = detectConflicts(G);
+		partial_confs = this->detectConflicts();
 		n_confs += partial_confs;
 	} while (partial_confs > 0);
 #endif
 #ifdef SEQUENTIAL_RECOLOR
-	sortGraphVerts(G);
-	n_cols = colorGraph(G, n_cols);
+	this->sortGraphVerts();
+	n_cols = this->colorGraph(n_cols);
 	++n_iters;
-	n_confs = detectConflicts(G);
+	n_confs = this->detectConflicts();
 
 	if (n_confs > 0) {
-		sortGraphVerts(G);
+		this->sortGraphVerts();
 		int index = 0;
 
 #ifdef COMPUTE_ELAPSED_TIME
 		sampleTime();
 #endif
 
-		n_cols = colorGraphParallel(G, n_cols, index);
+		n_cols = this->colorGraphParallel(n_cols, index);
 
 #ifdef COMPUTE_ELAPSED_TIME
 		sampleTime();
@@ -247,5 +253,5 @@ std::vector<int> solve(struct graph& G) {
 #endif
 #endif
 
-	return G.col;
+	return n_cols;
 }

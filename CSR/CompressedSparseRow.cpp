@@ -112,7 +112,7 @@ void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iter
 	++expected_row;
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginRow(int row_idx) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(int row_idx) const throw(std::out_of_range) {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -120,7 +120,7 @@ const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginRow(int ro
 	return this->col_idxs.begin() + this->row_ptrs[row_idx];
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::endRow(int row_idx) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator CompressedSparseRow::endNeighs(int row_idx) const throw(std::out_of_range) {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -128,10 +128,10 @@ const ::std::vector<size_t>::const_iterator CompressedSparseRow::endRow(int row_
 	return this->col_idxs.begin() + this->row_ptrs[row_idx + 1];
 }
 
-const size_t CompressedSparseRow::count() const {
+const size_t CompressedSparseRow::nE() const {
 	return this->row_ptrs[this->rows];
 }
 
-const size_t CompressedSparseRow::countRows() const {
+const size_t CompressedSparseRow::nV() const {
 	return this->rows;
 }

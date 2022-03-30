@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GM", "GM Multi Thread\GM Multi Thread.vcxproj", "{AEEE4419-C7F6-4511-982F-6828722FD721}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main", "GM Multi Thread\GM Multi Thread.vcxproj", "{AEEE4419-C7F6-4511-982F-6828722FD721}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GM CUDA Naive", "GM CUDA Naive\GM CUDA Naive.vcxproj", "{1E6FC60F-9CAC-4750-A9BC-04A4457FDAF9}"
 EndProject
@@ -15,9 +15,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Configuration", "Configurat
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader", "Loader\Loader.vcxproj", "{1F3E8FF7-56C2-43C7-A0D1-8EB98F3DDDB3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graph", "Graph\Graph.vcxproj", "{3536CBC3-9C34-4B5E-947A-B3B4FFC73B40}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GM", "Graph\Graph.vcxproj", "{3536CBC3-9C34-4B5E-947A-B3B4FFC73B40}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Benchmark", "Benchmark\Benchmark.vcxproj", "{A7E0D2C1-ECFD-4733-81A1-62EE9C841401}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphRepresentation", "GraphRepresentation\GraphRepresentation.vcxproj", "{83E77F58-E039-496C-B4AA-125B75F774D3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdjacencyMatrix", "AdjacencyMatrix\AdjacencyMatrix.vcxproj", "{102D9953-EB0D-40A6-90C3-552A91EE7A4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +93,22 @@ Global
 		{A7E0D2C1-ECFD-4733-81A1-62EE9C841401}.Release|x64.Build.0 = Release|x64
 		{A7E0D2C1-ECFD-4733-81A1-62EE9C841401}.Release|x86.ActiveCfg = Release|Win32
 		{A7E0D2C1-ECFD-4733-81A1-62EE9C841401}.Release|x86.Build.0 = Release|Win32
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Debug|x64.ActiveCfg = Debug|x64
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Debug|x64.Build.0 = Debug|x64
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Debug|x86.ActiveCfg = Debug|Win32
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Debug|x86.Build.0 = Debug|Win32
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Release|x64.ActiveCfg = Release|x64
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Release|x64.Build.0 = Release|x64
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Release|x86.ActiveCfg = Release|Win32
+		{83E77F58-E039-496C-B4AA-125B75F774D3}.Release|x86.Build.0 = Release|Win32
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Debug|x64.ActiveCfg = Debug|x64
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Debug|x64.Build.0 = Debug|x64
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Debug|x86.ActiveCfg = Debug|Win32
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Debug|x86.Build.0 = Debug|Win32
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Release|x64.ActiveCfg = Release|x64
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Release|x64.Build.0 = Release|x64
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Release|x86.ActiveCfg = Release|Win32
+		{102D9953-EB0D-40A6-90C3-552A91EE7A4A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

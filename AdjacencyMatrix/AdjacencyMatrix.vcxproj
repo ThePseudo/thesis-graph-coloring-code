@@ -20,10 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{3536CBC3-9C34-4B5E-947A-B3B4FFC73B40}</ProjectGuid>
-    <RootNamespace>Graph</RootNamespace>
+    <ProjectGuid>{102D9953-EB0D-40A6-90C3-552A91EE7A4A}</ProjectGuid>
+    <RootNamespace>AdjacencyMatrix</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>GM</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -90,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,23 +142,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GM.cpp" />
+    <ClCompile Include="AdjacencyMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GM.h" />
+    <ClInclude Include="AdjacencyMatrix.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdjacencyMatrix\AdjacencyMatrix.vcxproj">
-      <Project>{102d9953-eb0d-40a6-90c3-552a91ee7a4a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
       <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Configuration\Configuration.vcxproj">
       <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\CSR\CSR.vcxproj">
-      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
     </ProjectReference>
     <ProjectReference Include="..\GraphRepresentation\GraphRepresentation.vcxproj">
       <Project>{83e77f58-e039-496c-b4aa-125b75f774d3}</Project>
