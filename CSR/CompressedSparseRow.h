@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "configuration.h"
+
 class CompressedSparseRow : public GraphRepresentation {
 private:
 	size_t rows;

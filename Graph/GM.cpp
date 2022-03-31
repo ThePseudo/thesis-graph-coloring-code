@@ -255,3 +255,7 @@ const int GM::solve() {
 
 	return n_cols;
 }
+
+const std::vector<int> GM::getColors() {
+	return this->col;
+}

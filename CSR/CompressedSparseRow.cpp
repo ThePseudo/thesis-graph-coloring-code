@@ -1,5 +1,7 @@
 #include "CompressedSparseRow.h"
 
+#include "benchmark.h"
+
 #include <climits>
 #include <string>
 
@@ -38,6 +40,10 @@ void CompressedSparseRow::init(size_t n_rows, size_t n_cols) {
 }
 
 std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
+#ifdef COMPUTE_ELAPSED_TIME
+	sampleTime();
+#endif
+
 	size_t n;
 	size_t row_idx;
 	std::string buffer;
@@ -61,6 +67,11 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 
 		m.populateRow(actual_row_idx, cols.begin(), cols.end());
 	}
+
+#ifdef COMPUTE_ELAPSED_TIME
+	sampleTime();
+	loadTime += getElapsedTime();
+#endif
 
 	return is;
 }

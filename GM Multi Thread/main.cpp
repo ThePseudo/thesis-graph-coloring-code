@@ -1,5 +1,4 @@
 #include "configuration.h"
-//#include "loader.h"
 #include "GM.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
@@ -20,8 +19,8 @@
 #include <string>
 #include <vector>
 
-void printColors(struct graph&);
-void printDotFile(struct graph&);
+void printColors(GM&);
+void printDotFile(GM&);
 
 int main(int argc, char** argv) {
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
@@ -76,9 +75,6 @@ int main(int argc, char** argv) {
 #endif
 	//int n_cols = cols.size();
 
-	//printColors(G);
-	//printDotFile(G);
-
 #ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Solution converged to in " << n_iters << " iterations." << std::endl;
 	std::cout << "Detected a total of " << n_confs << " conflicts." << std::endl;
@@ -97,36 +93,42 @@ int main(int argc, char** argv) {
 	std::cout << "Total:\t\t" << loadTime + sortTime + colorTime + conflictsTime << " s" << std::endl;
 #endif
 
+	//printColors(G);
+	//printDotFile(G);
+
 	return 0;
 }
 
-//void printColors(GM& G) {
-//	auto p = G.col.begin();
-//	for (int v = 0; v < G.adj.nV(); ++v) {
-//		std::cout << v << ": " << G.col[v] << std::endl;
-//	}
-//}
-//
-//void printDotFile(struct graph& G) {
-//	std::ofstream file;
-//	file.open("output.dot");
-//
-//	file << "strict graph {" << std::endl;
-//	file << "\tnode [colorscheme=pastel19]" << std::endl;
-//	// Write vertexes
-//	for (int v = 0; v < G.adj.nV(); ++v) {
-//		file << "\t" << v << "[style=filled, color=" << G.col[v] + 1 << "]" << std::endl;
-//	}
-//	// Write edges
-//	for (int v = 0; v < G.adj.nV(); ++v) {
-//		auto adjIt = G.adj.beginNeighs(v);
-//		while (adjIt != G.adj.endNeighs(v)) {
-//			int w = *adjIt;
-//			if (v <= w) {
-//				file << "\t" << v << " -- " << w << std::endl;
-//			}
-//			++adjIt;
-//		}
-//	}
-//	file << "}" << std::endl;
-//}
+void printColors(GM& G) {
+	auto col = G.getColors();
+	auto p = col.begin();
+	for (int v = 0; v < G.adj().nV(); ++v) {
+		std::cout << v << ": " << col[v] << std::endl;
+	}
+}
+
+void printDotFile(GM& G) {
+	std::ofstream file;
+	file.open("output.dot");
+
+	auto col = G.getColors();
+
+	file << "strict graph {" << std::endl;
+	file << "\tnode [colorscheme=pastel19]" << std::endl;
+	// Write vertexes
+	for (int v = 0; v < G.adj().nV(); ++v) {
+		file << "\t" << v << "[style=filled, color=" << col[v] + 1 << "]" << std::endl;
+	}
+	// Write edges
+	for (int v = 0; v < G.adj().nV(); ++v) {
+		auto adjIt = G.adj().beginNeighs(v);
+		while (adjIt != G.adj().endNeighs(v)) {
+			int w = *adjIt;
+			if (v <= w) {
+				file << "\t" << v << " -- " << w << std::endl;
+			}
+			++adjIt;
+		}
+	}
+	file << "}" << std::endl;
+}

@@ -38,6 +38,8 @@ public:
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	const int solve();
 #endif
+
+	const std::vector<int> getColors();
 };
 
 #endif // !_GRAPH_H
