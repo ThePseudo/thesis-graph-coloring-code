@@ -4,6 +4,7 @@
 #include "configuration.h"
 
 #include <vector>
+#include <thread>
 #include <mutex>
 
 #include "GraphRepresentation.h"

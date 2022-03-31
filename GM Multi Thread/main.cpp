@@ -1,5 +1,7 @@
 #include "configuration.h"
+
 #include "GM.h"
+#include "JonesPlassmann.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
@@ -31,7 +33,7 @@ int main(int argc, char** argv) {
 #endif
 	auto& adj = *_adj;
 
-	GM* _G;
+	JonesPlassmann* _G;
 
 	if (argc <= 1) {
 		std::cout << "Usage: " << argv[0] << " <graph_path>" << std::endl;
@@ -45,7 +47,7 @@ int main(int argc, char** argv) {
 		fileIS.open(argv[1]);
 		std::istream& is = fileIS;
 		is >> adj;
-		_G = new GM(adj);
+		_G = new JonesPlassmann(adj);
 	} catch (const std::exception& e) {
 		std::cout << "An error occurred while loading the file." << std::endl << "The program will stop." << std::endl;
 		if (fileIS.is_open()) {
@@ -57,7 +59,7 @@ int main(int argc, char** argv) {
 		fileIS.close();
 	}
 
-	GM& G = *_G;
+	JonesPlassmann& G = *_G;
 
 	std::cout << "Graph succesfully loaded from file." << std::endl;
 	std::cout << "Size: V: " << adj.nV() << ", E: " << adj.nE() << std::endl;
