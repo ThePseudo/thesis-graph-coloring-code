@@ -22,7 +22,7 @@ private:
 	void parseInputParallel(std::istream&, std::mutex&);
 #endif
 #ifdef PARTITIONED_INPUT_LOAD
-	void parseInputParallel(std::string& const, std::mutex&, int const, size_t const);
+	void parseInputParallel(std::string&, std::mutex&, int const, size_t const);
 #endif
 	bool readHeader(std::istream&, struct header&);
 #ifdef PARALLEL_INPUT_LOAD
@@ -45,12 +45,12 @@ public:
 
 	const size_t nE() const override;
 	const size_t nV() const override;
-	const bool get(size_t v, size_t w) const throw(std::out_of_range) override;
+	const bool get(size_t v, size_t w) const override;
 
-	const int countNeighs(size_t v) const throw(std::out_of_range) { __super::countNeighs(v); };
+	const int countNeighs(size_t v) const { __super::countNeighs(v); };
 
-	const ::std::vector<size_t>::const_iterator beginNeighs(int v) const throw(std::out_of_range) override;
-	const ::std::vector<size_t>::const_iterator endNeighs(int v) const throw(std::out_of_range) override;
+	const ::std::vector<size_t>::const_iterator beginNeighs(size_t v) const override;
+	const ::std::vector<size_t>::const_iterator endNeighs(size_t v) const override;
 };
 
 #endif // !_ADJACENCY_MATRIC_H

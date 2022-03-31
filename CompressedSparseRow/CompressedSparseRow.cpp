@@ -41,7 +41,8 @@ void CompressedSparseRow::init(size_t n_rows, size_t n_cols) {
 
 std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 	size_t n;
@@ -69,14 +70,13 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	}
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	loadTime += getElapsedTime();
+	bm.sampleTimeToFlag(0);
 #endif
 
 	return is;
 }
 
-const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const throw(std::out_of_range) {
+const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -99,7 +99,7 @@ const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const throw(
 }
 
 template<typename Iterator>
-void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iterator end) throw(std::invalid_argument, std::out_of_range) {
+void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iterator end) {
 	static size_t expected_row = 0;
 
 	if (row_idx != expected_row) {
@@ -123,7 +123,7 @@ void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iter
 	++expected_row;
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(int row_idx) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(size_t row_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -131,7 +131,7 @@ const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(int
 	return this->col_idxs.begin() + this->row_ptrs[row_idx];
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::endNeighs(int row_idx) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator CompressedSparseRow::endNeighs(size_t row_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}

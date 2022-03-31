@@ -21,7 +21,7 @@ private:
 	void init(size_t n_rows, size_t n_cols);
 
 	template<typename Iterator>
-	void populateRow(size_t row_idx, Iterator begin, const Iterator end) throw(std::invalid_argument, std::out_of_range);
+	void populateRow(size_t row_idx, Iterator begin, const Iterator end);
 
 public:
 	CompressedSparseRow();
@@ -34,12 +34,12 @@ public:
 
 	const size_t nE() const override;
 	const size_t nV() const override;
-	const bool get(size_t row, size_t col) const throw(std::out_of_range) override;
+	const bool get(size_t row, size_t col) const override;
 
-	const int countNeighs(size_t v) const throw(std::out_of_range) { __super::countNeighs(v); };
+	const int countNeighs(size_t v) const { __super::countNeighs(v); };
 
-	const ::std::vector<size_t>::const_iterator beginNeighs(int row_idx) const throw(std::out_of_range) override;
-	const ::std::vector<size_t>::const_iterator endNeighs(int row_idx) const throw(std::out_of_range) override;
+	const ::std::vector<size_t>::const_iterator beginNeighs(size_t row_idx) const override;
+	const ::std::vector<size_t>::const_iterator endNeighs(size_t row_idx) const override;
 };
 
 #endif // !_COMPRESSED_SPARSE_ROW_H

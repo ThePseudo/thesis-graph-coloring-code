@@ -156,11 +156,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CompressedSparseRow\CompressedSparseRow.vcxproj">
+      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Configuration\Configuration.vcxproj">
       <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\CSR\CSR.vcxproj">
-      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

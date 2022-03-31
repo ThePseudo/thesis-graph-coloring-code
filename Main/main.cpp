@@ -1,6 +1,6 @@
 #include "configuration.h"
 
-#include "GM.h"
+#include "GebremedhinManne.h"
 #include "JonesPlassmann.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
@@ -9,10 +9,10 @@
 
 #include "GraphRepresentation.h"
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
-#include "AdjacencyMatrix.h";
+#include "AdjacencyMatrix.h"
 #endif
 #ifdef GRAPH_REPRESENTATION_CSR
-#include "CompressedSparseRow.h";
+#include "CompressedSparseRow.h"
 #endif
 
 #include <algorithm>
@@ -21,8 +21,8 @@
 #include <string>
 #include <vector>
 
-void printColors(GM&);
-void printDotFile(GM&);
+void printColors(GebremedhinManne&);
+void printDotFile(GebremedhinManne&);
 
 int main(int argc, char** argv) {
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
@@ -40,6 +40,16 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
+#ifdef COMPUTE_ELAPSED_TIME
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.clear(0);
+	bm.clear(1);
+	bm.clear(2);
+#ifdef PARALLEL_GRAPH_COLOR
+	bm.clear(3);
+#endif
+#endif
+
 	std::cout << "Loading graph from " << argv[1] << std::endl;
 
 	std::ifstream fileIS;
@@ -49,6 +59,7 @@ int main(int argc, char** argv) {
 		is >> adj;
 		_G = new JonesPlassmann(adj);
 	} catch (const std::exception& e) {
+		(void) e;
 		std::cout << "An error occurred while loading the file." << std::endl << "The program will stop." << std::endl;
 		if (fileIS.is_open()) {
 			fileIS.close();
@@ -86,13 +97,13 @@ int main(int argc, char** argv) {
 #ifdef COMPUTE_ELAPSED_TIME
 	std::cout << std::endl << std::endl;
 	std::cout << "TIME USAGE" << std::endl;
-	std::cout << "File load:\t\t" << loadTime << " s" << std::endl;
-	std::cout << "Vertex sort:\t\t" << sortTime << " s" << std::endl;
-	std::cout << "Vertex color:\t\t" << colorTime << " s" << std::endl;
+	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
+	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #ifdef PARALLEL_GRAPH_COLOR
-	std::cout << "Conflict search:\t" << conflictsTime << " s" << std::endl;
+	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 #endif
-	std::cout << "Total:\t\t" << loadTime + sortTime + colorTime + conflictsTime << " s" << std::endl;
+	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
 #endif
 
 	//printColors(G);
@@ -101,7 +112,7 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-void printColors(GM& G) {
+void printColors(GebremedhinManne& G) {
 	auto col = G.getColors();
 	auto p = col.begin();
 	for (int v = 0; v < G.adj().nV(); ++v) {
@@ -109,7 +120,7 @@ void printColors(GM& G) {
 	}
 }
 
-void printDotFile(GM& G) {
+void printDotFile(GebremedhinManne& G) {
 	std::ofstream file;
 	file.open("output.dot");
 
@@ -122,10 +133,10 @@ void printDotFile(GM& G) {
 		file << "\t" << v << "[style=filled, color=" << col[v] + 1 << "]" << std::endl;
 	}
 	// Write edges
-	for (int v = 0; v < G.adj().nV(); ++v) {
+	for (size_t v = 0; v < G.adj().nV(); ++v) {
 		auto adjIt = G.adj().beginNeighs(v);
 		while (adjIt != G.adj().endNeighs(v)) {
-			int w = *adjIt;
+			size_t w = *adjIt;
 			if (v <= w) {
 				file << "\t" << v << " -- " << w << std::endl;
 			}

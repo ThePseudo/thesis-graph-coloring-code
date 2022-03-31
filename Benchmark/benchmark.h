@@ -2,13 +2,26 @@
 #define _BENCHMARK_H
 
 #include <ctime>
+#include <vector>
+#include <unordered_map>
 
-extern float loadTime;
-extern float sortTime;
-extern float colorTime;
-extern float conflictsTime;
+class Benchmark {	
+private:
+	std::unordered_map<int, clock_t>* timeMap;
+	clock_t prev;
+	clock_t now;
 
-void sampleTime();
-float getElapsedTime();
+	static Benchmark* _instance;
+	Benchmark();
+
+public:
+
+	static Benchmark* getInstance();
+	void clear(const int flagId);
+	void sampleTime();
+	void sampleTimeToFlag(const int flagId);
+	const float getTimeOfFlag(const int flagId);
+	const float getTotalTime();
+};
 
 #endif // !_BENCHMARK_H

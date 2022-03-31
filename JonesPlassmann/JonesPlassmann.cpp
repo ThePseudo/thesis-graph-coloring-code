@@ -42,7 +42,8 @@ const int JonesPlassmann::solve() {
 	int n_cols = 0;
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 	while (!toAnalyze.empty()) {
@@ -66,15 +67,14 @@ const int JonesPlassmann::solve() {
 		}
 
 #ifdef COMPUTE_ELAPSED_TIME
-		sampleTime();
-		sortTime += getElapsedTime();
+		bm.sampleTimeToFlag(1);
 #endif
 		for (auto& v : indipendent) {
 			auto neighIt = this->adj().beginNeighs(v);
 			auto forbidden = std::vector<bool>(n_cols);
 			std::fill(forbidden.begin(), forbidden.end(), false);
 			while (neighIt != this->adj().endNeighs(v)) {
-				int w = *neighIt;
+				size_t w = *neighIt;
 				int c = this->col[w];
 
 				if (c != JonesPlassmann::INVALID_COLOR) forbidden[c] = true;
@@ -93,8 +93,7 @@ const int JonesPlassmann::solve() {
 		}
 
 #ifdef COMPUTE_ELAPSED_TIME
-		sampleTime();
-		colorTime += getElapsedTime();
+		bm.sampleTimeToFlag(2);
 #endif
 
 		std::set_difference(toAnalyze.begin(), toAnalyze.end(),

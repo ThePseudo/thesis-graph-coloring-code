@@ -1,5 +1,5 @@
-#ifndef _GRAPH_H
-#define _GRAPH_H
+#ifndef _GEBREMEFHIN_MANNE_H
+#define _GEBREMEFHIN_MANNE_H
 
 #include "configuration.h"
 
@@ -9,7 +9,7 @@
 
 #include "GraphRepresentation.h"
 
-class GM {
+class GebremedhinManne {
 private:
 	constexpr static int INVALID_COLOR = -1;
 
@@ -29,7 +29,7 @@ private:
 public:
 	const int MAX_THREADS_SOLVE = std::thread::hardware_concurrency();
 
-	GM(GraphRepresentation& adj);
+	GebremedhinManne(GraphRepresentation& adj);
 
 	const GraphRepresentation& adj();
 
@@ -43,4 +43,4 @@ public:
 	const std::vector<int> getColors();
 };
 
-#endif // !_GRAPH_H
+#endif // !_GEBREMEFHIN_MANNE_H

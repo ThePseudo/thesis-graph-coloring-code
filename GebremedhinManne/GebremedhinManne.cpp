@@ -1,5 +1,5 @@
 #include "configuration.h"
-#include "GM.h"
+#include "GebremedhinManne.h"
 
 #ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
@@ -7,23 +7,24 @@
 
 #include <algorithm>
 
-GM::GM(GraphRepresentation& gr) {
+GebremedhinManne::GebremedhinManne(GraphRepresentation& gr) {
 	this->_adj = &gr;
 	this->col = std::vector<int>(this->adj().nV());
 	this->recolor = std::vector<int>(this->adj().nV());
 	for (int i = 0; i < this->adj().nV(); ++i) {
-		this->col[i] = GM::INVALID_COLOR;
+		this->col[i] = GebremedhinManne::INVALID_COLOR;
 		this->recolor[i] = i;
 	}
 }
 
-const GraphRepresentation& GM::adj() {
+const GraphRepresentation& GebremedhinManne::adj() {
 	return *this->_adj;
 }
 
-int GM::colorGraph(int n_cols) {
+int GebremedhinManne::colorGraph(int n_cols) {
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 #ifdef PARALLEL_GRAPH_COLOR
@@ -50,10 +51,10 @@ int GM::colorGraph(int n_cols) {
 		auto forbidden = std::vector<bool>(n_cols);
 		std::fill(forbidden.begin(), forbidden.end(), false);
 		while (neighIt != this->adj().endNeighs(v)) {
-			int w = *neighIt;
+			size_t w = *neighIt;
 			int c = this->col[w];
 
-			if (c != GM::INVALID_COLOR) forbidden[c] = true;
+			if (c != GebremedhinManne::INVALID_COLOR) forbidden[c] = true;
 			++neighIt;
 		}
 		auto targetIt = std::find(forbidden.begin(), forbidden.end(), false);
@@ -70,15 +71,14 @@ int GM::colorGraph(int n_cols) {
 #endif
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	colorTime += getElapsedTime();
+	bm.sampleTimeToFlag(2);
 #endif
 
 	return n_cols;
 }
 
 #ifdef PARALLEL_GRAPH_COLOR
-int GM::colorGraphParallel(int n_cols, int& i) {
+int GebremedhinManne::colorGraphParallel(int n_cols, int& i) {
 	this->mutex.lock();
 	while (i < this->recolor.size()) {
 		int v = this->recolor[i];
@@ -92,7 +92,7 @@ int GM::colorGraphParallel(int n_cols, int& i) {
 			int w = *neighIt;
 			int c = this->col[w];
 
-			if (c != GM::INVALID_COLOR) {
+			if (c != GebremedhinManne::INVALID_COLOR) {
 				if (c >= n_cols) {
 					n_cols = c + 1;
 					forbidden.resize(n_cols, false);
@@ -119,9 +119,10 @@ int GM::colorGraphParallel(int n_cols, int& i) {
 	return n_cols;
 }
 
-int GM::detectConflicts() {
+int GebremedhinManne::detectConflicts() {
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark bm = Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 	this->recolor.erase(this->recolor.begin(), this->recolor.end());
@@ -137,8 +138,7 @@ int GM::detectConflicts() {
 	int recolorSize = this->recolor.size();
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	conflictsTime += getElapsedTime();
+	bm.sampleTimeToFlag(3);
 #endif
 
 	return recolorSize;
@@ -146,7 +146,7 @@ int GM::detectConflicts() {
 
 void GM::detectConflictsParallel(const int i) {
 	for (int v = i; v < this->adj().nV(); v += this->MAX_THREADS_SOLVE) {
-		if (this->col[v] == GM::INVALID_COLOR) {
+		if (this->col[v] == GebremedhinManne::INVALID_COLOR) {
 			this->mutex.lock();
 			this->recolor.push_back(v);
 			this->mutex.unlock();
@@ -174,7 +174,7 @@ void GM::detectConflictsParallel(const int i) {
 }
 #endif
 
-void GM::sortGraphVerts() {
+void GebremedhinManne::sortGraphVerts() {
 #ifdef SORT_LARGEST_DEGREE_FIRST
 	auto sort_lambda = [&](const int v, const int w) { return this->adj().countNeighs(v) > this->adj().countNeighs(w); };
 #endif
@@ -189,22 +189,22 @@ void GM::sortGraphVerts() {
 #endif
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 	std::sort(this->recolor.begin(), this->recolor.end(), sort_lambda);
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	sortTime += getElapsedTime();
+	bm.sampleTimeToFlag(1);
 #endif
 }
 
 #ifdef PARALLEL_GRAPH_COLOR
-const int GM::solve(int& n_iters, int& n_confs) {
+const int GebremedhinManne::solve(int& n_iters, int& n_confs) {
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
-const int GM::solve() {
+const int GebremedhinManne::solve() {
 #endif
 	int n_cols = 0;
 
@@ -256,6 +256,6 @@ const int GM::solve() {
 	return n_cols;
 }
 
-const std::vector<int> GM::getColors() {
+const std::vector<int> GebremedhinManne::getColors() {
 	return this->col;
 }

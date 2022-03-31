@@ -18,35 +18,62 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdjacencyMatrix\AdjacencyMatrix.vcxproj">
+      <Project>{102d9953-eb0d-40a6-90c3-552a91ee7a4a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
+      <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Configuration\Configuration.vcxproj">
+      <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CompressedSparseRow\CompressedSparseRow.vcxproj">
+      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GebremedhinManne\GebremedhinManne.vcxproj">
+      <Project>{42151d82-c65a-435b-a49c-3f91067ff331}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphRepresentation\GraphRepresentation.vcxproj">
+      <Project>{83e77f58-e039-496c-b4aa-125b75f774d3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\JonesPlassmann\JonesPlassmann.vcxproj">
+      <Project>{1bb0f761-8068-43d2-ae86-470e0b6bad91}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{3536CBC3-9C34-4B5E-947A-B3B4FFC73B40}</ProjectGuid>
-    <RootNamespace>Graph</RootNamespace>
+    <ProjectGuid>{AEEE4419-C7F6-4511-982F-6828722FD721}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GMMultiThread</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>GM</ProjectName>
+    <ProjectName>Main</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,9 +97,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -82,89 +106,87 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)CSR;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="GM.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GM.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AdjacencyMatrix\AdjacencyMatrix.vcxproj">
-      <Project>{102d9953-eb0d-40a6-90c3-552a91ee7a4a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
-      <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Configuration\Configuration.vcxproj">
-      <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\CSR\CSR.vcxproj">
-      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\GraphRepresentation\GraphRepresentation.vcxproj">
-      <Project>{83e77f58-e039-496c-b4aa-125b75f774d3}</Project>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

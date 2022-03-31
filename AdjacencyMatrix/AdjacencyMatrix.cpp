@@ -43,7 +43,7 @@ const size_t AdjacencyMatrix::nV() const {
 	return this->_nV;
 }
 
-const bool AdjacencyMatrix::get(size_t v, size_t w) const throw(std::out_of_range) {
+const bool AdjacencyMatrix::get(size_t v, size_t w) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -57,7 +57,7 @@ const bool AdjacencyMatrix::get(size_t v, size_t w) const throw(std::out_of_rang
 	return found != vNeighs.end();
 }
 
-const ::std::vector<size_t>::const_iterator AdjacencyMatrix::beginNeighs(int v) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator AdjacencyMatrix::beginNeighs(size_t v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -65,7 +65,7 @@ const ::std::vector<size_t>::const_iterator AdjacencyMatrix::beginNeighs(int v) 
 	return this->adj[v].begin();
 }
 
-const ::std::vector<size_t>::const_iterator AdjacencyMatrix::endNeighs(int v) const throw(std::out_of_range) {
+const ::std::vector<size_t>::const_iterator AdjacencyMatrix::endNeighs(size_t v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -93,14 +93,15 @@ struct header {
 };
 
 struct vertex {
-	size_t v;
+	size_t v{};
 	std::vector<size_t> adj;
 };
 
 bool AdjacencyMatrix::parseInput(std::istream& is) {
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
 #endif
 
 	struct header head = {};
@@ -134,10 +135,10 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 #endif
 #ifdef PARTITIONED_INPUT_LOAD
 	// Get file length
-	int const currPos = is.tellg();
+	auto const currPos = is.tellg();
 	is.seekg(0, std::ios_base::end);
-	int const endPos = is.tellg();
-	int const fileLength = endPos - currPos;
+	auto const endPos = is.tellg();
+	auto const fileLength = endPos - currPos;
 	is.seekg(currPos, std::ios_base::beg);
 
 	// Read file into memory
@@ -146,12 +147,12 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 	fileContents.assign(std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>());
 
 	// Calculate number of working threads
-	unsigned int nThreads = MAX_THREADS_LOAD;
-	nThreads = std::min(head.nV, static_cast<size_t>(nThreads));
+	int nThreads = MAX_THREADS_LOAD;
+	nThreads = static_cast<int>(std::min(static_cast<size_t>(nThreads), head.nV));
 
 	// Calculate rough size of every partition
 	// Every thread will analyze a portion of the file roughly this big
-	int partitionSize = fileLength / nThreads;
+	size_t partitionSize = fileLength / nThreads;
 
 	std::vector<std::thread> threadPool;
 	std::mutex m;
@@ -184,8 +185,7 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 #endif
 
 #ifdef COMPUTE_ELAPSED_TIME
-	sampleTime();
-	loadTime += getElapsedTime();
+	bm.sampleTimeToFlag(0);
 #endif
 
 	return true;
@@ -222,7 +222,7 @@ void AdjacencyMatrix::parseInputParallel(std::istream& file, std::mutex& mutex) 
 #endif
 
 #ifdef PARTITIONED_INPUT_LOAD
-void AdjacencyMatrix::parseInputParallel(std::string& const fileContents, std::mutex& mutex, int const i, size_t const partitionSize) {
+void AdjacencyMatrix::parseInputParallel(std::string& fileContents, std::mutex& mutex, int const i, size_t const partitionSize) {
 	// Search start of partition to the right
 	// Start of partition = char after next \n
 	size_t end = std::min(i * partitionSize + partitionSize, fileContents.length() - 1);
