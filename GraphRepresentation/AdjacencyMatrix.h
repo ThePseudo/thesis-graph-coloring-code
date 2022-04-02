@@ -12,7 +12,7 @@
 #endif
 
 
-class AdjacencyMatrix :	public GraphRepresentation {
+class AdjacencyMatrix : public GraphRepresentation {
 private:
 	std::vector<std::vector<size_t>> adj;
 	size_t _nV, _nE;

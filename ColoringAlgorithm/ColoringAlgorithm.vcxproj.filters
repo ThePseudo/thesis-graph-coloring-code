@@ -15,11 +15,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColoringAlgorithm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JonesPlassmann.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GebremedhinManne.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColoringAlgorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JonesPlassmann.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GebremedhinManne.h">
       <Filter>Header Files</Filter>
     </ClInclude>

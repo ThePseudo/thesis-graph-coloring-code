@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{102D9953-EB0D-40A6-90C3-552A91EE7A4A}</ProjectGuid>
-    <RootNamespace>AdjacencyMatrix</RootNamespace>
+    <ProjectGuid>{64226059-8505-4244-AD99-A6922E67C75F}</ProjectGuid>
+    <RootNamespace>ColoringAlgorithm</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,10 +142,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AdjacencyMatrix.cpp" />
+    <ClCompile Include="ColoringAlgorithm.cpp" />
+    <ClCompile Include="GebremedhinManne.cpp" />
+    <ClCompile Include="JonesPlassmann.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdjacencyMatrix.h" />
+    <ClInclude Include="ColoringAlgorithm.h" />
+    <ClInclude Include="GebremedhinManne.h" />
+    <ClInclude Include="JonesPlassmann.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">

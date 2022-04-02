@@ -81,7 +81,7 @@ std::istream& operator>>(std::istream& is, AdjacencyMatrix& m) {
 	return is;
 }
 //////////////////////////////////////////////////
-////////////////////////////////////////// LOADER
+/////////////////////////////////////////// LOADER
 //////////////////////////////////////////////////
 
 #if defined(PARALLEL_INPUT_LOAD) || defined(PARTITIONED_INPUT_LOAD)
@@ -304,7 +304,7 @@ bool AdjacencyMatrix::readHeader(std::istream& file, struct header& head) {
 bool AdjacencyMatrix::readVertex(std::istream& file, struct vertex& vert, std::mutex& m) {
 #endif
 #ifdef PARTITIONED_INPUT_LOAD
-bool AdjacencyMatrix::readVertex(std::string& line, struct vertex& vert) {
+bool AdjacencyMatrix::readVertex(std::string & line, struct vertex& vert) {
 #endif
 #ifdef SEQUENTIAL_INPUT_LOAD
 bool AdjacencyMatrix::readVertex(std::istream & file, struct vertex& vert) {

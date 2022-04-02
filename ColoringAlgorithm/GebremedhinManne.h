@@ -8,15 +8,16 @@
 #include <mutex>
 
 #include "GraphRepresentation.h"
+#include "ColoringAlgorithm.h"
 
-class GebremedhinManne {
+class GebremedhinManne : public ColoringAlgorithm {
 private:
-	constexpr static int INVALID_COLOR = -1;
-
-	GraphRepresentation* _adj;
-	std::vector<int> col;
 	std::vector<int> recolor;
 	std::mutex mutex;
+#ifdef PARALLEL_GRAPH_COLOR
+	int nConflicts;
+	int nIterations;
+#endif
 
 	int colorGraph(int);
 	void sortGraphVerts();
@@ -26,21 +27,22 @@ private:
 	void detectConflictsParallel(const int);
 #endif
 
+//#ifdef PARALLEL_GRAPH_COLOR
+//	const int solve(int&, int&);
+//#endif
+//#ifdef SEQUENTIAL_GRAPH_COLOR
+	const int solve();
+//#endif
 public:
 	const int MAX_THREADS_SOLVE = std::thread::hardware_concurrency();
 
-	GebremedhinManne(GraphRepresentation& adj);
-
-	const GraphRepresentation& adj();
+	GebremedhinManne(std::string const filepath);
+	const int startColoring() override;
 
 #ifdef PARALLEL_GRAPH_COLOR
-	const int solve(int&, int&);
+	const int getConflicts() const;
+	const int getIterations() const;
 #endif
-#ifdef SEQUENTIAL_GRAPH_COLOR
-	const int solve();
-#endif
-
-	const std::vector<int> getColors();
 };
 
 #endif // !_GEBREMEFHIN_MANNE_H

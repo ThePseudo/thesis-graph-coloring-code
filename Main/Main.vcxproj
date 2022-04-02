@@ -22,26 +22,17 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdjacencyMatrix\AdjacencyMatrix.vcxproj">
-      <Project>{102d9953-eb0d-40a6-90c3-552a91ee7a4a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
       <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ColoringAlgorithm\ColoringAlgorithm.vcxproj">
+      <Project>{64226059-8505-4244-ad99-a6922e67c75f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Configuration\Configuration.vcxproj">
       <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\CompressedSparseRow\CompressedSparseRow.vcxproj">
-      <Project>{b42fec82-565e-4b86-bd6c-9e6fcce6e851}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\GebremedhinManne\GebremedhinManne.vcxproj">
-      <Project>{42151d82-c65a-435b-a49c-3f91067ff331}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\GraphRepresentation\GraphRepresentation.vcxproj">
       <Project>{83e77f58-e039-496c-b4aa-125b75f774d3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\JonesPlassmann\JonesPlassmann.vcxproj">
-      <Project>{1bb0f761-8068-43d2-ae86-470e0b6bad91}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -117,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -175,7 +166,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)GebremedhinManne;$(SolutionDir)CompressedSparseRow;$(SolutionDir)AdjacencyMatrix;$(SolutionDir)JonesPlassmann;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
