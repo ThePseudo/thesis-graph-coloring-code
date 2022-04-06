@@ -45,12 +45,22 @@ int main(int argc, char** argv) {
 	std::cout << "Graph succesfully loaded from file." << std::endl;
 	std::cout << "Size: V: " << G.adj().nV() << ", E: " << G.adj().nE() << std::endl;
 #ifndef SEQUENTIAL_GRAPH_COLOR
-#ifdef COLORING_ALGORITHM_GM
 	std::cout << "Performing computation using " << G.MAX_THREADS_SOLVE << " threads." << std::endl;
-#endif
 #endif
 
 	int n_cols = G.startColoring();
+
+	std::vector<std::pair<size_t, size_t>> incorrectPairs = G.checkCorrectColoring();
+
+	if (!incorrectPairs.empty()) {
+		std::cout << "There was an error while assigning colors. Two or more adjacent verteces have the same color." << std::endl;
+		for (auto& p : incorrectPairs) {
+			if (p.first < p.second) {
+				std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+			}
+		}
+		return 0;
+	}
 
 #if defined(COLORING_ALGORITHM_GM) && defined(PARALLEL_GRAPH_COLOR)
 	std::cout << "Solution converged to in " << G.getIterations() << " iterations." << std::endl;
@@ -67,8 +77,13 @@ int main(int argc, char** argv) {
 	std::cout << "TIME USAGE" << std::endl;
 	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
 #ifdef COLORING_ALGORITHM_JP
+#ifdef SEQUENTIAL_GRAPH_COLOR
 	std::cout << "Ind set create:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+#endif
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+#endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
 	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
@@ -80,7 +95,7 @@ int main(int argc, char** argv) {
 	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
 #endif
 
-	//G.printColors(std::out);
+	//G.printColors(std::cout);
 	//G.printDotFile(std::ofstream("output.txt"));
 
 	return 0;

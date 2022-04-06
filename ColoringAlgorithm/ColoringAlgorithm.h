@@ -24,6 +24,8 @@ public:
 	// Returns the number of colors used
 	const int computeVertexColor(size_t const v, int const n_cols, int* targetCol) const;
 
+	std::vector<std::pair<size_t, size_t>> checkCorrectColoring();
+
 	void printColors(std::ostream& os) const;
 	void printDotFile(std::ostream& os) const;
 };

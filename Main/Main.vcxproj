@@ -22,6 +22,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\barrier\barrier.vcxproj">
+      <Project>{c7ec5160-cac3-4252-a0d3-e97c19e4cfd5}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
       <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
     </ProjectReference>
@@ -108,7 +111,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,7 +129,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,8 +149,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark;$(SolutionDir)barrier</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,8 +172,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GraphRepresentation;$(SolutionDir)Configuration;$(SolutionDir)ColoringAlgorithm;$(SolutionDir)Benchmark;$(SolutionDir)barrier</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

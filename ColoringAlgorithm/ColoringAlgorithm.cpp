@@ -40,6 +40,20 @@ const int ColoringAlgorithm::computeVertexColor(size_t const v, int const n_cols
 	return colorsNum;
 }
 
+std::vector<std::pair<size_t, size_t>> ColoringAlgorithm::checkCorrectColoring() {
+	std::vector<std::pair<size_t, size_t>> incorrect;
+	for (size_t v = 0; v < this->adj().nV(); ++v) {
+		for (auto it = this->adj().beginNeighs(v); it < this->adj().endNeighs(v); ++it) {
+			size_t w = *it;
+			if (v != w && this->col[v] == this->col[w]) {
+				incorrect.push_back(std::pair<size_t, size_t>(v, w));
+			}
+		}
+	}
+
+	return incorrect;
+}
+
 void ColoringAlgorithm::printColors(std::ostream& os) const {
 	for (int v = 0; v < this->adj().nV(); ++v) {
 		os << v << ": " << this->col[v] << std::endl;
