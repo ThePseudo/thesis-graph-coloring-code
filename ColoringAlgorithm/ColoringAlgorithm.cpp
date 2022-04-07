@@ -1,5 +1,59 @@
 #include "ColoringAlgorithm.h"
 
+void ColoringAlgorithm::printColorAlgorithmConfs() {
+	std::cout << "Coloring Algorithm: ";
+#ifdef SEQUENTIAL_GRAPH_COLOR
+	std::cout << "Sequential ";
+#ifdef COLORING_ALGORITHM_JP
+	std::cout << "Jones-Plassmann";
+#endif
+#ifdef COLORING_ALGORITHM_GM
+	std::cout << "Gebremedhin-Manne ";
+#ifdef SORT_LARGEST_DEGREE_FIRST
+	std::cout << "Largest Degree First";
+#endif
+#ifdef SORT_SMALLEST_DEGREE_FIRST
+	std::cout << "Smaller Degree First";
+#endif
+#ifdef SORT_VERTEX_ORDER
+	std::cout << "";
+#endif
+#ifdef SORT_VERTEX_ORDER_REVERSED
+	std::cout << "Reversed";
+#endif
+#endif
+#endif
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Parallel ";
+#ifdef COLORING_ALGORITHM_JP
+	std::cout << "Jones-Plassmann";
+#endif
+#ifdef COLORING_ALGORITHM_GM
+	std::cout << "Gebremedhin-Manne ";
+#ifdef SORT_LARGEST_DEGREE_FIRST
+	std::cout << "Largest Degree First ";
+#endif
+#ifdef SORT_SMALLEST_DEGREE_FIRST
+	std::cout << "Smaller Degree First ";
+#endif
+#ifdef SORT_VERTEX_ORDER
+	std::cout << " ";
+#endif
+#ifdef SORT_VERTEX_ORDER_REVERSED
+	std::cout << "Reversed ";
+#endif
+#ifdef PARALLEL_RECOLOR
+	std::cout << "with Parallel Recolor";
+#endif
+#ifdef SEQUENTIAL_RECOLOR
+		std::cout << "with Sequential Recolor";
+#endif
+#endif
+#endif
+
+	std::cout << std::endl;
+}
+
 const GraphRepresentation& ColoringAlgorithm::adj() const {
 	return *this->_adj;
 }

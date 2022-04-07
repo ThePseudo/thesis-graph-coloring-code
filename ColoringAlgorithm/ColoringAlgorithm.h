@@ -15,6 +15,8 @@ protected:
 	std::vector<int> col;
 
 public:
+	static void printColorAlgorithmConfs();
+
 	const GraphRepresentation& adj() const;
 	const std::vector<int> getColors() const;
 

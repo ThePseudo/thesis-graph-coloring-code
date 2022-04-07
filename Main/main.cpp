@@ -26,8 +26,6 @@
 #include <string>
 #include <vector>
 
-void printColors(ColoringAlgorithm&);
-void printDotFile(ColoringAlgorithm&);
 
 int main(int argc, char** argv) {
 	COLORING_ALGO_T* _G;
@@ -35,6 +33,11 @@ int main(int argc, char** argv) {
 		std::cout << "Usage: " << argv[0] << " <graph_path>" << std::endl;
 		return 0;
 	}
+
+	GraphRepresentation::printGraphRepresentationConfs();
+	ColoringAlgorithm::printColorAlgorithmConfs();
+
+	std::cout << std::endl;
 
 	std::cout << "Loading graph from " << argv[1] << std::endl;
 

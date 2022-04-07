@@ -18,6 +18,7 @@ public:
 	virtual const bool get(size_t v, size_t w) const = 0;
 
 	const int countNeighs(size_t v) const;
+	static void printGraphRepresentationConfs();
 
 	// Returns begin iterator of neighbors of v
 	virtual const ::std::vector<size_t>::const_iterator beginNeighs(size_t v) const = 0;

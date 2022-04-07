@@ -29,8 +29,12 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	this->col = std::vector<int>(this->adj().nV());
 	this->vWeights = std::vector<float>(this->adj().nV());
 	
+#ifdef PARALLEL_GRAPH_COLOR
+	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), static_cast<size_t>(this->MAX_THREADS_SOLVE));
+	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
 	this->firstAndLasts = std::vector<std::pair<size_t, size_t>>(this->MAX_THREADS_SOLVE);
+#endif
 
 	srand(static_cast<unsigned>(time(0)));
 	// TODO: Remove static random seed
@@ -106,13 +110,11 @@ const int JonesPlassmann::solve() {
 #endif
 	bool again = true;
 	std::vector<std::thread> threadPool;
-	int const nThreads = std::min(this->adj().nV(), static_cast<size_t>(this->MAX_THREADS_SOLVE));
 	
-	this->barrier = new Barrier(nThreads);
-	this->partitionVerticesByEdges(nThreads);
+	this->partitionVerticesByEdges(this->MAX_THREADS_SOLVE);
 	
-	threadPool.reserve(nThreads);
-	for (int i = 0; i < nThreads; ++i) {
+	threadPool.reserve(this->MAX_THREADS_SOLVE);
+	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 		auto& firstAndLast = this->firstAndLasts[i];
 		threadPool.emplace_back(
 			[=, &n_cols, &again] { this->coloringHeuristic(firstAndLast.first, firstAndLast.second, n_cols, again); }
@@ -131,6 +133,7 @@ const int JonesPlassmann::solve() {
 	return n_cols;
 }
 
+#ifdef SEQUENTIAL_GRAPH_COLOR
 void JonesPlassmann::findIndependentSet(std::set<size_t>::iterator& first, std::set<size_t>::iterator last, std::set<size_t>& indSet) {
 	while (true) {
 		if (first == last) {
@@ -156,11 +159,13 @@ void JonesPlassmann::findIndependentSet(std::set<size_t>::iterator& first, std::
 		}
 	}
 }
+#endif
 
 const int JonesPlassmann::getIterations() const {
 	return this->nIterations;
 }
 
+#ifdef PARALLEL_GRAPH_COLOR
 void JonesPlassmann::partitionVerticesByEdges(int const nThreads) {
 	size_t first = 0;
 	size_t last = 0;
@@ -247,3 +252,4 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 	}
 	this->mutex.unlock();
 }
+#endif
