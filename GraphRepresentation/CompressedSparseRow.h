@@ -30,13 +30,14 @@ public:
 	CompressedSparseRow(size_t n);
 	~CompressedSparseRow();
 
+	const size_t* getColIndexes() const;
+	const size_t* getRowPointers() const;
+
 	friend std::istream& operator>>(std::istream& is, CompressedSparseRow& m);
 
 	const size_t nE() const override;
 	const size_t nV() const override;
 	const bool get(size_t row, size_t col) const override;
-
-	const int countNeighs(size_t v) const { __super::countNeighs(v); };
 
 	const ::std::vector<size_t>::const_iterator beginNeighs(size_t row_idx) const override;
 	const ::std::vector<size_t>::const_iterator endNeighs(size_t row_idx) const override;

@@ -17,7 +17,7 @@ protected:
 public:
 	static void printColorAlgorithmConfs();
 
-	const GraphRepresentation& adj() const;
+	const GRAPH_REPR_T& adj() const;
 	const std::vector<int> getColors() const;
 
 	virtual const int startColoring() = 0;

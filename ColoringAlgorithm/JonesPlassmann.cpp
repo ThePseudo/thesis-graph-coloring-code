@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <random>
 #include <set>
 
 JonesPlassmann::JonesPlassmann(std::string const filepath) {
@@ -27,7 +28,7 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	}
 
 	this->col = std::vector<int>(this->adj().nV());
-	this->vWeights = std::vector<float>(this->adj().nV());
+	this->vWeights = std::vector<int>(this->adj().nV());
 	
 #ifdef PARALLEL_GRAPH_COLOR
 	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), static_cast<size_t>(this->MAX_THREADS_SOLVE));
@@ -42,8 +43,12 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 
 	for (int i = 0; i < this->adj().nV(); ++i) {
 		this->col[i] = this->INVALID_COLOR;
-		this->vWeights[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+		this->vWeights[i] = i;
+		//this->vWeights[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 	}
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(this->vWeights.begin(), this->vWeights.end(), g);
 
 	this->nIterations = 0;
 }
@@ -54,8 +59,11 @@ const int JonesPlassmann::startColoring() {
 	bm.clear(1);
 	bm.clear(2);
 #endif
-
+#if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	return this->colorWithCuda();
+#else
 	return this->solve();
+#endif
 }
 
 const int JonesPlassmann::solve() {
@@ -251,5 +259,29 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 		n_cols = nColors;
 	}
 	this->mutex.unlock();
+}
+#endif
+
+#if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+#include "cudaKernels.h"
+const int JonesPlassmann::colorWithCuda() {
+	int const n = this->adj().nV();
+	const size_t* Ao = this->adj().getRowPointers();
+	const size_t* Ac = this->adj().getColIndexes();
+	int* colors = this->col.data();
+	const int* randoms = this->vWeights.data();
+
+	size_t total_size = (n + 1) * sizeof(*Ao) + Ao[n] * sizeof(Ac) + n * sizeof(*colors) + n * sizeof(*randoms);
+	std::cout << "Transfering " << total_size << " bytes to GPU memory." << std::endl;
+
+#ifdef COMPUTE_ELAPSED_TIME
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
+#endif
+	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms);
+#ifdef COMPUTE_ELAPSED_TIME
+	bm.sampleTimeToFlag(1);
+#endif
+	return this->nIterations;
 }
 #endif

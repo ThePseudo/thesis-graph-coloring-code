@@ -1,6 +1,8 @@
 #ifndef _GRAPH_REPRESENTATION_H
 #define _GRAPH_REPRESENTATION_H
 
+#include "configuration.h"
+
 #include <iostream>
 #include <istream>
 #include <vector>

@@ -15,6 +15,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColoringAlgorithm", "Colori
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "barrier", "barrier\barrier.vcxproj", "{C7EC5160-CAC3-4252-A0D3-E97C19E4CFD5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaKernels", "CudaKernels\CudaKernels.vcxproj", "{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMain", "CudaMain\CudaMain.vcxproj", "{E7360E65-72E5-451B-9A6F-1F1D3919F871}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +75,18 @@ Global
 		{C7EC5160-CAC3-4252-A0D3-E97C19E4CFD5}.Release|x64.Build.0 = Release|x64
 		{C7EC5160-CAC3-4252-A0D3-E97C19E4CFD5}.Release|x86.ActiveCfg = Release|Win32
 		{C7EC5160-CAC3-4252-A0D3-E97C19E4CFD5}.Release|x86.Build.0 = Release|Win32
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Debug|x64.ActiveCfg = Debug|x64
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Debug|x64.Build.0 = Debug|x64
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Debug|x86.ActiveCfg = Debug|x64
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Release|x64.ActiveCfg = Release|x64
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Release|x64.Build.0 = Release|x64
+		{19DF3CE8-D57A-442E-8BDD-CE8D228F4E67}.Release|x86.ActiveCfg = Release|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Debug|x64.ActiveCfg = Debug|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Debug|x64.Build.0 = Debug|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Debug|x86.ActiveCfg = Debug|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Release|x64.ActiveCfg = Release|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Release|x64.Build.0 = Release|x64
+		{E7360E65-72E5-451B-9A6F-1F1D3919F871}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

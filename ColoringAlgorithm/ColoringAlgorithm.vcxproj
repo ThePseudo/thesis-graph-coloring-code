@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier;$(SolutionDir)CudaKernels</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier;$(SolutionDir)CudaKernels</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier;$(SolutionDir)CudaKernels</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;$(SolutionDir)GraphRepresentation;$(SolutionDir)barrier;$(SolutionDir)CudaKernels</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

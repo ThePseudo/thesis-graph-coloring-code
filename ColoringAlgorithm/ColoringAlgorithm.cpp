@@ -27,6 +27,9 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "Parallel ";
 #ifdef COLORING_ALGORITHM_JP
 	std::cout << "Jones-Plassmann";
+#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	std::cout << " (CUDA)";
+#endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
 	std::cout << "Gebremedhin-Manne ";
@@ -54,7 +57,7 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << std::endl;
 }
 
-const GraphRepresentation& ColoringAlgorithm::adj() const {
+const GRAPH_REPR_T& ColoringAlgorithm::adj() const {
 	return *this->_adj;
 }
 

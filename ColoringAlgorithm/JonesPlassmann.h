@@ -22,7 +22,7 @@
 
 class JonesPlassmann : public ColoringAlgorithm {
 private:
-	std::vector<float> vWeights;
+	std::vector<int> vWeights;
 	int nIterations;
 	
 #ifdef PARALLEL_GRAPH_COLOR
@@ -51,6 +51,8 @@ public:
 	const int startColoring() override;
 
 	const int getIterations() const;
+
+	const int colorWithCuda();
 };
 
 #endif // !_JONES_PLASSMANN_H

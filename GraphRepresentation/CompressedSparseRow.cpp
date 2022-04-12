@@ -28,6 +28,13 @@ CompressedSparseRow::~CompressedSparseRow() {
 	delete[] this->row_ptrs;
 }
 
+const size_t* CompressedSparseRow::getColIndexes() const {
+	return this->col_idxs.data();
+}
+const size_t* CompressedSparseRow::getRowPointers() const {
+	return this->row_ptrs;
+}
+
 void CompressedSparseRow::init(size_t n_rows, size_t n_cols) {
 	this->rows = n_rows;
 	this->cols = n_cols;
