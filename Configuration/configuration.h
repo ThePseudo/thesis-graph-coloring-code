@@ -29,8 +29,8 @@
 #define COLORING_ALGORITHM_JP
 //#define COLORING_ALGORITHM_GM
 
-#define PARALLEL_GRAPH_COLOR
-//#define SEQUENTIAL_GRAPH_COLOR
+//#define PARALLEL_GRAPH_COLOR
+#define SEQUENTIAL_GRAPH_COLOR
 
 ////////////////////////////////////////////////////////
 //////////////////////////////// JONES-PLASSMANN OPTIONS

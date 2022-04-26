@@ -80,13 +80,7 @@ int main(int argc, char** argv) {
 	std::cout << "TIME USAGE" << std::endl;
 	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
 #ifdef COLORING_ALGORITHM_JP
-#ifdef SEQUENTIAL_GRAPH_COLOR
-	std::cout << "Ind set create:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-#endif
-#ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-#endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
 	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;

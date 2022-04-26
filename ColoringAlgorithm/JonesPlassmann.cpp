@@ -30,12 +30,15 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	this->col = std::vector<int>(this->adj().nV());
 	this->vWeights = std::vector<int>(this->adj().nV());
 	
+#ifdef SEQUENTIAL_GRAPH_COLOR
+	this->nWaits = std::vector<int>(this->adj().nV());
+#endif
 #ifdef PARALLEL_GRAPH_COLOR
 	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), static_cast<size_t>(this->MAX_THREADS_SOLVE));
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
 	this->firstAndLasts = std::vector<std::pair<size_t, size_t>>(this->MAX_THREADS_SOLVE);
-	//this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE, 0);
+	this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE, 0);
 #endif
 
 	srand(static_cast<unsigned>(time(0)));
@@ -58,7 +61,6 @@ const int JonesPlassmann::startColoring() {
 #ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(1);
-	bm.clear(2);
 #endif
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 	return this->colorWithCuda();
@@ -70,53 +72,14 @@ const int JonesPlassmann::startColoring() {
 const int JonesPlassmann::solve() {
 	int n_cols = 0;
 
-#ifdef SEQUENTIAL_GRAPH_COLOR
 #ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
 #endif
-	std::set<size_t> toAnalyze;
-	std::set<size_t> independent;
-	std::set<size_t> diff;
-	for (size_t i = 0; i < this->adj().nV(); ++i) {
-		toAnalyze.insert(i);
-	}
-	while (!toAnalyze.empty()) {
-		// Find independent set of verteces not yet colored
-		independent.clear();
-		auto it = toAnalyze.begin();
 
-		this->findIndependentSet(it, toAnalyze.end(), independent);
-#ifdef COMPUTE_ELAPSED_TIME
-		bm.sampleTimeToFlag(1);
-#endif
-		for (auto& v : independent) {
-			n_cols = this->computeVertexColor(
-				v, n_cols, &this->col[v]
-			);
-		}
-
-#ifdef COMPUTE_ELAPSED_TIME
-		bm.sampleTimeToFlag(2);
-#endif
-
-		std::set_difference(toAnalyze.begin(), toAnalyze.end(),
-			independent.begin(), independent.end(),
-			std::inserter(diff, diff.begin()));
-
-		toAnalyze.clear();
-		toAnalyze = diff;
-		diff.clear();
-
-		++this->nIterations;
-	}
-#endif
+	this->coloringHeuristic(0, this->adj().nV(), n_cols);
 
 #ifdef PARALLEL_GRAPH_COLOR
-#ifdef COMPUTE_ELAPSED_TIME
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-#endif
 	std::vector<std::thread> threadPool;
 	
 	this->partitionVerticesByEdges(this->MAX_THREADS_SOLVE);
@@ -124,8 +87,9 @@ const int JonesPlassmann::solve() {
 	threadPool.reserve(this->MAX_THREADS_SOLVE);
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 		auto& firstAndLast = this->firstAndLasts[i];
+		auto& ncols = this->n_colors[i];
 		threadPool.emplace_back(
-			[=, &n_cols] { this->coloringHeuristic(firstAndLast.first, firstAndLast.second, n_cols); }
+			[=, &ncols] { this->coloringHeuristic(firstAndLast.first, firstAndLast.second, ncols); }
 		);
 	}
 
@@ -133,43 +97,15 @@ const int JonesPlassmann::solve() {
 		t.join();
 	}
 
-	//n_cols = *std::max_element(this->n_colors.begin(), this->n_colors.end());
+	n_cols = *std::max_element(this->n_colors.begin(), this->n_colors.end());
+#endif
 
 #ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
 #endif
-#endif
 
 	return n_cols;
 }
-
-#ifdef SEQUENTIAL_GRAPH_COLOR
-void JonesPlassmann::findIndependentSet(std::set<size_t>::iterator& first, std::set<size_t>::iterator last, std::set<size_t>& indSet) {
-	while (true) {
-		if (first == last) {
-			break;
-		}
-		auto& v = *first;
-		++first;
-		float selfWeight = this->vWeights[v];
-		bool isMax = true;
-		// FIX: Iterate on toAnalyze `intersect` neighbors
-		for (auto it = this->adj().beginNeighs(v);
-			isMax && it < this->adj().endNeighs(v); ++it) {
-			float neighWeight = this->vWeights[*it];
-			if (selfWeight < neighWeight) {
-				isMax = false;
-				break;
-			}
-		}
-
-		if (isMax) {
-			indSet.insert(v);
-			this->vWeights[v] = 0.0f;
-		}
-	}
-}
-#endif
 
 const int JonesPlassmann::getIterations() const {
 	return this->nIterations;
@@ -198,10 +134,13 @@ void JonesPlassmann::partitionVerticesByEdges(int const nThreads) {
 		acc = 0;
 	}
 }
+#endif
 
 void JonesPlassmann::coloringHeuristic(size_t const first, size_t const last, int& n_cols) {
 	this->calcWaitTime(first, last);
+#ifdef PARALLEL_GRAPH_COLOR
 	this->barrier->wait();
+#endif
 	this->colorWhileWaiting(first, last, n_cols);
 }
 
@@ -243,13 +182,10 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 		}
 	} while (again);
 
-	this->mutex.lock();
 	if (nColors > n_cols) {
 		n_cols = nColors;
 	}
-	this->mutex.unlock();
 }
-#endif
 
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 #include "cudaKernels.h"
