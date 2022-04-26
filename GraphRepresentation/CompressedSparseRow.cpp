@@ -55,6 +55,7 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	size_t n;
 	size_t row_idx;
 	std::string buffer;
+	std::vector<size_t> cols;
 
 	is >> n;
 
@@ -63,7 +64,7 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	for (row_idx = 0; row_idx < n; ++row_idx) {
 		is >> buffer;
 		size_t actual_row_idx = atoi(buffer.c_str());
-		std::vector<size_t> cols;
+		cols.clear();
 
 		is >> buffer;
 		while (buffer.c_str()[0] != '#') {
