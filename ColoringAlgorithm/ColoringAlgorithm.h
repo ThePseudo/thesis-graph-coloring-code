@@ -11,7 +11,7 @@ class ColoringAlgorithm {
 protected:
 	constexpr static int INVALID_COLOR = -1;
 
-	GRAPH_REPR_T* _adj;
+	GRAPH_REPR_T* _adj = nullptr;
 	std::vector<int> col;
 
 public:

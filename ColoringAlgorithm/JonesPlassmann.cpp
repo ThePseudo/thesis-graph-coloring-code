@@ -265,7 +265,7 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 #include "cudaKernels.h"
 const int JonesPlassmann::colorWithCuda() {
-	int const n = this->adj().nV();
+	size_t const n = this->adj().nV();
 	const size_t* Ao = this->adj().getRowPointers();
 	const size_t* Ac = this->adj().getColIndexes();
 	int* colors = this->col.data();

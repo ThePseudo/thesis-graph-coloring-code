@@ -122,7 +122,7 @@ int GebremedhinManne::detectConflicts() {
 }
 
 void GebremedhinManne::detectConflictsParallel(const int i) {
-	for (int v = i; v < this->adj().nV(); v += this->MAX_THREADS_SOLVE) {
+	for (size_t v = i; v < this->adj().nV(); v += this->MAX_THREADS_SOLVE) {
 		if (this->col[v] == GebremedhinManne::INVALID_COLOR) {
 			this->mutex.lock();
 			this->recolor.push_back(v);
@@ -135,7 +135,7 @@ void GebremedhinManne::detectConflictsParallel(const int i) {
 			neighIt != this->adj().endNeighs(v);
 			++neighIt
 			) {
-			int w = *neighIt;
+			size_t w = *neighIt;
 			if (v < w) continue;
 
 			if (this->col[v] == this->col[w]) {
