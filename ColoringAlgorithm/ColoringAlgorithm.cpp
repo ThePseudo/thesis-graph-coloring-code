@@ -70,7 +70,8 @@ const int ColoringAlgorithm::computeVertexColor(size_t const v, int const n_cols
 	auto neighIt = this->adj().beginNeighs(v);
 	auto forbidden = std::vector<bool>(colorsNum);
 	std::fill(forbidden.begin(), forbidden.end(), false);
-	while (neighIt != this->adj().endNeighs(v)) {
+	auto const end = this->adj().endNeighs(v);
+	while (neighIt != end) {
 		size_t w = *neighIt;
 		int c = this->col[w];
 
@@ -100,7 +101,8 @@ const int ColoringAlgorithm::computeVertexColor(size_t const v, int const n_cols
 std::vector<std::pair<size_t, size_t>> ColoringAlgorithm::checkCorrectColoring() {
 	std::vector<std::pair<size_t, size_t>> incorrect;
 	for (size_t v = 0; v < this->adj().nV(); ++v) {
-		for (auto it = this->adj().beginNeighs(v); it < this->adj().endNeighs(v); ++it) {
+		auto const end = this->adj().endNeighs(v);
+		for (auto it = this->adj().beginNeighs(v); it < end; ++it) {
 			size_t w = *it;
 			if (v != w && this->col[v] == this->col[w]) {
 				incorrect.push_back(std::pair<size_t, size_t>(v, w));
@@ -127,7 +129,8 @@ void ColoringAlgorithm::printDotFile(std::ostream& os) const {
 	// Write edges
 	for (size_t v = 0; v < this->adj().nV(); ++v) {
 		auto adjIt = this->adj().beginNeighs(v);
-		while (adjIt != this->adj().endNeighs(v)) {
+		auto const end = this->adj().endNeighs(v);
+		while (adjIt != end) {
 			size_t w = *adjIt;
 			if (v <= w) {
 				os << "\t" << v << " -- " << w << std::endl;

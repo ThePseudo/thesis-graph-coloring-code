@@ -77,8 +77,9 @@ const int JonesPlassmann::solve() {
 	bm.sampleTime();
 #endif
 
+#ifdef SEQUENTIAL_GRAPH_COLOR
 	this->coloringHeuristic(0, this->adj().nV(), n_cols);
-
+#endif
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
 	

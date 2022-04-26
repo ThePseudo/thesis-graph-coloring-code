@@ -66,8 +66,9 @@ int GebremedhinManne::colorGraph(int n_cols) {
 	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
+	auto const end = this->recolor.end();
 	for (auto it = this->recolor.begin();
-		it != this->recolor.end(); ++it) {
+		it != end; ++it) {
 		n_cols = this->computeVertexColor(*it, n_cols, &this->col[*it]);
 	}
 #endif
@@ -130,11 +131,9 @@ void GebremedhinManne::detectConflictsParallel(const int i) {
 			continue;
 		}
 
-		for (
-			auto neighIt = this->adj().beginNeighs(v);
-			neighIt != this->adj().endNeighs(v);
-			++neighIt
-			) {
+		auto const end = this->adj().endNeighs(v);
+		for (auto neighIt = this->adj().beginNeighs(v);
+			neighIt != end;	++neighIt) {
 			size_t w = *neighIt;
 			if (v < w) continue;
 
