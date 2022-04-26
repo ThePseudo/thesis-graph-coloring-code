@@ -35,6 +35,7 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
 	this->firstAndLasts = std::vector<std::pair<size_t, size_t>>(this->MAX_THREADS_SOLVE);
+	//this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE, 0);
 #endif
 
 	srand(static_cast<unsigned>(time(0)));
@@ -116,7 +117,6 @@ const int JonesPlassmann::solve() {
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
 #endif
-	bool again = true;
 	std::vector<std::thread> threadPool;
 	
 	this->partitionVerticesByEdges(this->MAX_THREADS_SOLVE);
@@ -125,13 +125,15 @@ const int JonesPlassmann::solve() {
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 		auto& firstAndLast = this->firstAndLasts[i];
 		threadPool.emplace_back(
-			[=, &n_cols, &again] { this->coloringHeuristic(firstAndLast.first, firstAndLast.second, n_cols, again); }
+			[=, &n_cols] { this->coloringHeuristic(firstAndLast.first, firstAndLast.second, n_cols); }
 		);
 	}
 
 	for (auto& t : threadPool) {
 		t.join();
 	}
+
+	//n_cols = *std::max_element(this->n_colors.begin(), this->n_colors.end());
 
 #ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
@@ -178,14 +180,15 @@ void JonesPlassmann::partitionVerticesByEdges(int const nThreads) {
 	size_t first = 0;
 	size_t last = 0;
 	size_t acc = 0;
-	size_t thresh = this->adj().nE() / nThreads;
+	size_t const thresh = this->adj().nE() / nThreads;
+	size_t const nV = this->adj().nV();
 
 	for (int i = 0; i < nThreads; ++i) {
-		while (i != nThreads - 1 && last < this->adj().nV() && acc < thresh) {
+		while (i != nThreads - 1 && last < nV && acc < thresh) {
 			acc += this->adj().countNeighs(last);
 			++last;
 		}
-		while (i == nThreads - 1 && last < this->adj().nV()) {
+		while (i == nThreads - 1 && last < nV) {
 			acc += this->adj().countNeighs(last);
 			++last;
 		}
@@ -196,63 +199,49 @@ void JonesPlassmann::partitionVerticesByEdges(int const nThreads) {
 	}
 }
 
-void JonesPlassmann::coloringHeuristic(size_t const first, size_t const last, int& n_cols, bool& again) {
+void JonesPlassmann::coloringHeuristic(size_t const first, size_t const last, int& n_cols) {
 	this->calcWaitTime(first, last);
 	this->barrier->wait();
-	this->colorWhileWaiting(first, last, n_cols, again);
+	this->colorWhileWaiting(first, last, n_cols);
 }
 
 void JonesPlassmann::calcWaitTime(size_t const first, size_t const last) {
 	for (size_t v = first; v < this->adj().nV() && v < last; ++v) {
+		auto const end = this->adj().endNeighs(v);
 		for (auto neighIt = this->adj().beginNeighs(v);
-			neighIt != this->adj().endNeighs(v); ++neighIt) {
+			neighIt != end; ++neighIt) {
 			size_t w = *neighIt;
 			
-			// Ordering by random weight > n neighbors > index
+			// Ordering by random weight
 			if (this->vWeights[w] > this->vWeights[v]) {
 				++this->nWaits[v];
-			} else if (this->vWeights[w] == this->vWeights[v]) {
-				if (this->adj().countNeighs(w) > this->adj().countNeighs(v)) {
-					++this->nWaits[v];
-				} else if (this->adj().countNeighs(w) == this->adj().countNeighs(v)) {
-					if (w > v) {
-						++this->nWaits[v];
-					}
-				}
 			}
-
-			// Branchless conditional
-			//this->nWaits[v] += 
-			//	(this->vWeights[w] >  this->vWeights[v]) +
-			//	((this->vWeights[w] == this->vWeights[v]) * (this->adj().countNeighs(w) >  this->adj().countNeighs(v))) +
-			//	((this->vWeights[w] == this->vWeights[v]) * (this->adj().countNeighs(w) == this->adj().countNeighs(v)) * (w > v));
 		}
 	}
 }
 
-void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, int& n_cols, bool& again) {
+void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, int& n_cols) {
 	int nColors = n_cols;
-	while (again) {
-		this->barrier->wait();
+	bool again = true;
+	do {
 		again = false;
-		this->barrier->wait();
 		for (size_t v = first; v < this->adj().nV() && v < last; ++v) {
 			if (this->nWaits[v] == 0) {
 				nColors = this->computeVertexColor(v, nColors, &this->col[v]);
 				--this->nWaits[v];
-				for (auto neighIt = this->adj().beginNeighs(v); neighIt != this->adj().endNeighs(v); ++neighIt) {
+				auto const end = this->adj().endNeighs(v);
+				for (auto neighIt = this->adj().beginNeighs(v); neighIt != end; ++neighIt) {
 					--this->nWaits[*neighIt];
 				}
-			} else if (!again && this->nWaits[v] > 0) {
+			} else if (this->nWaits[v] > 0) {
 				again = true;
 			}
 		}
 
-		this->barrier->wait();
 		if (first == 0) {
 			++this->nIterations;
 		}
-	}
+	} while (again);
 
 	this->mutex.lock();
 	if (nColors > n_cols) {

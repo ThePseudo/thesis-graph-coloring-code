@@ -29,12 +29,13 @@ private:
 	std::mutex mutex;
 	std::vector<std::atomic_int> nWaits;
 	std::vector<std::pair<size_t, size_t>> firstAndLasts;
+	//std::vector<int> n_colors;
 	Barrier* barrier;
 
 	void partitionVerticesByEdges(int const nThreads);
-	void coloringHeuristic(size_t const first, size_t const last, int& n_cols, bool& again);
+	void coloringHeuristic(size_t const first, size_t const last, int& n_cols);
 	void calcWaitTime(size_t const first, size_t const last);
-	void colorWhileWaiting(size_t const first, size_t const last, int& n_cols, bool& again);
+	void colorWhileWaiting(size_t const first, size_t const last, int& n_cols);
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	void findIndependentSet(std::set<size_t>::iterator& first, std::set<size_t>::iterator last, std::set<size_t>& indSet);
