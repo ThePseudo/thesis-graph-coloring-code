@@ -83,7 +83,7 @@ const int JonesPlassmann::solve() {
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
 	
-	this->partitionVerticesByEdges(this->MAX_THREADS_SOLVE);
+	this->partitionVertices();
 	
 	threadPool.reserve(this->MAX_THREADS_SOLVE);
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
@@ -113,10 +113,36 @@ const int JonesPlassmann::getIterations() const {
 }
 
 #ifdef PARALLEL_GRAPH_COLOR
-void JonesPlassmann::partitionVerticesByEdges(int const nThreads) {
+void JonesPlassmann::partitionVertices() {
+#ifdef PARTITION_VERTICES_EQUALLY
+	this->partitionVerticesEqually();
+#endif
+#ifdef PARTITION_VERTICES_BY_EDGE_NUM
+	this->partitionVerticesByEdges();
+#endif
+}
+
+void JonesPlassmann::partitionVerticesEqually() {
+	int const nThreads = this->MAX_THREADS_SOLVE;
+	size_t const nV = this->adj().nV();
+	size_t const thresh = nV / nThreads;
+	size_t first = 0;
+	size_t last = thresh;
+	
+
+	for (int i = 0; i < nThreads - 1; ++i) {
+		this->firstAndLasts[i] = std::pair<size_t, size_t>(first, last);
+		first = last;
+		last += thresh;
+	}
+	this->firstAndLasts[nThreads - 1] = std::pair<size_t, size_t>(first, nV);
+}
+
+void JonesPlassmann::partitionVerticesByEdges() {
 	size_t first = 0;
 	size_t last = 0;
 	size_t acc = 0;
+	int const nThreads = this->MAX_THREADS_SOLVE;
 	size_t const thresh = this->adj().nE() / nThreads;
 	size_t const nV = this->adj().nV();
 
@@ -161,13 +187,12 @@ void JonesPlassmann::calcWaitTime(size_t const first, size_t const last) {
 }
 
 void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, int& n_cols) {
-	int nColors = n_cols;
 	bool again = true;
 	do {
 		again = false;
 		for (size_t v = first; v < this->adj().nV() && v < last; ++v) {
 			if (this->nWaits[v] == 0) {
-				nColors = this->computeVertexColor(v, nColors, &this->col[v]);
+				n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
 				--this->nWaits[v];
 				auto const end = this->adj().endNeighs(v);
 				for (auto neighIt = this->adj().beginNeighs(v); neighIt != end; ++neighIt) {
@@ -182,10 +207,6 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 			++this->nIterations;
 		}
 	} while (again);
-
-	if (nColors > n_cols) {
-		n_cols = nColors;
-	}
 }
 
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)

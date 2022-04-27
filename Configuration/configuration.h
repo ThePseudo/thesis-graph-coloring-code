@@ -36,6 +36,9 @@
 //////////////////////////////// JONES-PLASSMANN OPTIONS
 ////////////////////////////////////////////////////////
 
+//#define PARTITION_VERTICES_EQUALLY
+#define PARTITION_VERTICES_BY_EDGE_NUM
+
 //#define USE_CUDA_ALGORITHM
 
 ////////////////////////////////////////////////////////
@@ -117,6 +120,14 @@
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
 #undef PARALLEL_GRAPH_COLOR
+#endif
+
+#ifdef PARTITION_VERTICES_EQUALLY
+#undef PARTITION_VERTICES_BY_EDGE_NUM
+#endif
+
+#ifdef PARTITION_VERTICES_BY_EDGE_NUM
+#undef PARTITION_VERTICES_EQUALLY
 #endif
 
 #ifdef PARALLEL_RECOLOR

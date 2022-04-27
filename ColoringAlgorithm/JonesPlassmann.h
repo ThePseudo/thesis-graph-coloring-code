@@ -35,7 +35,9 @@ private:
 	std::vector<int> n_colors;
 	Barrier* barrier;
 
-	void partitionVerticesByEdges(int const nThreads);
+	void partitionVertices();
+	void partitionVerticesEqually();
+	void partitionVerticesByEdges();
 #endif
 
 	const int solve();
