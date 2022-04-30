@@ -189,30 +189,9 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	bm.sampleTime();
 #endif
 
-	err = cudaMalloc(&dAv, Ao[n] * sizeof(*dAv));
-	if (err != cudaSuccess) {
-		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
 	err = cudaMalloc(&dAo, (n + 1) * sizeof(*dAo));
 	if (err != cudaSuccess) {
 		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dAc, Ao[n] * sizeof(*dAc));
-	if (err != cudaSuccess) {
-		std::cout << "Error2: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dColors, n * sizeof(*dColors));
-	if (err != cudaSuccess) {
-		std::cout << "Error4: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-
-	err = cudaMemset(dAv, 0x1, n * sizeof(*dAv));
-	if (err != cudaSuccess) {
-		std::cout << "Error8: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
 	}
 	err = cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice);
@@ -220,9 +199,21 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 		std::cout << "Error5: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
 	}
+
+	err = cudaMalloc(&dAc, Ao[n] * sizeof(*dAc));
+	if (err != cudaSuccess) {
+		std::cout << "Error2: " << cudaGetErrorString(err) << std::endl;
+		goto Error;
+	}
 	err = cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice);
 	if (err != cudaSuccess) {
 		std::cout << "Error6: " << cudaGetErrorString(err) << std::endl;
+		goto Error;
+	}
+
+	err = cudaMalloc(&dColors, n * sizeof(*dColors));
+	if (err != cudaSuccess) {
+		std::cout << "Error4: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
 	}
 	err = cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice);
@@ -230,6 +221,12 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 		std::cout << "Error8: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
 	}
+
+	err = cudaMalloc(&dAv, Ao[n] * sizeof(*dAv));
+	if (err != cudaSuccess) {
+		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
+		goto Error;
+	}	
 
 	int c;
 	float fractionToColor = 1.0;
@@ -259,9 +256,12 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 		dColors,
 		NULL,
 		colorInfo);
+
 #ifdef COMPUTE_ELAPSED_TIME
+	cudaDeviceSynchronize();
 	bm.sampleTimeToFlag(2);
 #endif
+
 	err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
 	if (err != cudaSuccess) {
 		std::cout << "Error9: " << cudaGetErrorString(err) << std::endl;
@@ -270,7 +270,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 
 Error:
 #ifdef COMPUTE_ELAPSED_TIME
-	bm.sampleTimeToFlag(1);
+	bm.sampleTimeToFlag(3);
 #endif
 	cudaFree(dAv);
 	cudaFree(dAo);

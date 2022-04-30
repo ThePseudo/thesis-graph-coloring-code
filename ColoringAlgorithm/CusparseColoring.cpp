@@ -33,6 +33,7 @@ const int CusparseColoring::startColoring() {
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(1);
 	bm.clear(2);
+	bm.clear(3);
 #endif
 	
 #ifdef GRAPH_REPRESENTATION_CSR

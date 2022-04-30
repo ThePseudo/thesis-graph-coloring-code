@@ -88,6 +88,7 @@ int main(int argc, char** argv) {
 #ifdef COLORING_ALGORITHM_CUSPARSE
 	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 #endif
 	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
 #endif
