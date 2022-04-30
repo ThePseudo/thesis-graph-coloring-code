@@ -1,6 +1,9 @@
 #ifndef _CUDA_KERNELS_H
 #define _CUDA_KERNELS_H
 
-int color_jpl(int const n, const size_t* Ao, const size_t* Ac, int* colors, const int* randoms);
+#include "configuration.h"
+#include "benchmark.h"
 
+int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms);
+int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors);
 #endif // !_CUDA_KERNELS_H

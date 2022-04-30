@@ -26,8 +26,9 @@
 ///////////////////////////////////// COLORING ALGORITHM
 ////////////////////////////////////////////////////////
 
-#define COLORING_ALGORITHM_JP
+//#define COLORING_ALGORITHM_JP
 //#define COLORING_ALGORITHM_GM
+#define COLORING_ALGORITHM_CUSPARSE
 
 #define PARALLEL_GRAPH_COLOR
 //#define SEQUENTIAL_GRAPH_COLOR
@@ -108,10 +109,17 @@
 
 #ifdef COLORING_ALGORITHM_JP
 #undef COLORING_ALGORITHM_GM
+#undef COLORING_ALGORITHM_CUSPARSE
 #endif
 
 #ifdef COLORING_ALGORITHM_GM
 #undef COLORING_ALGORITHM_JP
+#undef COLORING_ALGORITHM_CUSPARSE
+#endif
+
+#ifdef COLORING_ALGORITHM_CUSPARSE
+#undef COLORING_ALGORITHM_JP
+#undef COLORING_ALGORITHM_GM
 #endif
 
 #ifdef PARALLEL_GRAPH_COLOR
@@ -166,6 +174,10 @@
 
 #ifdef COLORING_ALGORITHM_JP
 #define COLORING_ALGO_T JonesPlassmann
+#endif
+
+#ifdef COLORING_ALGORITHM_CUSPARSE
+#define COLORING_ALGO_T CusparseColoring
 #endif
 
 #endif // !_CONFIGURATION_H

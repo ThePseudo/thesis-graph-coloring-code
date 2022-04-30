@@ -2,6 +2,9 @@
 
 void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "Coloring Algorithm: ";
+#ifdef COLORING_ALGORITHM_CUSPARSE
+	std::cout << "Cohen-Castonguay (cuSPARSE)";
+#else
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	std::cout << "Sequential ";
 #ifdef COLORING_ALGORITHM_JP
@@ -53,6 +56,7 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #endif
 #endif
 #endif
+#endif
 
 	std::cout << std::endl;
 }
@@ -65,14 +69,14 @@ const std::vector<int> ColoringAlgorithm::getColors() const {
 	return this->col;
 }
 
-const int ColoringAlgorithm::computeVertexColor(size_t const v, int const n_cols, int* targetCol) const {
+const int ColoringAlgorithm::computeVertexColor(int const v, int const n_cols, int* targetCol) const {
 	int colorsNum = n_cols;
 	auto neighIt = this->adj().beginNeighs(v);
 	auto forbidden = std::vector<bool>(colorsNum);
 	std::fill(forbidden.begin(), forbidden.end(), false);
 	auto const end = this->adj().endNeighs(v);
 	while (neighIt != end) {
-		size_t w = *neighIt;
+		int w = *neighIt;
 		int c = this->col[w];
 
 		if (c != ColoringAlgorithm::INVALID_COLOR) {
@@ -98,14 +102,14 @@ const int ColoringAlgorithm::computeVertexColor(size_t const v, int const n_cols
 	return colorsNum;
 }
 
-std::vector<std::pair<size_t, size_t>> ColoringAlgorithm::checkCorrectColoring() {
-	std::vector<std::pair<size_t, size_t>> incorrect;
-	for (size_t v = 0; v < this->adj().nV(); ++v) {
+std::vector<std::pair<int, int>> ColoringAlgorithm::checkCorrectColoring() {
+	std::vector<std::pair<int, int>> incorrect;
+	for (int v = 0; v < this->adj().nV(); ++v) {
 		auto const end = this->adj().endNeighs(v);
-		for (auto it = this->adj().beginNeighs(v); it < end; ++it) {
-			size_t w = *it;
+		for (auto it = this->adj().beginNeighs(v); it != end; ++it) {
+			int w = *it;
 			if (v != w && this->col[v] == this->col[w]) {
-				incorrect.push_back(std::pair<size_t, size_t>(v, w));
+				incorrect.push_back(std::pair<int, int>(v, w));
 			}
 		}
 	}
@@ -127,11 +131,11 @@ void ColoringAlgorithm::printDotFile(std::ostream& os) const {
 		os << "\t" << v << "[style=filled, color=" << this->col[v] + 1 << "]" << std::endl;
 	}
 	// Write edges
-	for (size_t v = 0; v < this->adj().nV(); ++v) {
+	for (int v = 0; v < this->adj().nV(); ++v) {
 		auto adjIt = this->adj().beginNeighs(v);
 		auto const end = this->adj().endNeighs(v);
 		while (adjIt != end) {
-			size_t w = *adjIt;
+			int w = *adjIt;
 			if (v <= w) {
 				os << "\t" << v << " -- " << w << std::endl;
 			}

@@ -11,37 +11,37 @@ CompressedSparseRow::CompressedSparseRow(const CompressedSparseRow& to_copy) {
 	this->rows = to_copy.rows;
 	this->cols = to_copy.cols;
 
-	this->col_idxs = std::vector<size_t>(to_copy.col_idxs);
+	this->col_idxs = std::vector<int>(to_copy.col_idxs);
 	delete[] this->row_ptrs;
-	this->row_ptrs = new size_t[this->rows + 1];
+	this->row_ptrs = new int[static_cast<size_t>(this->rows) + 1];
 
-	std::memcpy(this->row_ptrs, to_copy.row_ptrs, (this->rows + 1) * sizeof(*this->row_ptrs));
+	std::memcpy(this->row_ptrs, to_copy.row_ptrs, (static_cast<size_t>(this->rows) + 1) * sizeof(*this->row_ptrs));
 }
 
-CompressedSparseRow::CompressedSparseRow(size_t n_rows, size_t n_cols) {
+CompressedSparseRow::CompressedSparseRow(int n_rows, int n_cols) {
 	init(n_rows, n_cols);
 }
 
-CompressedSparseRow::CompressedSparseRow(size_t n) : CompressedSparseRow(n, n) { }
+CompressedSparseRow::CompressedSparseRow(int n) : CompressedSparseRow(n, n) { }
 
 CompressedSparseRow::~CompressedSparseRow() {
 	delete[] this->row_ptrs;
 }
 
-const size_t* CompressedSparseRow::getColIndexes() const {
+const int* CompressedSparseRow::getColIndexes() const {
 	return this->col_idxs.data();
 }
-const size_t* CompressedSparseRow::getRowPointers() const {
+const int* CompressedSparseRow::getRowPointers() const {
 	return this->row_ptrs;
 }
 
-void CompressedSparseRow::init(size_t n_rows, size_t n_cols) {
+void CompressedSparseRow::init(int n_rows, int n_cols) {
 	this->rows = n_rows;
 	this->cols = n_cols;
 
-	this->col_idxs = std::vector<size_t>();
+	this->col_idxs = std::vector<int>();
 	//delete[] this->row_ptrs;
-	this->row_ptrs = new size_t[this->rows + 1];
+	this->row_ptrs = new int[static_cast<size_t>(this->rows) + 1];
 
 	std::fill(this->row_ptrs, this->row_ptrs + this->rows, 0);
 }
@@ -52,8 +52,8 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	bm.sampleTime();
 #endif
 
-	size_t n;
-	size_t row_idx;
+	int n;
+	int row_idx;
 	std::string buffer;
 	std::vector<size_t> cols;
 
@@ -63,12 +63,12 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 
 	for (row_idx = 0; row_idx < n; ++row_idx) {
 		is >> buffer;
-		size_t actual_row_idx = atoi(buffer.c_str());
+		int actual_row_idx = atoi(buffer.c_str());
 		cols.clear();
 
 		is >> buffer;
 		while (buffer.c_str()[0] != '#') {
-			size_t col_idx = atoi(buffer.c_str());
+			int col_idx = atoi(buffer.c_str());
 			cols.push_back(col_idx);
 
 			is >> buffer;
@@ -84,7 +84,7 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	return is;
 }
 
-const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const {
+const bool CompressedSparseRow::get(int row_idx, int col_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -92,8 +92,8 @@ const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const {
 		throw std::out_of_range("col index out of range: " + col_idx);
 	}
 
-	size_t col_ptr = this->row_ptrs[row_idx];
-	size_t next_col_ptr = this->row_ptrs[row_idx + 1];
+	int col_ptr = this->row_ptrs[row_idx];
+	int next_col_ptr = this->row_ptrs[row_idx + 1];
 
 	while (col_ptr < next_col_ptr) {
 		if (this->col_idxs[col_ptr] == col_idx) {
@@ -107,7 +107,7 @@ const bool CompressedSparseRow::get(size_t row_idx, size_t col_idx) const {
 }
 
 template<typename Iterator>
-void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iterator end) {
+void CompressedSparseRow::populateRow(int row_idx, Iterator begin, const Iterator end) {
 	static size_t expected_row = 0;
 
 	if (row_idx != expected_row) {
@@ -117,12 +117,12 @@ void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iter
 		throw std::out_of_range("row index out of range: " + std::to_string(row_idx));
 	}
 
-	size_t curr_row_ptr = this->row_ptrs[row_idx];
-	size_t* next_row_ptrs_ptr = &this->row_ptrs[row_idx + 1];
+	int curr_row_ptr = this->row_ptrs[row_idx];
+	int* next_row_ptrs_ptr = &this->row_ptrs[row_idx + 1];
 
 	*next_row_ptrs_ptr = curr_row_ptr;
 	while (begin != end) {
-		size_t col_idx = *begin;
+		int col_idx = *begin;
 		this->col_idxs.push_back(col_idx);
 		++(*next_row_ptrs_ptr);
 		++begin;
@@ -131,7 +131,7 @@ void CompressedSparseRow::populateRow(size_t row_idx, Iterator begin, const Iter
 	++expected_row;
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(size_t row_idx) const {
+const ::std::vector<int>::const_iterator CompressedSparseRow::beginNeighs(int row_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -139,7 +139,7 @@ const ::std::vector<size_t>::const_iterator CompressedSparseRow::beginNeighs(siz
 	return this->col_idxs.begin() + this->row_ptrs[row_idx];
 }
 
-const ::std::vector<size_t>::const_iterator CompressedSparseRow::endNeighs(size_t row_idx) const {
+const ::std::vector<int>::const_iterator CompressedSparseRow::endNeighs(int row_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -151,6 +151,6 @@ const size_t CompressedSparseRow::nE() const {
 	return this->row_ptrs[this->rows];
 }
 
-const size_t CompressedSparseRow::nV() const {
+const int CompressedSparseRow::nV() const {
 	return this->rows;
 }

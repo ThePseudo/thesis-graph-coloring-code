@@ -58,6 +58,7 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <NvccCompilation>compile</NvccCompilation>
+      <Include>$(SolutionDir)Configuration;$(SolutionDir)Benchmark</Include>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -79,13 +80,28 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_50,sm_50</CodeGeneration>
       <NvccCompilation>compile</NvccCompilation>
+      <Include>$(SolutionDir)Configuration;$(SolutionDir)Benchmark;"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\include"</Include>
     </CudaCompile>
+    <CudaLink>
+      <AdditionalLibraryDirectories>$(CudaToolkitBinDir)/crt;"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5\lib\x64"</AdditionalLibraryDirectories>
+    </CudaLink>
+    <CudaLink>
+      <AdditionalDependencies>cusparse.lib</AdditionalDependencies>
+    </CudaLink>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="cudaKernels.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cudaKernels.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Benchmark\Benchmark.vcxproj">
+      <Project>{a7e0d2c1-ecfd-4733-81a1-62ee9c841401}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Configuration\Configuration.vcxproj">
+      <Project>{c9e19b23-ea36-4767-b33b-b68d306b2f31}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

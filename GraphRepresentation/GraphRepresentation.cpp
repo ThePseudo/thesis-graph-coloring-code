@@ -1,6 +1,6 @@
 #include "GraphRepresentation.h"
 
-const int GraphRepresentation::countNeighs(size_t v) const {
+const int GraphRepresentation::countNeighs(int v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}

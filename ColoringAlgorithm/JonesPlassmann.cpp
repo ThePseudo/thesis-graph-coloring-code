@@ -34,10 +34,10 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	this->nWaits = std::vector<int>(this->adj().nV());
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
-	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), static_cast<size_t>(this->MAX_THREADS_SOLVE));
+	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
-	this->firstAndLasts = std::vector<std::pair<size_t, size_t>>(this->MAX_THREADS_SOLVE);
+	this->firstAndLasts = std::vector<std::pair<int, int>>(this->MAX_THREADS_SOLVE);
 	this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE, 0);
 #endif
 
@@ -124,27 +124,27 @@ void JonesPlassmann::partitionVertices() {
 
 void JonesPlassmann::partitionVerticesEqually() {
 	int const nThreads = this->MAX_THREADS_SOLVE;
-	size_t const nV = this->adj().nV();
-	size_t const thresh = nV / nThreads;
-	size_t first = 0;
-	size_t last = thresh;
+	int const nV = this->adj().nV();
+	int const thresh = nV / nThreads;
+	int first = 0;
+	int last = thresh;
 	
 
 	for (int i = 0; i < nThreads - 1; ++i) {
-		this->firstAndLasts[i] = std::pair<size_t, size_t>(first, last);
+		this->firstAndLasts[i] = std::pair<int, int>(first, last);
 		first = last;
 		last += thresh;
 	}
-	this->firstAndLasts[nThreads - 1] = std::pair<size_t, size_t>(first, nV);
+	this->firstAndLasts[nThreads - 1] = std::pair<int, int>(first, nV);
 }
 
 void JonesPlassmann::partitionVerticesByEdges() {
-	size_t first = 0;
-	size_t last = 0;
+	int first = 0;
+	int last = 0;
 	size_t acc = 0;
 	int const nThreads = this->MAX_THREADS_SOLVE;
 	size_t const thresh = this->adj().nE() / nThreads;
-	size_t const nV = this->adj().nV();
+	int const nV = this->adj().nV();
 
 	for (int i = 0; i < nThreads; ++i) {
 		while (i != nThreads - 1 && last < nV && acc < thresh) {
@@ -156,14 +156,14 @@ void JonesPlassmann::partitionVerticesByEdges() {
 			++last;
 		}
 		if (i + 1 < nThreads) ++last;
-		this->firstAndLasts[i] = std::pair<size_t, size_t>(first, last);
+		this->firstAndLasts[i] = std::pair<int, int>(first, last);
 		first = last;
 		acc = 0;
 	}
 }
 #endif
 
-void JonesPlassmann::coloringHeuristic(size_t const first, size_t const last, int& n_cols) {
+void JonesPlassmann::coloringHeuristic(int const first, int const last, int& n_cols) {
 	this->calcWaitTime(first, last);
 #ifdef PARALLEL_GRAPH_COLOR
 	this->barrier->wait();
@@ -171,12 +171,12 @@ void JonesPlassmann::coloringHeuristic(size_t const first, size_t const last, in
 	this->colorWhileWaiting(first, last, n_cols);
 }
 
-void JonesPlassmann::calcWaitTime(size_t const first, size_t const last) {
-	for (size_t v = first; v < this->adj().nV() && v < last; ++v) {
+void JonesPlassmann::calcWaitTime(int const first, int const last) {
+	for (int v = first; v < this->adj().nV() && v < last; ++v) {
 		auto const end = this->adj().endNeighs(v);
 		for (auto neighIt = this->adj().beginNeighs(v);
 			neighIt != end; ++neighIt) {
-			size_t w = *neighIt;
+			int w = *neighIt;
 			
 			// Ordering by random weight
 			if (this->vWeights[w] > this->vWeights[v]) {
@@ -186,11 +186,12 @@ void JonesPlassmann::calcWaitTime(size_t const first, size_t const last) {
 	}
 }
 
-void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, int& n_cols) {
+void JonesPlassmann::colorWhileWaiting(int const first, int const last, int& n_cols) {
 	bool again = true;
+	int const nV = this->adj().nV();
 	do {
 		again = false;
-		for (size_t v = first; v < this->adj().nV() && v < last; ++v) {
+		for (int v = first; v < nV && v < last; ++v) {
 			if (this->nWaits[v] == 0) {
 				n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
 				--this->nWaits[v];
@@ -212,23 +213,17 @@ void JonesPlassmann::colorWhileWaiting(size_t const first, size_t const last, in
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 #include "cudaKernels.h"
 const int JonesPlassmann::colorWithCuda() {
-	size_t const n = this->adj().nV();
-	const size_t* Ao = this->adj().getRowPointers();
-	const size_t* Ac = this->adj().getColIndexes();
+	int const n = this->adj().nV();
+	const int* Ao = this->adj().getRowPointers();
+	const int* Ac = this->adj().getColIndexes();
 	int* colors = this->col.data();
 	const int* randoms = this->vWeights.data();
 
 	size_t total_size = (n + 1) * sizeof(*Ao) + Ao[n] * sizeof(Ac) + n * sizeof(*colors) + n * sizeof(*randoms);
 	std::cout << "Transfering " << total_size << " bytes to GPU memory." << std::endl;
 
-#ifdef COMPUTE_ELAPSED_TIME
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-#endif
 	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms);
-#ifdef COMPUTE_ELAPSED_TIME
-	bm.sampleTimeToFlag(1);
-#endif
+
 	return this->nIterations;
 }
 #endif

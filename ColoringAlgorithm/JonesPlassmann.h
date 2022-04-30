@@ -31,7 +31,7 @@ private:
 #ifdef PARALLEL_GRAPH_COLOR
 	std::mutex mutex;
 	std::vector<std::atomic_int> nWaits;
-	std::vector<std::pair<size_t, size_t>> firstAndLasts;
+	std::vector<std::pair<int, int>> firstAndLasts;
 	std::vector<int> n_colors;
 	Barrier* barrier;
 
@@ -41,9 +41,9 @@ private:
 #endif
 
 	const int solve();
-	void coloringHeuristic(size_t const first, size_t const last, int& n_cols);
-	void calcWaitTime(size_t const first, size_t const last);
-	void colorWhileWaiting(size_t const first, size_t const last, int& n_cols);
+	void coloringHeuristic(int const first, int const last, int& n_cols);
+	void calcWaitTime(int const first, int const last);
+	void colorWhileWaiting(int const first, int const last, int& n_cols);
 
 public:
 #ifdef PARALLEL_GRAPH_COLOR

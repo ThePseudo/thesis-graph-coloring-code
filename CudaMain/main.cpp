@@ -7,6 +7,9 @@
 #ifdef COLORING_ALGORITHM_JP
 #include "JonesPlassmann.h"
 #endif
+#ifdef COLORING_ALGORITHM_CUSPARSE
+#include "CusparseColoring.h"
+#endif
 
 #ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
@@ -53,15 +56,8 @@ int main(int argc, char** argv) {
 
 	int n_cols = G.startColoring();
 
-	std::vector<std::pair<size_t, size_t>> incorrectPairs = G.checkCorrectColoring();
-
-	if (!incorrectPairs.empty()) {
-		std::cout << "There was an error while assigning colors. Two or more adjacent verteces have the same color." << std::endl;
-		for (auto& p : incorrectPairs) {
-			if (p.first < p.second) {
-				std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
-			}
-		}
+	if (n_cols < 0) {
+		std::cout << "An error occurred!" << std::endl;
 		return 0;
 	}
 
@@ -89,8 +85,23 @@ int main(int argc, char** argv) {
 	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 #endif
 #endif
+#ifdef COLORING_ALGORITHM_CUSPARSE
+	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+#endif
 	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
 #endif
+
+	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
+
+	if (!incorrectPairs.empty()) {
+		std::cout << "There was an error while assigning colors. Two or more adjacent verteces have the same color." << std::endl;
+		for (auto& p : incorrectPairs) {
+			if (p.first < p.second) {
+				std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+			}
+		}
+	}
 
 	//G.printColors(std::cout);
 	//G.printDotFile(std::ofstream("output.txt"));

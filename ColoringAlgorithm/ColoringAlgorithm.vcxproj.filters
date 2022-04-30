@@ -24,6 +24,9 @@
     <ClCompile Include="GebremedhinManne.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CusparseColoring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColoringAlgorithm.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GebremedhinManne.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CusparseColoring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

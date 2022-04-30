@@ -12,7 +12,7 @@
 
 AdjacencyMatrix::AdjacencyMatrix() : AdjacencyMatrix(0) { }
 
-AdjacencyMatrix::AdjacencyMatrix(size_t nV) {
+AdjacencyMatrix::AdjacencyMatrix(int nV) {
 	this->adj.reserve(nV);
 	this->_nV = 0;
 	this->_nE = 0;
@@ -39,11 +39,11 @@ const size_t AdjacencyMatrix::nE() const {
 	return this->_nE;
 }
 
-const size_t AdjacencyMatrix::nV() const {
+const int AdjacencyMatrix::nV() const {
 	return this->_nV;
 }
 
-const bool AdjacencyMatrix::get(size_t v, size_t w) const {
+const bool AdjacencyMatrix::get(int v, int w) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -57,7 +57,7 @@ const bool AdjacencyMatrix::get(size_t v, size_t w) const {
 	return found != vNeighs.end();
 }
 
-const ::std::vector<size_t>::const_iterator AdjacencyMatrix::beginNeighs(size_t v) const {
+const ::std::vector<int>::const_iterator AdjacencyMatrix::beginNeighs(int v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -65,7 +65,7 @@ const ::std::vector<size_t>::const_iterator AdjacencyMatrix::beginNeighs(size_t 
 	return this->adj[v].begin();
 }
 
-const ::std::vector<size_t>::const_iterator AdjacencyMatrix::endNeighs(size_t v) const {
+const ::std::vector<int>::const_iterator AdjacencyMatrix::endNeighs(int v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -89,12 +89,12 @@ const auto MAX_THREADS_LOAD = 3 * std::thread::hardware_concurrency();
 #endif
 
 struct header {
-	size_t nV;
+	int nV;
 };
 
 struct vertex {
-	size_t v{};
-	std::vector<size_t> adj;
+	int v{};
+	std::vector<int> adj;
 };
 
 bool AdjacencyMatrix::parseInput(std::istream& is) {
@@ -148,7 +148,7 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 
 	// Calculate number of working threads
 	int nThreads = MAX_THREADS_LOAD;
-	nThreads = static_cast<int>(std::min(static_cast<size_t>(nThreads), head.nV));
+	nThreads = std::min(nThreads, head.nV);
 
 	// Calculate rough size of every partition
 	// Every thread will analyze a portion of the file roughly this big
@@ -336,7 +336,7 @@ bool AdjacencyMatrix::readVertex(std::istream & file, struct vertex& vert) {
 	}
 	start = end + 1;
 	while (start != end) {
-		size_t w = static_cast<int>(strtol(start, &end, 10));
+		int w = static_cast<int>(strtol(start, &end, 10));
 		if (w == 0 && start == end) break;
 		vert.adj.push_back(w);
 		start = end + 1;

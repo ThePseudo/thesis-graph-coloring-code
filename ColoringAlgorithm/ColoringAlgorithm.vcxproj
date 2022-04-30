@@ -143,11 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColoringAlgorithm.cpp" />
+    <ClCompile Include="CusparseColoring.cpp" />
     <ClCompile Include="GebremedhinManne.cpp" />
     <ClCompile Include="JonesPlassmann.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColoringAlgorithm.h" />
+    <ClInclude Include="CusparseColoring.h" />
     <ClInclude Include="GebremedhinManne.h" />
     <ClInclude Include="JonesPlassmann.h" />
   </ItemGroup>

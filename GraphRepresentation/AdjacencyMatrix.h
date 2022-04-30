@@ -14,8 +14,9 @@
 
 class AdjacencyMatrix : public GraphRepresentation {
 private:
-	std::vector<std::vector<size_t>> adj;
-	size_t _nV, _nE;
+	std::vector<std::vector<int>> adj;
+	int _nV;
+	size_t _nE;
 
 	bool parseInput(std::istream&);
 #ifdef PARALLEL_INPUT_LOAD
@@ -38,19 +39,19 @@ private:
 public:
 	AdjacencyMatrix();
 	AdjacencyMatrix(const AdjacencyMatrix& to_copy);
-	AdjacencyMatrix(size_t nV);
+	AdjacencyMatrix(int nV);
 	~AdjacencyMatrix();
 
 	friend std::istream& operator>>(std::istream& is, AdjacencyMatrix& m);
 
 	const size_t nE() const override;
-	const size_t nV() const override;
-	const bool get(size_t v, size_t w) const override;
+	const int nV() const override;
+	const bool get(int v, int w) const override;
 
-	const int countNeighs(size_t v) const { __super::countNeighs(v); };
+	const int countNeighs(int v) const { __super::countNeighs(v); };
 
-	const ::std::vector<size_t>::const_iterator beginNeighs(size_t v) const override;
-	const ::std::vector<size_t>::const_iterator endNeighs(size_t v) const override;
+	const ::std::vector<int>::const_iterator beginNeighs(int v) const override;
+	const ::std::vector<int>::const_iterator endNeighs(int v) const override;
 };
 
 #endif // !_ADJACENCY_MATRIC_H
