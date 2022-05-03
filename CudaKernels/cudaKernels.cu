@@ -90,7 +90,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		int nt = 256;
 		int nb = std::min((n + nt - 1) / nt, CUDA_MAX_BLOCKS);
 		create_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dRandoms, dColors, dSet);
-		expand_to_maximal_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dColors, dSet);
+		//expand_to_maximal_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dColors, dSet);
 		color_jpl_kernel<<<nb, nt>>>(n, c, dColors, dSet);
 		err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
 		if (err != cudaSuccess) {

@@ -26,6 +26,8 @@ public:
 	virtual const ::std::vector<int>::const_iterator beginNeighs(int v) const = 0;
 	// Returns end iterator of neighbors of v
 	virtual const ::std::vector<int>::const_iterator endNeighs(int v) const = 0;
+
+	void printGraphInfo() const;
 };
 
 #endif // !_GRAPH_REPRESENTATION_H

@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 	COLORING_ALGO_T& G = *_G;
 
 	std::cout << "Graph succesfully loaded from file." << std::endl;
-	std::cout << "Size: V: " << G.adj().nV() << ", E: " << G.adj().nE() << std::endl;
+	G.adj().printGraphInfo();
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && !defined(USE_CUDA_ALGORITHM)
 	std::cout << "Performing computation using " << G.MAX_THREADS_SOLVE << " threads." << std::endl;
 #endif

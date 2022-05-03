@@ -18,3 +18,7 @@ void GraphRepresentation::printGraphRepresentationConfs() {
 #endif
 	std::cout << std::endl;
 }
+
+void GraphRepresentation::printGraphInfo() const {
+	std::cout << "V: " << this->nV() << ", E: " << this->nE() << std::endl;
+}

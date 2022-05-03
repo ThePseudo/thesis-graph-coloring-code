@@ -27,8 +27,8 @@
 ////////////////////////////////////////////////////////
 
 //#define COLORING_ALGORITHM_JP
-//#define COLORING_ALGORITHM_GM
-#define COLORING_ALGORITHM_CUSPARSE
+#define COLORING_ALGORITHM_GM
+//#define COLORING_ALGORITHM_CUSPARSE
 
 #define PARALLEL_GRAPH_COLOR
 //#define SEQUENTIAL_GRAPH_COLOR
@@ -40,7 +40,7 @@
 //#define PARTITION_VERTICES_EQUALLY
 #define PARTITION_VERTICES_BY_EDGE_NUM
 
-//#define USE_CUDA_ALGORITHM
+#define USE_CUDA_ALGORITHM
 
 ////////////////////////////////////////////////////////
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS
