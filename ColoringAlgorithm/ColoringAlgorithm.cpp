@@ -7,7 +7,7 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #else
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	std::cout << "Sequential ";
-#ifdef COLORING:ALGORITHM_GREEDY
+#ifdef COLORING_ALGORITHM_GREEDY
 	std::cout << "Greedy ";
 #ifdef SORT_LARGEST_DEGREE_FIRST
 	std::cout << "Largest Degree First ";
@@ -37,7 +37,7 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Parallel ";
-#ifdef COLORING:ALGORITHM_GREEDY
+#ifdef COLORING_ALGORITHM_GREEDY
 	std::cout << "Greedy ";
 #ifdef SORT_LARGEST_DEGREE_FIRST
 	std::cout << "Largest Degree First ";
