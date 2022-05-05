@@ -1,18 +1,14 @@
 #include "CusparseColoring.h"
 
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include "cudaKernels.h"
 
 #include <fstream>
 
 CusparseColoring::CusparseColoring(std::string const filepath) {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(0);
-#endif
 
 	this->_adj = new GRAPH_REPR_T();
 
@@ -29,12 +25,10 @@ CusparseColoring::CusparseColoring(std::string const filepath) {
 }
 
 const int CusparseColoring::startColoring() {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(1);
 	bm.clear(2);
 	bm.clear(3);
-#endif
 	
 #ifdef GRAPH_REPRESENTATION_CSR
 	int const n = this->adj().nV();

@@ -47,10 +47,8 @@ void CompressedSparseRow::init(int n_rows, int n_cols) {
 }
 
 std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 	int n;
 	int row_idx;
@@ -77,9 +75,7 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 		m.populateRow(actual_row_idx, cols.begin(), cols.end());
 	}
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(0);
-#endif
 
 	return is;
 }

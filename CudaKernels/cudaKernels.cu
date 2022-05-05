@@ -23,10 +23,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	int* dRandoms;
 	int* dColors;
 	unsigned int* dSet;
-
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
-#endif
 
 	err = cudaMalloc(&dAo, (n+1) * sizeof(*dAo));
 	if (err != cudaSuccess) {
@@ -80,9 +77,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		goto Error;
 	}
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTime();
-#endif
 
 	int c;
 	int left;
@@ -101,9 +96,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	}
 
 Error:
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
-#endif
 	cudaFree(dAo);
 	cudaFree(dAc);
 	cudaFree(dRandoms);
@@ -184,10 +177,8 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	int* dAc;
 	int* dColors;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 	err = cudaMalloc(&dAo, (n + 1) * sizeof(*dAo));
 	if (err != cudaSuccess) {
@@ -241,9 +232,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	status = cusparseCreateColorInfo(&colorInfo);
 
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
-#endif
 	status = cusparseScsrcolor(handle,
 		n,
 		Ao[n],
@@ -257,10 +246,8 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 		NULL,
 		colorInfo);
 
-#ifdef COMPUTE_ELAPSED_TIME
 	cudaDeviceSynchronize();
 	bm.sampleTimeToFlag(2);
-#endif
 
 	err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
 	if (err != cudaSuccess) {
@@ -269,9 +256,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	}
 
 Error:
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(3);
-#endif
 	cudaFree(dAv);
 	cudaFree(dAo);
 	cudaFree(dAc);

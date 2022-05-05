@@ -14,9 +14,7 @@
 #include "CusparseColoring.h"
 #endif
 
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include "GraphRepresentation.h"
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
@@ -73,7 +71,6 @@ int main(int argc, char** argv) {
 #endif
 	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	std::cout << std::endl << std::endl;
 	std::cout << "TIME USAGE" << std::endl;
@@ -101,7 +98,6 @@ int main(int argc, char** argv) {
 	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 #endif
 	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
-#endif
 
 	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
 

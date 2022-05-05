@@ -99,10 +99,8 @@ struct vertex {
 
 bool AdjacencyMatrix::parseInput(std::istream& is) {
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 	struct header head = {};
 	if (!readHeader(is, head)) {
@@ -184,9 +182,7 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 	}
 #endif
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(0);
-#endif
 
 	return true;
 }

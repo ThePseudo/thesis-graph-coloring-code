@@ -1,9 +1,7 @@
 #include "Greedy.h"
 #include "configuration.h"
 
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include <algorithm>
 #include <fstream>
@@ -47,10 +45,8 @@ const int Greedy::startColoring() {
 }
 
 int Greedy::colorGraph(int n_cols) {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
@@ -73,9 +69,7 @@ int Greedy::colorGraph(int n_cols) {
 	}
 #endif
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(2);
-#endif
 
 	return n_cols;
 }
@@ -97,10 +91,8 @@ int Greedy::colorGraphParallel(int n_cols, int& i) {
 }
 
 int Greedy::detectConflicts() {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 	this->recolor.clear();
 	std::vector<std::thread> threadPool;
@@ -114,9 +106,7 @@ int Greedy::detectConflicts() {
 
 	int recolorSize = this->recolor.size();
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(3);
-#endif
 
 	return recolorSize;
 }
@@ -163,16 +153,12 @@ void Greedy::sortGraphVerts() {
 	auto sort_lambda = [&](const int v, const int w) { return v > w; };
 #endif
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 	std::sort(this->recolor.begin(), this->recolor.end(), sort_lambda);
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
-#endif
 }
 
 const int Greedy::solve() {
@@ -205,16 +191,12 @@ const int Greedy::solve() {
 		this->sortGraphVerts();
 		int index = 0;
 
-#ifdef COMPUTE_ELAPSED_TIME
 		Benchmark& bm = *Benchmark::getInstance();
 		bm.sampleTime();
-#endif
 
 		n_cols = this->colorGraphParallel(n_cols, index);
 
-#ifdef COMPUTE_ELAPSED_TIME
 		bm.sampleTimeToFlag(1);
-#endif
 		++this->nIterations;
 	}
 #endif

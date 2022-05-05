@@ -1,8 +1,6 @@
 #include "JonesPlassmann.h"
 
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include <algorithm>
 #include <fstream>
@@ -11,10 +9,8 @@
 #include <set>
 
 JonesPlassmann::JonesPlassmann(std::string const filepath) {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(0);
-#endif
 
 	this->_adj = new GRAPH_REPR_T();
 
@@ -58,10 +54,8 @@ JonesPlassmann::JonesPlassmann(std::string const filepath) {
 }
 
 const int JonesPlassmann::startColoring() {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(1);
-#endif
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 	return this->colorWithCuda();
 #else
@@ -72,10 +66,8 @@ const int JonesPlassmann::startColoring() {
 const int JonesPlassmann::solve() {
 	int n_cols = 0;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	this->coloringHeuristic(0, this->adj().nV(), n_cols);
@@ -101,9 +93,7 @@ const int JonesPlassmann::solve() {
 	n_cols = *std::max_element(this->n_colors.begin(), this->n_colors.end());
 #endif
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
-#endif
 
 	return n_cols;
 }

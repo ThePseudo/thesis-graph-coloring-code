@@ -7,10 +7,7 @@
 #ifdef COLORING_ALGORITHM_JP
 #include "JonesPlassmann.h"
 #endif
-
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include "GraphRepresentation.h"
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
@@ -74,7 +71,6 @@ int main(int argc, char** argv) {
 #endif
 	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	std::cout << std::endl << std::endl;
 	std::cout << "TIME USAGE" << std::endl;
@@ -96,7 +92,6 @@ int main(int argc, char** argv) {
 #endif
 #endif
 	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
-#endif
 
 	//G.printColors(std::cout);
 	//G.printDotFile(std::ofstream("output.txt"));

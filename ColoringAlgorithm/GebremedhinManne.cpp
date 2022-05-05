@@ -1,9 +1,6 @@
 #include "configuration.h"
 #include "GebremedhinManne.h"
-
-#ifdef COMPUTE_ELAPSED_TIME
 #include "benchmark.h"
-#endif
 
 #include <algorithm>
 #include <fstream>
@@ -47,10 +44,8 @@ const int GebremedhinManne::startColoring() {
 }
 
 int GebremedhinManne::colorGraph(int n_cols) {
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
@@ -68,9 +63,7 @@ int GebremedhinManne::colorGraph(int n_cols) {
 
 	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(2);
-#endif
 
 	return n_cols;
 }
@@ -104,10 +97,8 @@ void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int
 
 #ifdef PARALLEL_GRAPH_COLOR
 	if (initial == 0) {
-#ifdef COMPUTE_ELAPSED_TIME
 		Benchmark& bm = *Benchmark::getInstance();
 		bm.sampleTimeToFlag(1);
-#endif
 	}
 
 	this->barrier->wait();
@@ -135,32 +126,23 @@ void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int
 const int GebremedhinManne::solve() {
 	int n_cols = 0;
 
-#ifdef COMPUTE_ELAPSED_TIME
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
-#endif
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	n_cols = this->colorGraph(n_cols);
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(1);
-#endif
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
 	n_cols = this->colorGraph(n_cols);
 	++this->nIterations;
 	this->nConflicts += this->recolor.size();
-#ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(2);
-#endif
 
 	if (this->nConflicts > 0) {
 		int index = 0;
 		n_cols = this->performRecoloring(n_cols);
-
-#ifdef COMPUTE_ELAPSED_TIME
 		bm.sampleTimeToFlag(3);
-#endif
 		++this->nIterations;
 	}
 #endif
