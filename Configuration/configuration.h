@@ -34,6 +34,18 @@
 //#define SEQUENTIAL_GRAPH_COLOR
 
 ////////////////////////////////////////////////////////
+///////////////////////////////////////// GREEDY OPTIONS
+////////////////////////////////////////////////////////
+
+#define SORT_LARGEST_DEGREE_FIRST
+//#define SORT_SMALLEST_DEGREE_FIRST
+//#define SORT_VERTEX_ORDER
+//#define SORT_VERTEX_ORDER_REVERSED
+
+//#define PARALLEL_RECOLOR
+#define SEQUENTIAL_RECOLOR
+
+////////////////////////////////////////////////////////
 //////////////////////////////// JONES-PLASSMANN OPTIONS
 ////////////////////////////////////////////////////////
 
@@ -46,13 +58,8 @@
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS
 ////////////////////////////////////////////////////////
 
-#define SORT_LARGEST_DEGREE_FIRST
-//#define SORT_SMALLEST_DEGREE_FIRST
-//#define SORT_VERTEX_ORDER
-//#define SORT_VERTEX_ORDER_REVERSED
-
-//#define PARALLEL_RECOLOR
-#define SEQUENTIAL_RECOLOR
+//#define COLORING_SYNCHRONOUS
+#define COLORING_ASYNCHRONOUS
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -138,6 +145,14 @@
 #undef PARTITION_VERTICES_EQUALLY
 #endif
 
+#ifdef COLORING_SYNCHRONOUS
+#undef COLORING_ASYNCHRONOUS
+#endif
+
+#ifdef ASYNCHRONOUS
+#undef COLORING_ASYNCHRONOUS
+#endif
+
 #ifdef PARALLEL_RECOLOR
 #undef SEQUENTIAL_RECOLOR
 #endif
@@ -167,6 +182,10 @@
 ////////////////////////////////////////////////////////////
 ////////////////////////////// SETUP COLORING ALGORITHM TYPE
 ////////////////////////////////////////////////////////////
+
+#ifdef COLORING_ALGORITHM_GREEDY
+#define COLORING_ALGO_T Greedy
+#endif
 
 #ifdef COLORING_ALGORITHM_GM
 #define COLORING_ALGO_T GebremedhinManne

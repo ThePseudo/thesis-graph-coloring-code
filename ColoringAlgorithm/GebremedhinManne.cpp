@@ -23,17 +23,16 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 		fileIS.close();
 	}
 
-	this->col = std::vector<int>(this->adj().nV());
-	this->recolor = std::vector<int>(this->adj().nV());
-	for (int i = 0; i < this->adj().nV(); ++i) {
-		this->col[i] = GebremedhinManne::INVALID_COLOR;
-		this->recolor[i] = i;
-	}
+	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
+	this->col = std::vector<int>(this->adj().nV(), GebremedhinManne::INVALID_COLOR);
+	int const maxConflicts = this->adj().nE() / this->adj().nV() * (this->MAX_THREADS_SOLVE - 1) / 2;
+	this->recolor = std::vector<int>(maxConflicts);
 
-#ifdef PARALLEL_GRAPH_COLOR
 	this->nConflicts = 0;
 	this->nIterations = 0;
-#endif
+
+	
+	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 }
 
 const int GebremedhinManne::startColoring() {
@@ -43,6 +42,7 @@ const int GebremedhinManne::startColoring() {
 #ifdef PARALLEL_GRAPH_COLOR
 	bm.clear(3);
 #endif
+
 	return this->solve();
 }
 
@@ -54,24 +54,19 @@ int GebremedhinManne::colorGraph(int n_cols) {
 
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
-	int parallelIdx = 0;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
-		threadPool.emplace_back([&, n_cols] { this->colorGraphParallel(n_cols, parallelIdx); });
+		threadPool.emplace_back([=] { this->partitionBasedColoring(n_cols, i, this->MAX_THREADS_SOLVE); });
 	}
 
 	for (auto& t : threadPool) {
 		t.join();
 	}
-
-	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
-	auto const end = this->recolor.end();
-	for (auto it = this->recolor.begin();
-		it != end; ++it) {
-		n_cols = this->computeVertexColor(*it, n_cols, &this->col[*it]);
-	}
+	this->partitionBasedColoring(n_cols, 0, 1);
 #endif
+
+	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 
 #ifdef COMPUTE_ELAPSED_TIME
 	bm.sampleTimeToFlag(2);
@@ -80,151 +75,99 @@ int GebremedhinManne::colorGraph(int n_cols) {
 	return n_cols;
 }
 
-#ifdef PARALLEL_GRAPH_COLOR
-int GebremedhinManne::colorGraphParallel(int n_cols, int& i) {
-	this->mutex.lock();
-	while (i < this->recolor.size()) {
+int GebremedhinManne::performRecoloring(int n_cols) {
+	for (int i = 0; i < this->recolor.size(); ++i) {
 		int v = this->recolor[i];
-		++i;
-		this->mutex.unlock();
 
 		n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
-
-		this->mutex.lock();
 	}
-	this->mutex.unlock();
 
 	return n_cols;
 }
 
-int GebremedhinManne::detectConflicts() {
-#ifdef COMPUTE_ELAPSED_TIME
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-#endif
-
-	this->recolor.erase(this->recolor.begin(), this->recolor.end());
-	std::vector<std::thread> threadPool;
-	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
-		threadPool.emplace_back([&, i] { this->detectConflictsParallel(i); });
-	}
-
-	for (auto& t : threadPool) {
-		t.join();
-	}
-
-	int recolorSize = this->recolor.size();
-
-#ifdef COMPUTE_ELAPSED_TIME
-	bm.sampleTimeToFlag(3);
-#endif
-
-	return recolorSize;
-}
-
-void GebremedhinManne::detectConflictsParallel(const int i) {
-	for (int v = i; v < this->adj().nV(); v += this->MAX_THREADS_SOLVE) {
-		if (this->col[v] == GebremedhinManne::INVALID_COLOR) {
-			this->mutex.lock();
-			this->recolor.push_back(v);
-			this->mutex.unlock();
-			continue;
+void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int const displacement) {
+	int const nV = this->adj().nV();
+#if defined(COLORING_SYNCHRONOUS) && !defined(SEQUENTIAL_GRAPH_COLOR)
+	int const nVCeil = (nV / displacement + 1) * displacement;
+	for (int v = initial; v < nVCeil; v += displacement) {
+		if (v < nV) {
+			n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
 		}
+		this->barrier->wait();
+	}
+#endif
+#if defined(COLORING_ASYNCHRONOUS) || defined(SEQUENTIAL_GRAPH_COLOR)
+	for (int v = initial; v < nV; v += displacement) {
+		n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+	}
+#endif
 
+#ifdef PARALLEL_GRAPH_COLOR
+	if (initial == 0) {
+#ifdef COMPUTE_ELAPSED_TIME
+		Benchmark& bm = *Benchmark::getInstance();
+		bm.sampleTimeToFlag(1);
+#endif
+	}
+
+	this->barrier->wait();
+	int step;
+	for (int v = initial, step = 0; v < nV; v += displacement, ++step) {
 		auto const end = this->adj().endNeighs(v);
-		for (auto neighIt = this->adj().beginNeighs(v);
-			neighIt != end;	++neighIt) {
-			int w = *neighIt;
-			if (v < w) continue;
-
-			if (this->col[v] == this->col[w]) {
+		for (auto it = this->adj().beginNeighs(v); it != end; ++it) {
+			int w = *it;
+#ifdef COLORING_SYNCHRONOUS
+			if (w / displacement != step) continue;
+#endif
+			if (v < w && this->col[v] == this->col[w]) {
+				this->col[v] = GebremedhinManne::INVALID_COLOR;
 				this->mutex.lock();
 				this->recolor.push_back(v);
 				this->mutex.unlock();
-				break;
 			}
 		}
 	}
+#endif
 
 	return;
-}
-#endif
-
-void GebremedhinManne::sortGraphVerts() {
-#ifdef SORT_LARGEST_DEGREE_FIRST
-	auto sort_lambda = [&](const int v, const int w) { return this->adj().countNeighs(v) > this->adj().countNeighs(w); };
-#endif
-#ifdef SORT_SMALLEST_DEGREE_FIRST
-	auto sort_lambda = [&](const int v, const int w) { return this->adj().countNeighs(v) < this->adj().countNeighs(w); };
-#endif
-#ifdef SORT_VERTEX_ORDER
-	auto sort_lambda = [&](const int v, const int w) { return v < w; };
-#endif
-#ifdef SORT_VERTEX_ORDER_REVERSED
-	auto sort_lambda = [&](const int v, const int w) { return v > w; };
-#endif
-
-#ifdef COMPUTE_ELAPSED_TIME
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-#endif
-
-	std::sort(this->recolor.begin(), this->recolor.end(), sort_lambda);
-
-#ifdef COMPUTE_ELAPSED_TIME
-	bm.sampleTimeToFlag(1);
-#endif
 }
 
 const int GebremedhinManne::solve() {
 	int n_cols = 0;
 
+#ifdef COMPUTE_ELAPSED_TIME
+	Benchmark& bm = *Benchmark::getInstance();
+	bm.sampleTime();
+#endif
+
 #ifdef SEQUENTIAL_GRAPH_COLOR
-	this->sortGraphVerts();
 	n_cols = this->colorGraph(n_cols);
+#ifdef COMPUTE_ELAPSED_TIME
+	bm.sampleTimeToFlag(1);
+#endif
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
-#ifdef PARALLEL_RECOLOR
-	int partial_confs;
-	do {
-		this->sortGraphVerts();
-		n_cols = this->colorGraph(n_cols);
-
-		++this->nIterations;
-
-		partial_confs = this->detectConflicts();
-		this->nConflicts += partial_confs;
-	} while (partial_confs > 0);
-#endif
-#ifdef SEQUENTIAL_RECOLOR
-	this->sortGraphVerts();
 	n_cols = this->colorGraph(n_cols);
 	++this->nIterations;
-	this->nConflicts = this->detectConflicts();
-
-	if (this->nConflicts > 0) {
-		this->sortGraphVerts();
-		int index = 0;
-
+	this->nConflicts += this->recolor.size();
 #ifdef COMPUTE_ELAPSED_TIME
-		Benchmark& bm = *Benchmark::getInstance();
-		bm.sampleTime();
+	bm.sampleTimeToFlag(2);
 #endif
 
-		n_cols = this->colorGraphParallel(n_cols, index);
+	if (this->nConflicts > 0) {
+		int index = 0;
+		n_cols = this->performRecoloring(n_cols);
 
 #ifdef COMPUTE_ELAPSED_TIME
-		bm.sampleTimeToFlag(1);
+		bm.sampleTimeToFlag(3);
 #endif
 		++this->nIterations;
 	}
-#endif
 #endif
 
 	return n_cols;
 }
 
-#ifdef PARALLEL_GRAPH_COLOR
 const int GebremedhinManne::getConflicts() const {
 	return this->nConflicts;
 }
@@ -232,4 +175,3 @@ const int GebremedhinManne::getConflicts() const {
 const int GebremedhinManne::getIterations() const {
 	return this->nIterations;
 }
-#endif

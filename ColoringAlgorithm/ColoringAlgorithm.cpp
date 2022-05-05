@@ -7,35 +7,38 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #else
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	std::cout << "Sequential ";
+#ifdef COLORING:ALGORITHM_GREEDY
+	std::cout << "Greedy ";
+#ifdef SORT_LARGEST_DEGREE_FIRST
+	std::cout << "Largest Degree First ";
+#endif
+#ifdef SORT_SMALLEST_DEGREE_FIRST
+	std::cout << "Smaller Degree First ";
+#endif
+#ifdef SORT_VERTEX_ORDER
+	std::cout << " ";
+#endif
+#ifdef SORT_VERTEX_ORDER_REVERSED
+	std::cout << "Reversed ";
+#endif
+#endif
 #ifdef COLORING_ALGORITHM_JP
 	std::cout << "Jones-Plassmann";
 #endif
 #ifdef COLORING_ALGORITHM_GM
 	std::cout << "Gebremedhin-Manne ";
-#ifdef SORT_LARGEST_DEGREE_FIRST
-	std::cout << "Largest Degree First";
+#ifdef COLORING_SYNCHRONOUS
+	std::cout << "Sync";
 #endif
-#ifdef SORT_SMALLEST_DEGREE_FIRST
-	std::cout << "Smaller Degree First";
-#endif
-#ifdef SORT_VERTEX_ORDER
-	std::cout << "";
-#endif
-#ifdef SORT_VERTEX_ORDER_REVERSED
-	std::cout << "Reversed";
+#ifdef COLORING_ASYNCHRONOUS
+	std::cout << "Async";
 #endif
 #endif
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Parallel ";
-#ifdef COLORING_ALGORITHM_JP
-	std::cout << "Jones-Plassmann";
-#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-	std::cout << " (CUDA)";
-#endif
-#endif
-#ifdef COLORING_ALGORITHM_GM
-	std::cout << "Gebremedhin-Manne ";
+#ifdef COLORING:ALGORITHM_GREEDY
+	std::cout << "Greedy ";
 #ifdef SORT_LARGEST_DEGREE_FIRST
 	std::cout << "Largest Degree First ";
 #endif
@@ -52,7 +55,22 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "with Parallel Recolor";
 #endif
 #ifdef SEQUENTIAL_RECOLOR
-		std::cout << "with Sequential Recolor";
+	std::cout << "with Sequential Recolor";
+#endif
+#endif
+#ifdef COLORING_ALGORITHM_JP
+	std::cout << "Jones-Plassmann";
+#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	std::cout << " (CUDA)";
+#endif
+#endif
+#ifdef COLORING_ALGORITHM_GM
+	std::cout << "Gebremedhin-Manne ";
+#ifdef COLORING_SYNCHRONOUS
+	std::cout << "Sync";
+#endif
+#ifdef COLORING_ASYNCHRONOUS
+	std::cout << "Async";
 #endif
 #endif
 #endif

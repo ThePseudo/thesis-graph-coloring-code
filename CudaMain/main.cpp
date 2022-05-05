@@ -1,6 +1,9 @@
 #include "configuration.h"
 
 #include "ColoringAlgorithm.h"
+#ifdef COLORING_ALGORITHM_GREEDY
+#include "Greedy.h"
+#endif
 #ifdef COLORING_ALGORITHM_GM
 #include "GebremedhinManne.h"
 #endif
@@ -61,7 +64,7 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-#if defined(COLORING_ALGORITHM_GM) && defined(PARALLEL_GRAPH_COLOR)
+#if (defined(COLORING_ALGORITHM_GREEDY) || defined(COLORING_ALGORITHM_GM)) && defined(PARALLEL_GRAPH_COLOR)
 	std::cout << "Solution converged to in " << G.getIterations() << " iterations." << std::endl;
 	std::cout << "Detected a total of " << G.getConflicts() << " conflicts." << std::endl;
 #endif
@@ -75,14 +78,21 @@ int main(int argc, char** argv) {
 	std::cout << std::endl << std::endl;
 	std::cout << "TIME USAGE" << std::endl;
 	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
-#ifdef COLORING_ALGORITHM_JP
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-#endif
-#ifdef COLORING_ALGORITHM_GM
+#ifdef COLORING_ALGORITHM_GREEDY
 	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
+#endif
+#endif
+#ifdef COLORING_ALGORITHM_JP
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+#endif
+#ifdef COLORING_ALGORITHM_GM
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+	std::cout << "Vertex recolor:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 #endif
 #endif
 #ifdef COLORING_ALGORITHM_CUSPARSE
