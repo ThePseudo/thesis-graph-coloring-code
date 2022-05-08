@@ -216,6 +216,11 @@ const int JonesPlassmann::colorWithCuda() {
 
 	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms);
 
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+	return *std::max_element(this->col.begin(), this->col.end()) + 1;
+#endif
+#ifdef COLOR_MAX_INDEPENDENT_SET
 	return this->nIterations;
+#endif
 }
 #endif

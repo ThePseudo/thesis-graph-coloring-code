@@ -61,7 +61,10 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #ifdef COLORING_ALGORITHM_JP
 	std::cout << "Jones-Plassmann";
 #if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-	std::cout << " (CUDA)";
+	std::cout << " (CUDA) ";
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+	std::cout << "Min-Max Independent Sets";
+#endif
 #endif
 #endif
 #ifdef COLORING_ALGORITHM_GM

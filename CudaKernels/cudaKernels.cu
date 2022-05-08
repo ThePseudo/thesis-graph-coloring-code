@@ -25,7 +25,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	unsigned int* dSet;
 	Benchmark& bm = *Benchmark::getInstance();
 
-	err = cudaMalloc(&dAo, (n+1) * sizeof(*dAo));
+	err = cudaMalloc(&dAo, (n + 1) * sizeof(*dAo));
 	if (err != cudaSuccess) {
 		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
@@ -51,7 +51,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		goto Error;
 	}
 
-	err = cudaMemcpy(dAo, Ao, (n+1) * sizeof(*Ao), cudaMemcpyHostToDevice);
+	err = cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice);
 	if (err != cudaSuccess) {
 		std::cout << "Error5: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
@@ -122,7 +122,12 @@ __global__ void create_independent_set_kernel(int n, const int* Ao, const int* A
 
 		// ignore nodes colored earlier
 		if (colors[i] != -1) continue;
-		set[i] = 0x1;
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+		set[i] = 0;
+#endif
+#ifdef COLOR_MAX_INDEPENDENT_SET
+		set[i] = 1;
+#endif
 		int ir = randoms[i];
 
 		// look at neighbors to check their random number
@@ -132,8 +137,19 @@ __global__ void create_independent_set_kernel(int n, const int* Ao, const int* A
 			int jc = colors[j];
 			if ((jc != -1) || (i == j)) continue;
 			int jr = randoms[j];
-			if (ir <= jr) set[i] = 0x0;
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+			if (set[i] == 0 && ir <= jr) set[i] = 1;
+			else if (set[i] == 0 && ir > jr) set[i] = 2;
+			else if (set[i] == 1 && ir > jr) set[i] = 3;
+			else if (set[i] == 2 && ir <= jr) set[i] = 3;
+#endif
+#ifdef COLOR_MAX_INDEPENDENT_SET
+			if (ir <= jr) set[i] = 0;
+#endif
 		}
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+		if (set[i] == 0) set[i] = 1;
+#endif
 		// assign color if you have the maximum random number
 		//if (f) colors[i] = c;
 	}
@@ -157,8 +173,8 @@ __global__ void expand_to_maximal_independent_set_kernel(int n, const int* Ao, c
 			// cannot be part of MIS if neighbor is in initial set
 			//  or if neighboring vertex with higher degree is trying to enter the MIS
 			if (set[j] == 0x1 ||
-				(set[j] == 0x2 && Ao[i+1] - Ao[i] <= Ao[j+1] - Ao[j])
-			)
+				(set[j] == 0x2 && Ao[i + 1] - Ao[i] <= Ao[j + 1] - Ao[j])
+				)
 				set[i] = 0x0;
 		}
 
@@ -171,9 +187,14 @@ __global__ void color_jpl_kernel(int n, int c, int* colors, const unsigned int* 
 		i < n;
 		i += blockDim.x * gridDim.x)
 	{
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+		if (colors[i] != -1 || set[i] == 0 || set[i] == 3) continue;
+		colors[i] = 2 * c + set[i] - 1;
+#endif
+#ifdef COLOR_MAX_INDEPENDENT_SET
 		if (colors[i] != -1) continue;
-
-		if(set[i] != 0x0) colors[i] = c;
+		if(set[i] != 0) colors[i] = c;
+#endif
 	}
 }
 
@@ -225,7 +246,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	if (err != cudaSuccess) {
 		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
 		goto Error;
-	}	
+	}
 
 	int c;
 	float fractionToColor = 1.0;
