@@ -20,8 +20,8 @@
 ///////////////////////////////////// COLORING ALGORITHM
 ////////////////////////////////////////////////////////
 
-#define COLORING_ALGORITHM_GREEDY
-//#define COLORING_ALGORITHM_JP
+//#define COLORING_ALGORITHM_GREEDY
+#define COLORING_ALGORITHM_JP
 //#define COLORING_ALGORITHM_GM
 //#define COLORING_ALGORITHM_CUSPARSE
 
@@ -47,14 +47,14 @@
 //#define PARTITION_VERTICES_EQUALLY
 #define PARTITION_VERTICES_BY_EDGE_NUM
 
-#define USE_CUDA_ALGORITHM
+//#define USE_CUDA_ALGORITHM
 
 ////////////////////////////////////////////////////////
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS
 ////////////////////////////////////////////////////////
 
-//#define COLORING_SYNCHRONOUS
-#define COLORING_ASYNCHRONOUS
+#define COLORING_SYNCHRONOUS
+//#define COLORING_ASYNCHRONOUS
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////

@@ -77,30 +77,38 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		goto Error;
 	}
 
-	bm.sampleTime();
+	bm.sampleTimeToFlag(2);
 
 	int c;
 	int left;
+	int const nt = 256;
+	int nb = std::min((n + nt - 1) / nt, CUDA_MAX_BLOCKS);
 	for (c = 0, left = n; left > 0 && c < n; ++c) {
-		int nt = 256;
-		int nb = std::min((n + nt - 1) / nt, CUDA_MAX_BLOCKS);
+		bm.sampleTimeToFlag(4);
+
 		create_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dRandoms, dColors, dSet);
 		//expand_to_maximal_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dColors, dSet);
 		color_jpl_kernel<<<nb, nt>>>(n, c, dColors, dSet);
+
+		cudaDeviceSynchronize();
+		bm.sampleTimeToFlag(1);
+
 		err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
 		if (err != cudaSuccess) {
 			std::cout << "Error9: " << cudaGetErrorString(err) << std::endl;
 			goto Error;
 		}
+		bm.sampleTimeToFlag(3);
+
 		left = (int)thrust::count(colors, colors + n, -1);
 	}
 
 Error:
-	bm.sampleTimeToFlag(1);
 	cudaFree(dAo);
 	cudaFree(dAc);
 	cudaFree(dRandoms);
 	cudaFree(dColors);
+	cudaFree(dSet);
 
 	return err == cudaSuccess ? c : -1;
 }

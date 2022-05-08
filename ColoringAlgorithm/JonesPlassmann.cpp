@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iterator>
 #include <random>
-#include <set>
 
 JonesPlassmann::JonesPlassmann(std::string const filepath) {
 	Benchmark& bm = *Benchmark::getInstance();
@@ -57,6 +56,9 @@ const int JonesPlassmann::startColoring() {
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.clear(1);
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	bm.clear(2);
+	bm.clear(3);
+	bm.clear(4);
 	return this->colorWithCuda();
 #else
 	return this->solve();
@@ -209,8 +211,8 @@ const int JonesPlassmann::colorWithCuda() {
 	int* colors = this->col.data();
 	const int* randoms = this->vWeights.data();
 
-	size_t total_size = (n + 1) * sizeof(*Ao) + Ao[n] * sizeof(Ac) + n * sizeof(*colors) + n * sizeof(*randoms);
-	std::cout << "Transfering " << total_size << " bytes to GPU memory." << std::endl;
+	//size_t total_size = (n + 1) * sizeof(*Ao) + Ao[n] * sizeof(Ac) + n * sizeof(*colors) + n * sizeof(*randoms);
+	//std::cout << "Transfering " << total_size << " bytes to GPU memory." << std::endl;	
 
 	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms);
 
