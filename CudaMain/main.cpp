@@ -87,10 +87,10 @@ int main(int argc, char** argv) {
 	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #endif
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-#endif
 #if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
 	std::cout << "Count left:\t\t" << bm.getTimeOfFlag(4) << " s" << std::endl;
+#endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
