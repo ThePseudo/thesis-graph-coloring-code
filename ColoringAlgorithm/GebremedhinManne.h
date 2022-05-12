@@ -20,12 +20,15 @@ private:
 	int nConflicts;
 	int nIterations;
 
+	std::vector<std::vector<int>> colorClasses;
+
 
 	int colorGraph(int n_cols);
 
 	int performRecoloring(int n_cols);
 
 	void partitionBasedColoring(int n_cols, int const initial, int const displacement);
+	void improvedPartitionBasedColoring(int n_cols, int const initial, int const displacement);
 
 	const int solve();
 public:

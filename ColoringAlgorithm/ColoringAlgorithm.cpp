@@ -26,6 +26,9 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "Jones-Plassmann";
 #endif
 #ifdef COLORING_ALGORITHM_GM
+#ifdef USE_IMPROVED_ALGORITHM
+	std::cout << "Improved ";
+#endif
 	std::cout << "Gebremedhin-Manne ";
 #ifdef COLORING_SYNCHRONOUS
 	std::cout << "Sync";
@@ -68,6 +71,9 @@ void ColoringAlgorithm::printColorAlgorithmConfs() {
 #endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
+#ifdef USE_IMPROVED_ALGORITHM
+	std::cout << "Improved ";
+#endif
 	std::cout << "Gebremedhin-Manne ";
 #ifdef COLORING_SYNCHRONOUS
 	std::cout << "Sync";
@@ -93,8 +99,7 @@ const std::vector<int> ColoringAlgorithm::getColors() const {
 const int ColoringAlgorithm::computeVertexColor(int const v, int const n_cols, int* targetCol) const {
 	int colorsNum = n_cols;
 	auto neighIt = this->adj().beginNeighs(v);
-	auto forbidden = std::vector<bool>(colorsNum);
-	std::fill(forbidden.begin(), forbidden.end(), false);
+	auto forbidden = std::vector<bool>(colorsNum, false);
 	auto const end = this->adj().endNeighs(v);
 	while (neighIt != end) {
 		int w = *neighIt;

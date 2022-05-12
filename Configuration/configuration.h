@@ -21,8 +21,8 @@
 ////////////////////////////////////////////////////////
 
 //#define COLORING_ALGORITHM_GREEDY
-#define COLORING_ALGORITHM_JP
-//#define COLORING_ALGORITHM_GM
+//#define COLORING_ALGORITHM_JP
+#define COLORING_ALGORITHM_GM
 //#define COLORING_ALGORITHM_CUSPARSE
 
 #define PARALLEL_GRAPH_COLOR
@@ -47,7 +47,7 @@
 //#define PARTITION_VERTICES_EQUALLY
 #define PARTITION_VERTICES_BY_EDGE_NUM
 
-#define USE_CUDA_ALGORITHM
+//#define USE_CUDA_ALGORITHM
 
 //#define COLOR_MAX_INDEPENDENT_SET
 #define COLOR_MIN_MAX_INDEPENDENT_SET
@@ -56,8 +56,11 @@
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS
 ////////////////////////////////////////////////////////
 
-#define COLORING_SYNCHRONOUS
-//#define COLORING_ASYNCHRONOUS
+//#define COLORING_SYNCHRONOUS
+#define COLORING_ASYNCHRONOUS
+
+//#define USE_STANDARD_ALGORITHM
+#define USE_IMPROVED_ALGORITHM
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -166,6 +169,14 @@
 
 #ifdef COLORING_ASYNCHRONOUS
 #undef COLORING_SYNCHRONOUS
+#endif
+
+#ifdef USE_STANDARD_ALGORITHM
+#undef USE_IMPROVED_ALGORITHM
+#endif
+
+#ifdef USE_IMPROVED_ALGORITHM
+#undef USE_STANDARD_ALGORITHM
 #endif
 
 #ifdef PARALLEL_RECOLOR

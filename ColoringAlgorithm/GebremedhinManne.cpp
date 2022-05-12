@@ -28,8 +28,11 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 	this->nConflicts = 0;
 	this->nIterations = 0;
 
-	
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
+
+#ifdef USE_IMPROVED_ALGORITHM
+	this->colorClasses = std::vector<std::vector<int>>(this->adj().nV(), std::vector<int>());
+#endif
 }
 
 const int GebremedhinManne::startColoring() {
@@ -50,7 +53,12 @@ int GebremedhinManne::colorGraph(int n_cols) {
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
+#ifdef USE_STANDARD_ALGORITHM
 		threadPool.emplace_back([=] { this->partitionBasedColoring(n_cols, i, this->MAX_THREADS_SOLVE); });
+#endif
+#ifdef USE_IMPROVED_ALGORITHM
+		threadPool.emplace_back([=] { this->improvedPartitionBasedColoring(n_cols, i, this->MAX_THREADS_SOLVE); });
+#endif
 	}
 
 	for (auto& t : threadPool) {
@@ -58,7 +66,12 @@ int GebremedhinManne::colorGraph(int n_cols) {
 	}
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
+#ifdef USE_STANDARD_ALGORITHM
 	this->partitionBasedColoring(n_cols, 0, 1);
+#endif
+#ifdef USE_IMPROVED_ALGORITHM
+	this->improvedPartitionBasedColoring(n_cols, 0, 1);
+#endif
 #endif
 
 	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
@@ -80,7 +93,10 @@ int GebremedhinManne::performRecoloring(int n_cols) {
 
 void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int const displacement) {
 	int const nV = this->adj().nV();
+	// Phase 1
 #if defined(COLORING_SYNCHRONOUS) && !defined(SEQUENTIAL_GRAPH_COLOR)
+	// The upper bound of the loop must be the minimun multiple of displacement greater than nV
+	//  to account for the wait on the barrier.
 	int const nVCeil = (nV / displacement + 1) * displacement;
 	for (int v = initial; v < nVCeil; v += displacement) {
 		if (v < nV) {
@@ -103,6 +119,7 @@ void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int
 
 	this->barrier->wait();
 	int step;
+	// Phase 2
 	for (int v = initial, step = 0; v < nV; v += displacement, ++step) {
 		auto const end = this->adj().endNeighs(v);
 		for (auto it = this->adj().beginNeighs(v); it != end; ++it) {
@@ -110,6 +127,80 @@ void GebremedhinManne::partitionBasedColoring(int n_cols, int const initial, int
 #ifdef COLORING_SYNCHRONOUS
 			if (w / displacement != step) continue;
 #endif
+			if (v < w && this->col[v] == this->col[w]) {
+				this->col[v] = GebremedhinManne::INVALID_COLOR;
+				this->mutex.lock();
+				this->recolor.push_back(v);
+				this->mutex.unlock();
+			}
+		}
+	}
+#endif
+
+	return;
+}
+
+void GebremedhinManne::improvedPartitionBasedColoring(int n_cols, int const initial, int const displacement) {
+	int const nV = this->adj().nV();
+	// Phase 1
+#if defined(COLORING_SYNCHRONOUS) && !defined(SEQUENTIAL_GRAPH_COLOR)
+	// The upper bound of the loop must be the minimun multiple of displacement greater than nV
+	//  to account for the wait on the barrier.
+	int const nVCeil = (nV / displacement + 1) * displacement;
+	for (int v = initial; v < nVCeil; v += displacement) {
+		if (v < nV) {
+			n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+			this->mutex.lock();
+			this->colorClasses[this->col[v]].push_back(v);
+			this->mutex.unlock();
+		}
+		this->barrier->wait();
+	}
+#endif
+#if defined(COLORING_ASYNCHRONOUS) || defined(SEQUENTIAL_GRAPH_COLOR)
+	for (int v = initial; v < nV; v += displacement) {
+		n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+		this->mutex.lock();
+		this->colorClasses[this->col[v]].push_back(v);
+		this->mutex.unlock();
+	}
+#endif
+
+	// Uncolor all nodes
+	this->barrier->wait();
+	for (int v = initial; v < nV; v += displacement) {
+		this->col[v] = GebremedhinManne::INVALID_COLOR;
+	}
+
+	this->barrier->wait();
+	// Phase 2
+	for (int k = this->colorClasses.size() - 1; k >= 0; --k) {
+		// Uncolor color class nodes
+		//for (int vIdx = initial; vIdx < this->colorClasses[k].size(); vIdx += displacement) {
+		//	int v = this->colorClasses[k][vIdx];
+		//	this->col[v] = GebremedhinManne::INVALID_COLOR;
+		//}
+		//this->barrier->wait();
+		for (int vIdx = initial; vIdx < this->colorClasses[k].size(); vIdx += displacement) {
+			int v = this->colorClasses[k][vIdx];
+			n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+		}
+
+		// Synchronize thread for every color class
+		//this->barrier->wait();
+	}
+#ifdef PARALLEL_GRAPH_COLOR
+	if (initial == 0) {
+		Benchmark& bm = *Benchmark::getInstance();
+		bm.sampleTimeToFlag(1);
+	}
+
+	this->barrier->wait();
+	// Phase 3
+	for (int v = initial; v < nV; v += displacement) {
+		auto const end = this->adj().endNeighs(v);
+		for (auto it = this->adj().beginNeighs(v); it != end; ++it) {
+			int w = *it;
 			if (v < w && this->col[v] == this->col[w]) {
 				this->col[v] = GebremedhinManne::INVALID_COLOR;
 				this->mutex.lock();
@@ -141,6 +232,7 @@ const int GebremedhinManne::solve() {
 
 	if (this->nConflicts > 0) {
 		int index = 0;
+		// Phase 3
 		n_cols = this->performRecoloring(n_cols);
 		bm.sampleTimeToFlag(3);
 		++this->nIterations;
