@@ -16,6 +16,12 @@ CompressedSparseRow::CompressedSparseRow(const CompressedSparseRow& to_copy) {
 	this->row_ptrs = new int[static_cast<size_t>(this->rows) + 1];
 
 	std::memcpy(this->row_ptrs, to_copy.row_ptrs, (static_cast<size_t>(this->rows) + 1) * sizeof(*this->row_ptrs));
+
+	this->_nV = to_copy._nV;
+	this->_nE = to_copy._nE;
+	this->_maxD = to_copy._maxD;
+	this->_minD = to_copy._minD;
+	this->_avgD = to_copy._avgD;
 }
 
 CompressedSparseRow::CompressedSparseRow(int n_rows, int n_cols) {
@@ -44,6 +50,12 @@ void CompressedSparseRow::init(int n_rows, int n_cols) {
 	this->row_ptrs = new int[static_cast<size_t>(this->rows) + 1];
 
 	std::fill(this->row_ptrs, this->row_ptrs + this->rows, 0);
+
+	this->_nV = n_rows;
+	this->_nE = 0;
+	this->_maxD = 0;
+	this->_minD = INT_MAX;
+	this->_avgD = 0.0;
 }
 
 std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
@@ -80,7 +92,7 @@ std::istream& operator>>(std::istream& is, CompressedSparseRow& m) {
 	return is;
 }
 
-const bool CompressedSparseRow::get(int row_idx, int col_idx) const {
+bool CompressedSparseRow::get(int row_idx, int col_idx) const {
 	if (0 > row_idx || row_idx >= this->rows) {
 		throw std::out_of_range("row index out of range: " + row_idx);
 	}
@@ -104,7 +116,7 @@ const bool CompressedSparseRow::get(int row_idx, int col_idx) const {
 
 template<typename Iterator>
 void CompressedSparseRow::populateRow(int row_idx, Iterator begin, const Iterator end) {
-	static size_t expected_row = 0;
+	static int expected_row = 0;
 
 	if (row_idx != expected_row) {
 		throw std::invalid_argument("Expected row_idx = " + std::to_string(expected_row) + " but got " + std::to_string(row_idx));
@@ -115,6 +127,13 @@ void CompressedSparseRow::populateRow(int row_idx, Iterator begin, const Iterato
 
 	int curr_row_ptr = this->row_ptrs[row_idx];
 	int* next_row_ptrs_ptr = &this->row_ptrs[row_idx + 1];
+
+	this->_nE += end - begin;
+	this->_maxD = std::max(this->_maxD, static_cast<int>(end - begin));
+	this->_minD = std::min(this->_minD, static_cast<int>(end - begin));
+	if (expected_row == this->rows - 1) {
+		this->_avgD = static_cast<float>(this->nE()) / this->nV();
+	}
 
 	*next_row_ptrs_ptr = curr_row_ptr;
 	while (begin != end) {
@@ -141,12 +160,4 @@ const ::std::vector<int>::const_iterator CompressedSparseRow::endNeighs(int row_
 	}
 
 	return this->col_idxs.begin() + this->row_ptrs[row_idx + 1];
-}
-
-const size_t CompressedSparseRow::nE() const {
-	return this->row_ptrs[this->rows];
-}
-
-const int CompressedSparseRow::nV() const {
-	return this->rows;
 }

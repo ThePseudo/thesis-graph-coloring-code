@@ -35,9 +35,7 @@ public:
 
 	friend std::istream& operator>>(std::istream& is, CompressedSparseRow& m);
 
-	const size_t nE() const override;
-	const int nV() const override;
-	const bool get(int row, int col) const override;
+	bool get(int row, int col) const override;
 
 	const ::std::vector<int>::const_iterator beginNeighs(int row_idx) const override;
 	const ::std::vector<int>::const_iterator endNeighs(int row_idx) const override;

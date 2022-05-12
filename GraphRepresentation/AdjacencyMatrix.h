@@ -15,8 +15,6 @@
 class AdjacencyMatrix : public GraphRepresentation {
 private:
 	std::vector<std::vector<int>> adj;
-	int _nV;
-	size_t _nE;
 
 	bool parseInput(std::istream&);
 #ifdef PARALLEL_INPUT_LOAD
@@ -44,11 +42,7 @@ public:
 
 	friend std::istream& operator>>(std::istream& is, AdjacencyMatrix& m);
 
-	const size_t nE() const override;
-	const int nV() const override;
-	const bool get(int v, int w) const override;
-
-	const int countNeighs(int v) const { __super::countNeighs(v); };
+	bool get(int v, int w) const override;
 
 	const ::std::vector<int>::const_iterator beginNeighs(int v) const override;
 	const ::std::vector<int>::const_iterator endNeighs(int v) const override;

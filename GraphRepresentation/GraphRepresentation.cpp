@@ -1,6 +1,26 @@
 #include "GraphRepresentation.h"
 
-const int GraphRepresentation::countNeighs(int v) const {
+int GraphRepresentation::nV() const {
+	return _nV;
+}
+
+size_t GraphRepresentation::nE() const {
+	return _nE;
+}
+
+int GraphRepresentation::maxD() const {
+	return _maxD;
+}
+
+int GraphRepresentation::minD() const {
+	return _minD;
+}
+
+float GraphRepresentation::avgD() const {
+	return _avgD;
+}
+
+int GraphRepresentation::countNeighs(int v) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -20,5 +40,6 @@ void GraphRepresentation::printGraphRepresentationConfs() {
 }
 
 void GraphRepresentation::printGraphInfo() const {
-	std::cout << "V: " << this->nV() << ", E: " << this->nE() << std::endl;
+	std::cout << "V: " << this->nV() << ", E: " << this->nE() //<< std::endl
+		<< ", maxD: " << this->maxD() << ", minD: " << this->minD() << ", avgD: " << this->avgD() << std::endl;
 }

@@ -16,6 +16,9 @@ AdjacencyMatrix::AdjacencyMatrix(int nV) {
 	this->adj.reserve(nV);
 	this->_nV = 0;
 	this->_nE = 0;
+	this->_maxD = 0;
+	this->_minD = 0;
+	this->_avgD = 0.0;
 }
 
 AdjacencyMatrix::AdjacencyMatrix(const AdjacencyMatrix& to_copy) {
@@ -24,26 +27,21 @@ AdjacencyMatrix::AdjacencyMatrix(const AdjacencyMatrix& to_copy) {
 	}
 	this->adj.clear();
 	this->adj.reserve(to_copy._nV);
-	for (unsigned int i = 0; i < to_copy._nV; ++i) {
+	for (int i = 0; i < to_copy._nV; ++i) {
 		auto& v = this->adj[i];
 		auto& w = to_copy.adj[i];
 		v.assign(w.begin(), w.end());
 	}
 	this->_nV = to_copy._nV;
 	this->_nE = to_copy._nE;
+	this->_maxD = to_copy._maxD;
+	this->_minD = to_copy._minD;
+	this->_avgD = to_copy._avgD;
 }
 
 AdjacencyMatrix::~AdjacencyMatrix() { }
 
-const size_t AdjacencyMatrix::nE() const {
-	return this->_nE;
-}
-
-const int AdjacencyMatrix::nV() const {
-	return this->_nV;
-}
-
-const bool AdjacencyMatrix::get(int v, int w) const {
+bool AdjacencyMatrix::get(int v, int w) const {
 	if (0 > v || v >= this->nV()) {
 		throw std::out_of_range("v index out of range: " + v);
 	}
@@ -110,6 +108,8 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 	this->adj.resize(head.nV);
 	this->_nV = 0;
 	this->_nE = 0;
+	this->_maxD = 0;
+	this->_minD = INT_MAX;
 	// G.col.resize(head.nV);
 	// G.recolor.resize(head.nV);
 
@@ -118,9 +118,9 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 
 #ifdef PARALLEL_INPUT_LOAD
 	std::vector<std::thread> threadPool;
-	unsigned int nThreads = MAX_THREADS_LOAD;
+	int nThreads = MAX_THREADS_LOAD;
 
-	nThreads = std::min(head.nV, static_cast<size_t>(nThreads));
+	nThreads = std::min(head.nV, nThreads);
 
 	std::mutex m;
 	for (int i = 0; i < nThreads; ++i) {
@@ -179,8 +179,12 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 			//G.adj[w].push_back(v);
 		}
 		this->_nE += vert.adj.size();
+		this->_maxD = std::max(this->_maxD, static_cast<int>(vert.adj.size()));
+		this->_minD = std::min(this->_minD, static_cast<int>(vert.adj.size()));
 	}
 #endif
+
+	this->_avgD = static_cast<float>(this->nE()) / this->nV();
 
 	bm.sampleTimeToFlag(0);
 
@@ -210,6 +214,8 @@ void AdjacencyMatrix::parseInputParallel(std::istream& file, std::mutex& mutex) 
 		mutex.lock();
 		++this->_nV;
 		this->_nE += vert.adj.size();
+		this->_maxD = std::max(this->_maxD, static_cast<int>(vert.adj.size()));
+		this->_minD = std::min(this->_minD, static_cast<int>(vert.adj.size()));
 		mutex.unlock();
 	}
 
@@ -274,6 +280,8 @@ void AdjacencyMatrix::parseInputParallel(std::string& fileContents, std::mutex& 
 		mutex.lock();
 		++this->_nV;
 		this->_nE += vert.adj.size();
+		this->_maxD = std::max(this->_maxD, static_cast<int>(vert.adj.size()));
+		this->_minD = std::min(this->_minD, static_cast<int>(vert.adj.size()));
 		mutex.unlock();
 
 		start = lineEnd + 1;
