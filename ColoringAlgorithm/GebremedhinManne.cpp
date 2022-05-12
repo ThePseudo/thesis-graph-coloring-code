@@ -22,8 +22,11 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 
 	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
 	this->col = std::vector<int>(this->adj().nV(), GebremedhinManne::INVALID_COLOR);
-	int const maxConflicts = this->adj().nE() / this->adj().nV() * (this->MAX_THREADS_SOLVE - 1) / 2;
-	this->recolor = std::vector<int>(maxConflicts);
+	
+	// Pre-allocate vector to avoid reallocation at runtime
+	// Size is given by Lemma 1 of Gebremedhin-Manne paper.
+	int const maxConflicts = this->adj().avgD() * (this->MAX_THREADS_SOLVE - 1) / 2 * this->adj().nV() / (this->adj().nV() - 1);
+	this->recolor.reserve(maxConflicts);
 
 	this->nConflicts = 0;
 	this->nIterations = 0;
@@ -31,7 +34,7 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 
 #ifdef USE_IMPROVED_ALGORITHM
-	this->colorClasses = std::vector<std::vector<int>>(this->adj().nV(), std::vector<int>());
+	this->colorClasses = std::unordered_map<int, std::vector<int>>();
 #endif
 }
 
@@ -181,8 +184,8 @@ void GebremedhinManne::improvedPartitionBasedColoring(int n_cols, int const init
 		//	this->col[v] = GebremedhinManne::INVALID_COLOR;
 		//}
 		//this->barrier->wait();
-		for (int vIdx = initial; vIdx < this->colorClasses[k].size(); vIdx += displacement) {
-			int v = this->colorClasses[k][vIdx];
+		for (int vIdx = initial; vIdx < this->colorClasses.at(k).size(); vIdx += displacement) {
+			int v = this->colorClasses.at(k)[vIdx];
 			n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
 		}
 

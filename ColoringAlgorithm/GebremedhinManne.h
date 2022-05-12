@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <thread>
+#include <unordered_map>
 #include <mutex>
 #include "Barrier.h"
 
@@ -20,7 +21,7 @@ private:
 	int nConflicts;
 	int nIterations;
 
-	std::vector<std::vector<int>> colorClasses;
+	std::unordered_map<int, std::vector<int>> colorClasses;
 
 
 	int colorGraph(int n_cols);
