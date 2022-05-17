@@ -153,29 +153,43 @@ void GebremedhinManne::improvedPartitionBasedColoring(int n_cols, int const init
 	for (int v = initial; v < nVCeil; v += displacement) {
 		if (v < nV) {
 			n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+#ifdef PARALLEL_GRAPH_COLOR
 			this->mutex.lock();
+#endif
 			this->colorClasses[this->col[v]].push_back(v);
+#ifdef PARALLEL_GRAPH_COLOR
 			this->mutex.unlock();
+#endif
 		}
+#ifdef PARALLEL_GRAPH_COLOR
 		this->barrier->wait();
+#endif
 	}
 #endif
 #if defined(COLORING_ASYNCHRONOUS) || defined(SEQUENTIAL_GRAPH_COLOR)
 	for (int v = initial; v < nV; v += displacement) {
 		n_cols = this->computeVertexColor(v, n_cols, &this->col[v]);
+#ifdef PARALLEL_GRAPH_COLOR
 		this->mutex.lock();
+#endif
 		this->colorClasses[this->col[v]].push_back(v);
+#ifdef PARALLEL_GRAPH_COLOR
 		this->mutex.unlock();
+#endif
 	}
 #endif
 
 	// Uncolor all nodes
+#ifdef PARALLEL_GRAPH_COLOR
 	this->barrier->wait();
+#endif
 	for (int v = initial; v < nV; v += displacement) {
 		this->col[v] = GebremedhinManne::INVALID_COLOR;
 	}
 
+#ifdef PARALLEL_GRAPH_COLOR
 	this->barrier->wait();
+#endif
 	// Phase 2
 	for (int k = this->colorClasses.size() - 1; k >= 0; --k) {
 		// Uncolor color class nodes
@@ -225,7 +239,6 @@ const int GebremedhinManne::solve() {
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	n_cols = this->colorGraph(n_cols);
-	bm.sampleTimeToFlag(1);
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
 	n_cols = this->colorGraph(n_cols);

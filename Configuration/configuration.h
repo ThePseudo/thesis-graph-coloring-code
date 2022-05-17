@@ -22,11 +22,11 @@
 
 //#define COLORING_ALGORITHM_GREEDY
 //#define COLORING_ALGORITHM_JP
-#define COLORING_ALGORITHM_GM
-//#define COLORING_ALGORITHM_CUSPARSE
+//#define COLORING_ALGORITHM_GM
+#define COLORING_ALGORITHM_CUSPARSE
 
-#define PARALLEL_GRAPH_COLOR
-//#define SEQUENTIAL_GRAPH_COLOR
+//#define PARALLEL_GRAPH_COLOR
+#define SEQUENTIAL_GRAPH_COLOR
 
 ////////////////////////////////////////////////////////
 ///////////////////////////////////////// GREEDY OPTIONS
@@ -56,8 +56,8 @@
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS
 ////////////////////////////////////////////////////////
 
-//#define COLORING_SYNCHRONOUS
-#define COLORING_ASYNCHRONOUS
+#define COLORING_SYNCHRONOUS
+//#define COLORING_ASYNCHRONOUS
 
 //#define USE_STANDARD_ALGORITHM
 #define USE_IMPROVED_ALGORITHM
@@ -134,7 +134,7 @@
 #endif
 
 #ifdef COLORING_ALGORITHM_CUSPARSE
-#indef COLORING_ALGORITHM_GREEDY
+#undef COLORING_ALGORITHM_GREEDY
 #undef COLORING_ALGORITHM_JP
 #undef COLORING_ALGORITHM_GM
 #endif

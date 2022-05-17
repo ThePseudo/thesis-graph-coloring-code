@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 #endif
 #endif
 #ifdef COLORING_ALGORITHM_GM
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #ifdef PARALLEL_GRAPH_COLOR
 	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 	std::cout << "Vertex recolor:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
