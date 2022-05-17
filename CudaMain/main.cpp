@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
 	std::cout << "Graph succesfully loaded from file." << std::endl;
 	G.adj().printGraphInfo();
-#if defined(PARALLEL_GRAPH_COLOR) && !defined(USE_CUDA_ALGORITHM)
+#if defined(PARALLEL_GRAPH_COLOR) && !defined(USE_CUDA_ALGORITHM) && !defined(COLORING_ALGORITHM_CUSPARSE)
 	std::cout << "Performing computation using " << G.MAX_THREADS_SOLVE << " threads." << std::endl;
 #endif
 
@@ -104,13 +104,9 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-#if (defined(COLORING_ALGORITHM_GREEDY) || defined(COLORING_ALGORITHM_GM)) && defined(PARALLEL_GRAPH_COLOR)
-	std::cout << "Solution converged to in " << G.getIterations() << " iterations." << std::endl;
-	std::cout << "Detected a total of " << G.getConflicts() << " conflicts." << std::endl;
-#endif
-#ifdef COLORING_ALGORITHM_JP
-	std::cout << "Solution converged to in " << G.getIterations() << " iterations." << std::endl;
-#endif
+	std::cout << std::endl;
+
+	G.printExecutionInfo();
 	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
 	
 	std::cout << std::endl;
@@ -118,7 +114,6 @@ int main(int argc, char** argv) {
 	G.printBenchmarkInfo();
 
 	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
-
 	if (!incorrectPairs.empty()) {
 		std::cout << "There was an error while assigning colors. Two or more adjacent verteces have the same color." << std::endl;
 		for (auto& p : incorrectPairs) {
@@ -129,7 +124,6 @@ int main(int argc, char** argv) {
 	}
 
 	if(print_colors)	G.printColors(std::cout);
-
 	//G.printDotFile(std::ofstream("output.txt"));
 
 	return 0;

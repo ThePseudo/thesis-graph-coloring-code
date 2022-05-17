@@ -266,6 +266,15 @@ const int GebremedhinManne::getIterations() const {
 	return this->nIterations;
 }
 
+void GebremedhinManne::printExecutionInfo() const {
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Solution converged to in " << this->getIterations() << " iterations." << std::endl;
+	std::cout << "Detected a total of " << this->getConflicts() << " conflicts." << std::endl;
+#endif
+
+	return;
+}
+
 void GebremedhinManne::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 

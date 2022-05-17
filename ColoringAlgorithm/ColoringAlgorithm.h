@@ -28,6 +28,7 @@ public:
 
 	std::vector<std::pair<int, int>> checkCorrectColoring();
 
+	virtual void printExecutionInfo() const = 0;
 	virtual void printBenchmarkInfo() const;
 
 	void printColors(std::ostream& os) const;

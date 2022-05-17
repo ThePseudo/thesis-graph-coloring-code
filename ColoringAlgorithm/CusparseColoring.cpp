@@ -42,6 +42,10 @@ const int CusparseColoring::startColoring() {
 #endif
 }
 
+void CusparseColoring::printExecutionInfo() const {
+	return;
+}
+
 void CusparseColoring::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 

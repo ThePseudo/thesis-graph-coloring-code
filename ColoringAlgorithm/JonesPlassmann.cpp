@@ -225,6 +225,10 @@ const int JonesPlassmann::colorWithCuda() {
 }
 #endif
 
+void JonesPlassmann::printExecutionInfo() const {
+	std::cout << "Solution converged to in " << this->getIterations() << " iterations." << std::endl;
+}
+
 void JonesPlassmann::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 

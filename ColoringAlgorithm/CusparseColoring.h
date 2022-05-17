@@ -10,6 +10,8 @@ private:
 public:
 	CusparseColoring(std::string const filepath);
 	const int startColoring() override;
+
+	void printExecutionInfo() const override;
 	void printBenchmarkInfo() const override;
 };
 
