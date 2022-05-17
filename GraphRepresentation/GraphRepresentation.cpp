@@ -1,4 +1,5 @@
 #include "GraphRepresentation.h"
+#include "benchmark.h"
 
 int GraphRepresentation::nV() const {
 	return _nV;
@@ -42,4 +43,9 @@ void GraphRepresentation::printGraphRepresentationConfs() {
 void GraphRepresentation::printGraphInfo() const {
 	std::cout << "V: " << this->nV() << ", E: " << this->nE() //<< std::endl
 		<< ", maxD: " << this->maxD() << ", minD: " << this->minD() << ", avgD: " << this->avgD() << std::endl;
+}
+
+void GraphRepresentation::printBenchmarkInfo() const {
+	Benchmark& bm = *Benchmark::getInstance();
+	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
 }

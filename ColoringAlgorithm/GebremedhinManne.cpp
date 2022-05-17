@@ -25,7 +25,7 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 	
 	// Pre-allocate vector to avoid reallocation at runtime
 	// Size is given by Lemma 1 of Gebremedhin-Manne paper.
-	int const maxConflicts = this->adj().avgD() * (this->MAX_THREADS_SOLVE - 1) / 2 * this->adj().nV() / (this->adj().nV() - 1);
+	int const maxConflicts = 1.0f * this->adj().avgD() * (this->MAX_THREADS_SOLVE - 1) / 2 * this->adj().nV() / (this->adj().nV() - 1);
 	this->recolor.reserve(maxConflicts);
 
 	this->nConflicts = 0;
@@ -264,4 +264,17 @@ const int GebremedhinManne::getConflicts() const {
 
 const int GebremedhinManne::getIterations() const {
 	return this->nIterations;
+}
+
+void GebremedhinManne::printBenchmarkInfo() const {
+	__super::printBenchmarkInfo();
+
+	Benchmark& bm = *Benchmark::getInstance();
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+	std::cout << "Vertex recolor:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
+#endif
+
+	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
 }

@@ -21,12 +21,12 @@
 ////////////////////////////////////////////////////////
 
 //#define COLORING_ALGORITHM_GREEDY
-//#define COLORING_ALGORITHM_JP
+#define COLORING_ALGORITHM_JP
 //#define COLORING_ALGORITHM_GM
-#define COLORING_ALGORITHM_CUSPARSE
+//#define COLORING_ALGORITHM_CUSPARSE
 
-//#define PARALLEL_GRAPH_COLOR
-#define SEQUENTIAL_GRAPH_COLOR
+#define PARALLEL_GRAPH_COLOR
+//#define SEQUENTIAL_GRAPH_COLOR
 
 ////////////////////////////////////////////////////////
 ///////////////////////////////////////// GREEDY OPTIONS
@@ -47,10 +47,10 @@
 //#define PARTITION_VERTICES_EQUALLY
 #define PARTITION_VERTICES_BY_EDGE_NUM
 
-//#define USE_CUDA_ALGORITHM
+#define USE_CUDA_ALGORITHM
 
-//#define COLOR_MAX_INDEPENDENT_SET
-#define COLOR_MIN_MAX_INDEPENDENT_SET
+#define COLOR_MAX_INDEPENDENT_SET
+//#define COLOR_MIN_MAX_INDEPENDENT_SET
 
 ////////////////////////////////////////////////////////
 ////////////////////////////// GEBREMEDHIN-MANNE OPTIONS

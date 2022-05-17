@@ -28,6 +28,8 @@ public:
 
 	std::vector<std::pair<int, int>> checkCorrectColoring();
 
+	virtual void printBenchmarkInfo() const;
+
 	void printColors(std::ostream& os) const;
 	void printDotFile(std::ostream& os) const;
 };

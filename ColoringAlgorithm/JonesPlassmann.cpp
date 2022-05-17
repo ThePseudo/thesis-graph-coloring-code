@@ -224,3 +224,19 @@ const int JonesPlassmann::colorWithCuda() {
 #endif
 }
 #endif
+
+void JonesPlassmann::printBenchmarkInfo() const {
+	__super::printBenchmarkInfo();
+
+	Benchmark& bm = *Benchmark::getInstance();
+#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+#endif
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
+	std::cout << "Count left:\t\t" << bm.getTimeOfFlag(4) << " s" << std::endl;
+#endif
+
+	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
+}

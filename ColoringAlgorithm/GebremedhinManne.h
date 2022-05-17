@@ -38,6 +38,8 @@ public:
 	GebremedhinManne(std::string const filepath);
 	const int startColoring() override;
 
+	void printBenchmarkInfo() const override;
+
 	const int getConflicts() const;
 	const int getIterations() const;
 };

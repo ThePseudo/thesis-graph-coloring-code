@@ -41,6 +41,7 @@ public:
 	virtual const ::std::vector<int>::const_iterator endNeighs(int v) const = 0;
 
 	void printGraphInfo() const;
+	void printBenchmarkInfo() const;
 };
 
 #endif // !_GRAPH_REPRESENTATION_H

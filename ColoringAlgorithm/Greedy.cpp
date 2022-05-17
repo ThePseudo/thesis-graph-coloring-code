@@ -212,3 +212,16 @@ const int Greedy::getConflicts() const {
 const int Greedy::getIterations() const {
 	return this->nIterations;
 }
+
+void Greedy::printBenchmarkInfo() const {
+	__super::printBenchmarkInfo();
+
+	Benchmark& bm = *Benchmark::getInstance();
+	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+#ifdef PARALLEL_GRAPH_COLOR
+	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
+#endif
+
+	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
+}

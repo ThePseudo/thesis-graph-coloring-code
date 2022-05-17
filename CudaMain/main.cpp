@@ -14,8 +14,6 @@
 #include "CusparseColoring.h"
 #endif
 
-#include "benchmark.h"
-
 #include "GraphRepresentation.h"
 #ifdef GRAPH_REPRESENTATION_ADJ_MATRIX
 #include "AdjacencyMatrix.h"
@@ -30,23 +28,67 @@
 #include <string>
 #include <vector>
 
+bool print_colors = false;
+
+void printUsage(int const argc, char** const argv) {
+	std::cout << "Usage: " << argv[0] << " [OPTIONS] <graph_path>" << std::endl;
+	std::cout << "OPTIONS:" << std::endl;
+	std::cout << "\t-c\tPrint assigned colors to stdout after running" << std::endl;
+}
+
+char* getNextArgument(int* argc, char*** argv) {
+	if (*argc == 0) {
+		return nullptr;
+	}
+
+	char* const ret = *argv[0];
+	--*argc;
+	++*argv;
+	return ret;
+}
+
+void analyzeArgs(int const argc, char** const argv, std::string* graph_path) {
+	int rem = argc - 1;
+	char** args = argv + 1;
+
+	while (rem > 0) {
+		char* curr_arg = getNextArgument(&rem, &args);
+		if (curr_arg == nullptr) {
+			std::cout << "An error occurred while parsing command line arguments" << std::endl;
+			exit(1);
+		}
+
+		if (0 == strcmp(curr_arg, "-c")) {
+			print_colors = true;
+		} else if(graph_path->empty()) {
+			// Assume graph name
+			*graph_path = std::string(curr_arg);
+		} else {
+			// Unrecognized
+			std::cout << "Unrecognized argument '" << curr_arg << "'" << std::endl;
+		}
+	}
+}
+
 
 int main(int argc, char** argv) {
 	COLORING_ALGO_T* _G;
-	if (argc <= 1) {
-		std::cout << "Usage: " << argv[0] << " <graph_path>" << std::endl;
-		return 0;
-	}
+	std::string graph_path;
 
 	GraphRepresentation::printGraphRepresentationConfs();
 	ColoringAlgorithm::printColorAlgorithmConfs();
 
 	std::cout << std::endl;
+	
+	analyzeArgs(argc, argv, &graph_path);
+	if (graph_path.empty()) {
+		printUsage(argc, argv);
+		exit(0);
+	}
 
-	std::cout << "Loading graph from " << argv[1] << std::endl;
+	std::cout << "Loading graph from " << graph_path << std::endl;
 
-	_G = new COLORING_ALGO_T(std::string(argv[1]));
-
+	_G = new COLORING_ALGO_T(graph_path);
 	COLORING_ALGO_T& G = *_G;
 
 	std::cout << "Graph succesfully loaded from file." << std::endl;
@@ -70,41 +112,10 @@ int main(int argc, char** argv) {
 	std::cout << "Solution converged to in " << G.getIterations() << " iterations." << std::endl;
 #endif
 	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
+	
+	std::cout << std::endl;
 
-	Benchmark& bm = *Benchmark::getInstance();
-	std::cout << std::endl << std::endl;
-	std::cout << "TIME USAGE" << std::endl;
-	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
-#ifdef COLORING_ALGORITHM_GREEDY
-	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-#ifdef PARALLEL_GRAPH_COLOR
-	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
-#endif
-#endif
-#ifdef COLORING_ALGORITHM_JP
-#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-#endif
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-#if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
-	std::cout << "Count left:\t\t" << bm.getTimeOfFlag(4) << " s" << std::endl;
-#endif
-#endif
-#ifdef COLORING_ALGORITHM_GM
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-#ifdef PARALLEL_GRAPH_COLOR
-	std::cout << "Conflict search:\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-	std::cout << "Vertex recolor:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
-#endif
-#endif
-#ifdef COLORING_ALGORITHM_CUSPARSE
-	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
-	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
-	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
-#endif
-	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
+	G.printBenchmarkInfo();
 
 	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
 
@@ -117,7 +128,8 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	//G.printColors(std::cout);
+	if(print_colors)	G.printColors(std::cout);
+
 	//G.printDotFile(std::ofstream("output.txt"));
 
 	return 0;

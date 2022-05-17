@@ -41,3 +41,14 @@ const int CusparseColoring::startColoring() {
 	return -1;
 #endif
 }
+
+void CusparseColoring::printBenchmarkInfo() const {
+	__super::printBenchmarkInfo();
+
+	Benchmark& bm = *Benchmark::getInstance();
+	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
+	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
+	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;
+
+	std::cout << "Total:\t\t" << bm.getTotalTime() << " s" << std::endl;
+}

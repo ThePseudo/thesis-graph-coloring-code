@@ -1,4 +1,5 @@
 #include "ColoringAlgorithm.h"
+#include "benchmark.h"
 
 void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "Coloring Algorithm: ";
@@ -141,6 +142,13 @@ std::vector<std::pair<int, int>> ColoringAlgorithm::checkCorrectColoring() {
 	}
 
 	return incorrect;
+}
+
+void ColoringAlgorithm::printBenchmarkInfo() const {
+	std::cout << "TIME USAGE" << std::endl;
+	this->adj().printBenchmarkInfo();
+
+	Benchmark& bm = *Benchmark::getInstance();
 }
 
 void ColoringAlgorithm::printColors(std::ostream& os) const {
