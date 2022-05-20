@@ -1,4 +1,4 @@
-#include "Barrier.h"
+#include "barrier.h"
 
 Barrier::Barrier(unsigned int size) {
 	this->size = size;

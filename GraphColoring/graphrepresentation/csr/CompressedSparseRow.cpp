@@ -3,6 +3,7 @@
 #include "benchmark.h"
 
 #include <climits>
+#include <cstring>
 #include <string>
 
 CompressedSparseRow::CompressedSparseRow() : CompressedSparseRow(0, 0) { }

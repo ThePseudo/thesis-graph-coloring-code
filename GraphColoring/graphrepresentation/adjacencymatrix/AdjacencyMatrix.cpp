@@ -3,6 +3,8 @@
 #include "AdjacencyMatrix.h"
 
 #include <algorithm>
+#include <cassert>
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -264,7 +266,7 @@ void AdjacencyMatrix::parseInputParallel(std::string& fileContents, std::mutex& 
 			}
 		}
 
-		_ASSERT(lineEnd <= end);
+		assert(lineEnd <= end);
 
 		std::string line = fileContents.substr(start, lineEnd - start);
 		vert.adj.erase(vert.adj.begin(), vert.adj.end());

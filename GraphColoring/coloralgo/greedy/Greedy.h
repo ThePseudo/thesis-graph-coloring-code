@@ -13,6 +13,9 @@
 #include "ColoringAlgorithm.h"
 
 class Greedy : public ColoringAlgorithm {
+
+	define_super(ColoringAlgorithm);
+
 private:
 	std::vector<int> recolor;
 	std::mutex mutex;

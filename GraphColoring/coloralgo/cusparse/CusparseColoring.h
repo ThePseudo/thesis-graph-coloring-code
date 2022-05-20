@@ -5,6 +5,9 @@
 #include "ColoringAlgorithm.h"
 
 class CusparseColoring : public ColoringAlgorithm {
+
+	define_super(ColoringAlgorithm);
+
 private:
 
 public:

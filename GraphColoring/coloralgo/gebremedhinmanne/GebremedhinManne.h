@@ -7,12 +7,15 @@
 #include <thread>
 #include <unordered_map>
 #include <mutex>
-#include "Barrier.h"
+#include "barrier.h"
 
 #include "GraphRepresentation.h"
 #include "ColoringAlgorithm.h"
 
 class GebremedhinManne : public ColoringAlgorithm {
+
+	define_super(ColoringAlgorithm);
+
 private:
 	std::vector<int> recolor;
 	std::mutex mutex;

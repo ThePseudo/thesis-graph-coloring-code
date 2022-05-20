@@ -14,13 +14,16 @@
 #include <thread>
 #include <mutex>
 
-#include "Barrier.h"
+#include "barrier.h"
 #endif
 
 #include "GraphRepresentation.h"
 #include "ColoringAlgorithm.h"
 
 class JonesPlassmann : public ColoringAlgorithm {
+
+	define_super(ColoringAlgorithm);
+
 private:
 	std::vector<int> vWeights;
 	int nIterations;

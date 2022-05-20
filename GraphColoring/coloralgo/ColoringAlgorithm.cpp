@@ -1,4 +1,7 @@
 #include "ColoringAlgorithm.h"
+
+#include <algorithm>
+
 #include "benchmark.h"
 
 void ColoringAlgorithm::printColorAlgorithmConfs() {

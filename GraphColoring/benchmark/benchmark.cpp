@@ -18,7 +18,7 @@ Benchmark* Benchmark::getInstance() {
 
 
 void Benchmark::clear(const int flagId) {
-	this->timeMap->insert_or_assign(flagId, 0);
+	this->timeMap->emplace(flagId, 0);
 }
 
 void Benchmark::sampleTime() {

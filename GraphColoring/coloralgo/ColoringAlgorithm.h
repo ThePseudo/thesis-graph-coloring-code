@@ -11,6 +11,12 @@
 #endif
 #include <thread>
 
+#if !defined(_MSC_VER) || _MSC_VER < 1400
+#define define_super(c) typedef c __super
+#else
+#define define_super(c)
+#endif
+
 class ColoringAlgorithm {
 protected:
 	constexpr static int INVALID_COLOR = -1;
