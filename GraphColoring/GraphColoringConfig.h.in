@@ -1,0 +1,2 @@
+#define GraphColoring_VERSION_MAJOR @GraphColoring_VERSION_MAJOR@
+#define GraphColoring_VERSION_MINOR @GraphColoring_VERSION_MINOR@
