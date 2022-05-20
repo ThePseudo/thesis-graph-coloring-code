@@ -11,13 +11,20 @@
 
 #define CUDA_MAX_BLOCKS 2147483647 // Maximum blocks to launch, depending on GPU
 
+#define CUDA_SAFE_CALL(ans) { cudaSafeCheck((ans), __FILE__, __LINE__);}
+inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abort=true){
+  if (call != cudaSuccess){
+    printf("Error: %s in file: %s at line: %d\n", cudaGetErrorString(call), file, line);
+    if (abort)
+      exit(call);
+  }
+}
+
 __global__ void create_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* randoms, const int* colors, unsigned int* set);
 __global__ void expand_to_maximal_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* colors, unsigned int* set);
 __global__ void color_jpl_kernel(int n, int c, int* colors, const unsigned int* set);
 
 int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms) {
-	cudaError_t err = cudaSuccess;
-
 	int* dAo;
 	int* dAc;
 	int* dRandoms;
@@ -25,57 +32,17 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	unsigned int* dSet;
 	Benchmark& bm = *Benchmark::getInstance();
 
-	err = cudaMalloc(&dAo, (n + 1) * sizeof(*dAo));
-	if (err != cudaSuccess) {
-		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dAc, Ao[n] * sizeof(*dAc));
-	if (err != cudaSuccess) {
-		std::cout << "Error2: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dRandoms, n * sizeof(*dRandoms));
-	if (err != cudaSuccess) {
-		std::cout << "Error3: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dColors, n * sizeof(*dColors));
-	if (err != cudaSuccess) {
-		std::cout << "Error4: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMalloc(&dSet, n * sizeof(*dSet));
-	if (err != cudaSuccess) {
-		std::cout << "Error4: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
+	CUDA_SAFE_CALL(cudaMalloc(&dAc, Ao[n] * sizeof(*dAc)));
+	CUDA_SAFE_CALL(cudaMalloc(&dRandoms, n * sizeof(*dRandoms)));
+	CUDA_SAFE_CALL(cudaMalloc(&dColors, n * sizeof(*dColors)));
+	CUDA_SAFE_CALL(cudaMalloc(&dSet, n * sizeof(*dSet)));
 
-	err = cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error5: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error6: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dRandoms, randoms, n * sizeof(*randoms), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error7: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error8: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemset(dSet, 0x0, n * sizeof(*dSet));
-	if (err != cudaSuccess) {
-		std::cout << "Error8: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(dRandoms, randoms, n * sizeof(*randoms), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemset(dSet, 0x0, n * sizeof(*dSet)));
 
 	bm.sampleTimeToFlag(2);
 
@@ -93,24 +60,19 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		cudaDeviceSynchronize();
 		bm.sampleTimeToFlag(1);
 
-		err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
-		if (err != cudaSuccess) {
-			std::cout << "Error9: " << cudaGetErrorString(err) << std::endl;
-			goto Error;
-		}
+		CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
 		bm.sampleTimeToFlag(3);
 
 		left = (int)thrust::count(colors, colors + n, -1);
 	}
 
-Error:
-	cudaFree(dAo);
-	cudaFree(dAc);
-	cudaFree(dRandoms);
-	cudaFree(dColors);
-	cudaFree(dSet);
+	CUDA_SAFE_CALL(cudaFree(dAo));
+	CUDA_SAFE_CALL(cudaFree(dAc));
+	CUDA_SAFE_CALL(cudaFree(dRandoms));
+	CUDA_SAFE_CALL(cudaFree(dColors));
+	CUDA_SAFE_CALL(cudaFree(dSet));
 
-	return err == cudaSuccess ? c : -1;
+	return c;
 }
 
 __global__ void create_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* randoms, const int* colors, unsigned int* set) {
@@ -199,8 +161,6 @@ __global__ void color_jpl_kernel(int n, int c, int* colors, const unsigned int* 
 }
 
 int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
-	cudaError_t err = cudaSuccess;
-
 	float* dAv;
 	int* dAo;
 	int* dAc;
@@ -209,44 +169,16 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
 
-	err = cudaMalloc(&dAo, (n + 1) * sizeof(*dAo));
-	if (err != cudaSuccess) {
-		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error5: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
+	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
 
-	err = cudaMalloc(&dAc, Ao[n] * sizeof(*dAc));
-	if (err != cudaSuccess) {
-		std::cout << "Error2: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error6: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMalloc(&dAc, Ao[n] * sizeof(*dAc)));
+	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
 
-	err = cudaMalloc(&dColors, n * sizeof(*dColors));
-	if (err != cudaSuccess) {
-		std::cout << "Error4: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
-	err = cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice);
-	if (err != cudaSuccess) {
-		std::cout << "Error8: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMalloc(&dColors, n * sizeof(*dColors)));
+	CUDA_SAFE_CALL(cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice));
 
-	err = cudaMalloc(&dAv, Ao[n] * sizeof(*dAv));
-	if (err != cudaSuccess) {
-		std::cout << "Error1: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMalloc(&dAv, Ao[n] * sizeof(*dAv)));
 
 	int c;
 	float fractionToColor = 1.0;
@@ -278,22 +210,17 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
 	cudaDeviceSynchronize();
 	bm.sampleTimeToFlag(2);
 
-	err = cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost);
-	if (err != cudaSuccess) {
-		std::cout << "Error9: " << cudaGetErrorString(err) << std::endl;
-		goto Error;
-	}
+	CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
 
-Error:
 	bm.sampleTimeToFlag(3);
-	cudaFree(dAv);
-	cudaFree(dAo);
-	cudaFree(dAc);
-	cudaFree(dColors);
+	CUDA_SAFE_CALL(cudaFree(dAv));
+	CUDA_SAFE_CALL(cudaFree(dAo));
+	CUDA_SAFE_CALL(cudaFree(dAc));
+	CUDA_SAFE_CALL(cudaFree(dColors));
 
 	cusparseDestroyMatDescr(matrixDesc);
 	cusparseDestroyColorInfo(colorInfo);
 	cusparseDestroy(handle);
 
-	return err == cudaSuccess ? c : -1;
+	return c;
 }
