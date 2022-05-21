@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
-class Benchmark {	
+class Benchmark {
 private:
 	std::unordered_map<int, clock_t>* timeMap;
 	clock_t prev;
@@ -20,8 +20,8 @@ public:
 	void clear(const int flagId);
 	void sampleTime();
 	void sampleTimeToFlag(const int flagId);
-	const float getTimeOfFlag(const int flagId);
-	const float getTotalTime();
+	float getTimeOfFlag(const int flagId);
+	float getTotalTime();
 };
 
 #endif // !_BENCHMARK_H

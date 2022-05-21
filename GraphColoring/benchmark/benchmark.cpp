@@ -31,11 +31,11 @@ void Benchmark::sampleTimeToFlag(const int flagId) {
 	this->timeMap->at(flagId) += now - prev;
 }
 
-const float Benchmark::getTimeOfFlag(const int flagId) {
+float Benchmark::getTimeOfFlag(const int flagId) {
 	return (float)(this->timeMap->at(flagId)) / CLOCKS_PER_SEC;
 }
 
-const float Benchmark::getTotalTime() {
+float Benchmark::getTotalTime() {
 	clock_t sum = 0;
 	for (auto& it : *this->timeMap) {
 		sum += it.second;
