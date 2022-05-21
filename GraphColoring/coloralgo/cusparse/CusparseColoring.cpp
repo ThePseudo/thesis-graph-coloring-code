@@ -21,7 +21,7 @@ CusparseColoring::CusparseColoring(std::string const filepath) {
 		fileIS.close();
 	}
 
-	this->col = std::vector<int>(this->adj().nV(), CusparseColoring::INVALID_COLOR);
+	this->col = std::vector<int>(this->adj().nV(), -1);
 }
 
 const int CusparseColoring::startColoring() {

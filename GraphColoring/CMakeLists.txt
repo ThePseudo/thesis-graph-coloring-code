@@ -139,55 +139,55 @@ target_link_libraries(coloralgo_jp_seq benchmark)
 
 add_library(coloralgo_jp_par STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_par PUBLIC ${D_COLORALGO_JP_PAR} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_par benchmark)
+target_link_libraries(coloralgo_jp_par benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_jp_cuda_single STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_cuda_single PUBLIC ${D_COLORALGO_JP_CUDA_SINGLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_cuda_single benchmark)
+target_link_libraries(coloralgo_jp_cuda_single benchmark barrier)
 
 add_library(coloralgo_jp_cuda_double STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_cuda_double PUBLIC ${D_COLORALGO_JP_CUDA_DOUBLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_cuda_double benchmark)
+target_link_libraries(coloralgo_jp_cuda_double benchmark barrier)
 
 add_library(coloralgo_greedy_seq STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_greedy_seq PUBLIC ${D_COLORALGO_GREEDY_SEQ} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_greedy_seq benchmark)
+target_link_libraries(coloralgo_greedy_seq benchmark ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_greedy_par STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_greedy_par PUBLIC ${D_COLORALGO_GREEDY_PAR} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_greedy_par benchmark)
+target_link_libraries(coloralgo_greedy_par benchmark ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_gm_seq_sync_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_sync_std PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_sync_std benchmark)
+target_link_libraries(coloralgo_gm_seq_sync_std benchmark barrier)
 
 add_library(coloralgo_gm_seq_sync_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_sync_imp PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_sync_imp benchmark)
+target_link_libraries(coloralgo_gm_seq_sync_imp benchmark barrier)
 
 add_library(coloralgo_gm_seq_async_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_async_std PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_async_std benchmark)
+target_link_libraries(coloralgo_gm_seq_async_std benchmark barrier)
 
 add_library(coloralgo_gm_seq_async_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_async_imp PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_async_imp benchmark)
+target_link_libraries(coloralgo_gm_seq_async_imp benchmark barrier)
 
 add_library(coloralgo_gm_par_sync_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_sync_std PUBLIC ${D_COLORALGO_GM_PAR_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_sync_std benchmark)
+target_link_libraries(coloralgo_gm_par_sync_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_gm_par_sync_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_sync_imp PUBLIC ${D_COLORALGO_GM_PAR_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_sync_imp benchmark)
+target_link_libraries(coloralgo_gm_par_sync_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_gm_par_async_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_async_std PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_async_std benchmark)
+target_link_libraries(coloralgo_gm_par_async_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(coloralgo_gm_par_async_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_async_imp PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_async_imp benchmark)
+target_link_libraries(coloralgo_gm_par_async_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(cudakernels STATIC EXCLUDE_FROM_ALL ${SRC_CUDAKERNELS})
 target_compile_definitions(cudakernels PUBLIC ${D_GRAPHREPRESENTATION_CSR})
@@ -203,7 +203,7 @@ target_link_libraries(cudakernels_jp_double ${CUDA_LIBRARIES} benchmark)
 
 add_library(graphrepresentation_adjm STATIC EXCLUDE_FROM_ALL ${SRC_GRAPHREPRESENTATION})
 target_compile_definitions(graphrepresentation_adjm PUBLIC ${D_GRAPHREPRESENTATION_ADJM})
-target_link_libraries(graphrepresentation_adjm benchmark)
+target_link_libraries(graphrepresentation_adjm benchmark ${CMAKE_THREAD_LIBS_INIT})
 
 add_library(graphrepresentation_csr STATIC EXCLUDE_FROM_ALL ${SRC_GRAPHREPRESENTATION})
 target_compile_definitions(graphrepresentation_csr PUBLIC ${D_GRAPHREPRESENTATION_CSR})

@@ -21,7 +21,7 @@ GebremedhinManne::GebremedhinManne(std::string const filepath) {
 	}
 
 	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
-	this->col = std::vector<int>(this->adj().nV(), GebremedhinManne::INVALID_COLOR);
+	this->col = std::vector<int>(this->adj().nV(), -1);
 	
 	// Pre-allocate vector to avoid reallocation at runtime
 	// Size is given by Lemma 1 of Gebremedhin-Manne paper.

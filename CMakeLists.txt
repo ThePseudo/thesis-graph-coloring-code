@@ -21,6 +21,8 @@ project(GraphColoring
 
 # option(CMAKE_VERBOSE_MAKEFILE OFF)
 
+find_package(Threads REQUIRED)
+
 # # begin /* Find and set CUDA arch */
 set(REQUIRED_CUDA_VERSION 9.0)
 FIND_PACKAGE(CUDA ${REQUIRED_CUDA_VERSION} REQUIRED)

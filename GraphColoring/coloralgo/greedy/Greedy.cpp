@@ -22,7 +22,7 @@ Greedy::Greedy(std::string const filepath) {
 		fileIS.close();
 	}
 
-	this->col = std::vector<int>(this->adj().nV(), Greedy::INVALID_COLOR);
+	this->col = std::vector<int>(this->adj().nV(), -1);
 	this->recolor = std::vector<int>(this->adj().nV());
 	for (int i = 0; i < this->adj().nV(); ++i) {
 		this->recolor[i] = i;
