@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 	COLORING_ALGO_T* _G;
 	std::string graph_path;
 
-	std::cout << "Graph Coloring - v" << GraphColoring_VERSION_MAJOR << "." << GraphColoring_VERSION_MINOR << std::endl;
+	std::cout << "Graph Coloring - v" << GraphColoring_VERSION_MAJOR << "." << GraphColoring_VERSION_MINOR << "." << GraphColoring_VERSION_PATCH << std::endl;
 	GraphRepresentation::printGraphRepresentationConfs();
 	ColoringAlgorithm::printColorAlgorithmConfs();
 
