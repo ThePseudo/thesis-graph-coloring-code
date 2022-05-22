@@ -5,6 +5,7 @@
 #include "cudaKernels.h"
 
 #include <fstream>
+#include <set>
 
 CusparseColoring::CusparseColoring(std::string const filepath) {
 	Benchmark& bm = *Benchmark::getInstance();
@@ -35,7 +36,9 @@ const int CusparseColoring::startColoring() {
 	const int* Ao = this->adj().getRowPointers();
 	const int* Ac = this->adj().getColIndexes();
 	int* colors = this->col.data();
-	return color_cusparse(n, Ao, Ac, colors);
+	int possibly_wrong_return_value = color_cusparse(n, Ao, Ac, colors);
+	std::set<int> colorSet(colors, colors+n);
+	return colorSet.size();
 #else
 	std::cout << "Please enable GRAPH_REPRESENTATION_CSR to use this algorithm." << std::endl;
 	return -1;
