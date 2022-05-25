@@ -120,10 +120,15 @@ int main(int argc, char** argv) {
 
 	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
 	if (!incorrectPairs.empty()) {
-		std::cout << "There was an error while assigning colors. Two or more adjacent verteces have the same color." << std::endl;
-		for (auto& p : incorrectPairs) {
-			if (p.first < p.second) {
-				std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+		std::cout <<
+			"*****************************************************************************" << std::endl <<
+			"There was an error while assigning colors. " << incorrectPairs.size() << " pairs of verteces have the same color." << std::endl <<
+			"*****************************************************************************" << std::endl;
+		if (print_colors) {
+			for (auto& p : incorrectPairs) {
+				if (p.first < p.second) {
+					std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+				}
 			}
 		}
 	}
