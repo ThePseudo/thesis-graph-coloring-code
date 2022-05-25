@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
 	if (!incorrectPairs.empty()) {
 		std::cout <<
 			"*****************************************************************************" << std::endl <<
-			"There was an error while assigning colors. " << incorrectPairs.size() << " pairs of verteces have the same color." << std::endl <<
+			"There was an error while assigning colors. " << (incorrectPairs.size() >> 1) << " pairs of verteces have the same color." << std::endl <<
 			"*****************************************************************************" << std::endl;
 		if (print_colors) {
 			for (auto& p : incorrectPairs) {
