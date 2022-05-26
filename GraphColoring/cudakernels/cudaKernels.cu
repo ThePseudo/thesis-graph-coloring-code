@@ -4,10 +4,9 @@
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 
-#include <cuda_runtime_api.h>
-#include <cuda.h>
-#include <cooperative_groups.h>
-
+//#include <cuda_runtime_api.h>
+//#include <cuda.h>
+//#include <cooperative_groups.h>
 
 #include "cudaKernels.h"
 #include "cusparse.h"
@@ -29,8 +28,8 @@ inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abo
 int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors);
 __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
 
-int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
-__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors);
+//int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
+//__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors);
 
 __device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j, const int jc);
 __device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin = false);
@@ -52,19 +51,21 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 
 	bm.sampleTimeToFlag(2);
 
-	int device = 0;
-	int supportsCoopLaunch = 0;
-	cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, device);
+	//int device = 0;
+	//int supportsCoopLaunch = 0;
+	//cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, device);
 
 	int c = -1;
-	if (supportsCoopLaunch) {
-		std::cout << "Launching in cooperative mode🤝" << std::endl;
-		// Get raw pointer for dColors
-		int* dColors = thrust::raw_pointer_cast(dvColors.data());
-		c = launch_kernel_coop(n, dAo, dAc, dRandoms, dColors, colors);
-	} else {
-		c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
-	}
+	//if (supportsCoopLaunch) {
+	//	std::cout << "Launching in cooperative mode🤝" << std::endl;
+	//	// Get raw pointer for dColors
+	//	int* dColors = thrust::raw_pointer_cast(dvColors.data());
+	//	c = launch_kernel_coop(n, dAo, dAc, dRandoms, dColors, colors);
+	//} else {
+	//	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
+	//}
+
+	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
 
 	CUDA_SAFE_CALL(cudaFree(dAo));
 	CUDA_SAFE_CALL(cudaFree(dAc));
@@ -76,7 +77,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors) {
 	Benchmark& bm = *Benchmark::getInstance();
 	int c = -1;	// Number of colors used
-	int left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);	// Number of non-colored vertices
+	int left = n;	// Number of non-colored vertices
 
 	int nb;	// Number of blocks to be launched
 	int nt;	// Number of threads per block to be launched
@@ -85,19 +86,20 @@ int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vecto
 	// Limit blocks ti be launched by the number of vertices
 	nb = std::min((n + nt - 1) / nt, nb);
 
+	// Get raw pointer to device array
 	int* dColors = thrust::raw_pointer_cast(dvColors.data());
 	for (c = 0; left > 0 && c < n; ++c) {
 		// Launch coloring iteration kernel
 		color_jpl_kernel<<<nb, nt>>>(n, c, dAo, dAc, dRandoms, dColors);
-		cudaDeviceSynchronize();
+		cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark 
 		bm.sampleTimeToFlag(1);
 
-		// Count non-colored vertices (on GPU)
+		// Count non-colored vertices on device
 		left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
 		bm.sampleTimeToFlag(4);
 	}
 
-	// Copy colors array from GPU
+	// Copy colors array from devuce
 	thrust::copy(dvColors.begin(), dvColors.end(), colors);
 	bm.sampleTimeToFlag(3);
 
@@ -146,11 +148,14 @@ __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const 
 	}
 }
 
+/*****************************************************************************************************
+* color_jpl implementation with Cooperative Groups (CUDA >= 9.0, CC >= 6.0)
+* Seems to not be working
 int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors) {
 	int c = -1;
 	int device = 0;
-	int nb = 0;
-	int nt = 256;
+	int nb;
+	int nt;
 	Benchmark& bm = *Benchmark::getInstance();
 
 	cudaDeviceProp deviceProp;
@@ -161,7 +166,7 @@ int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandom
 
 	void* kernelArgs[] = {&n, &dAo, &dAc, &dRandoms, &dColors};
 	dim3 dimBlock(nt, 1, 1);
-	dim3 dimGrid(/*deviceProp.multiProcessorCount * */nb, 1, 1);
+	dim3 dimGrid(nb, 1, 1);
 	cudaLaunchCooperativeKernel((void*)color_jpl_coop_kernel, dimGrid, dimBlock, kernelArgs);
 
 	cudaDeviceSynchronize();
@@ -223,7 +228,7 @@ __global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const
 		}
 		grid.sync();
 	}
-}
+}*/
 
 __device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j, const int jc) {
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
