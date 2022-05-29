@@ -1,15 +1,20 @@
 ﻿#include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <thrust/count.h>
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+
+//#include <cuda_runtime_api.h>
+//#include <cuda.h>
+//#include <cooperative_groups.h>
 
 #include "cudaKernels.h"
 #include "cusparse.h"
 
 #include <algorithm>
 #include <iostream>
+#include <set>
 #include <vector>
-
-#define CUDA_MAX_BLOCKS 2147483647 // Maximum blocks to launch, depending on GPU
 
 #define CUDA_SAFE_CALL(ans) { cudaSafeCheck((ans), __FILE__, __LINE__);}
 inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abort=true){
@@ -20,144 +25,227 @@ inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abo
   }
 }
 
-__global__ void create_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* randoms, const int* colors, unsigned int* set);
-__global__ void expand_to_maximal_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* colors, unsigned int* set);
-__global__ void color_jpl_kernel(int n, int c, int* colors, const unsigned int* set);
+int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors);
+__global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
+
+//int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
+//__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors);
+
+__device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j, const int jc);
+__device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin = false);
 
 int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms) {
 	int* dAo;
 	int* dAc;
 	int* dRandoms;
-	int* dColors;
-	unsigned int* dSet;
 	Benchmark& bm = *Benchmark::getInstance();
+	thrust::device_vector<int> dvColors(n, -1);
 
 	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
 	CUDA_SAFE_CALL(cudaMalloc(&dAc, Ao[n] * sizeof(*dAc)));
 	CUDA_SAFE_CALL(cudaMalloc(&dRandoms, n * sizeof(*dRandoms)));
-	CUDA_SAFE_CALL(cudaMalloc(&dColors, n * sizeof(*dColors)));
-	CUDA_SAFE_CALL(cudaMalloc(&dSet, n * sizeof(*dSet)));
 
 	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
 	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
 	CUDA_SAFE_CALL(cudaMemcpy(dRandoms, randoms, n * sizeof(*randoms), cudaMemcpyHostToDevice));
-	CUDA_SAFE_CALL(cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice));
-	CUDA_SAFE_CALL(cudaMemset(dSet, 0x0, n * sizeof(*dSet)));
 
 	bm.sampleTimeToFlag(2);
 
-	int c;
-	int left;
-	int const nt = 256;
-	int nb = std::min((n + nt - 1) / nt, CUDA_MAX_BLOCKS);
-	for (c = 0, left = n; left > 0 && c < n; ++c) {
-		bm.sampleTimeToFlag(4);
+	//int device = 0;
+	//int supportsCoopLaunch = 0;
+	//cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, device);
 
-		create_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dRandoms, dColors, dSet);
-		//expand_to_maximal_independent_set_kernel<<<nb, nt>>>(n, dAo, dAc, dColors, dSet);
-		color_jpl_kernel<<<nb, nt>>>(n, c, dColors, dSet);
+	int c = -1;
+	//if (supportsCoopLaunch) {
+	//	std::cout << "Launching in cooperative mode🤝" << std::endl;
+	//	// Get raw pointer for dColors
+	//	int* dColors = thrust::raw_pointer_cast(dvColors.data());
+	//	c = launch_kernel_coop(n, dAo, dAc, dRandoms, dColors, colors);
+	//} else {
+	//	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
+	//}
 
-		cudaDeviceSynchronize();
-		bm.sampleTimeToFlag(1);
-
-		CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
-		bm.sampleTimeToFlag(3);
-
-		left = (int)thrust::count(colors, colors + n, -1);
-	}
+	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
 
 	CUDA_SAFE_CALL(cudaFree(dAo));
 	CUDA_SAFE_CALL(cudaFree(dAc));
 	CUDA_SAFE_CALL(cudaFree(dRandoms));
-	CUDA_SAFE_CALL(cudaFree(dColors));
-	CUDA_SAFE_CALL(cudaFree(dSet));
 
 	return c;
 }
 
-__global__ void create_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* randoms, const int* colors, unsigned int* set) {
+int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors) {
+	Benchmark& bm = *Benchmark::getInstance();
+	int c = -1;	// Number of colors used
+	int left = n;	// Number of non-colored vertices
+
+	int nb;	// Number of blocks to be launched
+	int nt;	// Number of threads per block to be launched
+	// Get optimal number of blocks and threads to launch to fill SMs
+	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_kernel, 0, 0);
+	// Limit blocks ti be launched by the number of vertices
+	nb = std::min((n + nt - 1) / nt, nb);
+
+	// Get raw pointer to device array
+	int* dColors = thrust::raw_pointer_cast(dvColors.data());
+	for (c = 0; left > 0 && c < n; ++c) {
+		// Launch coloring iteration kernel
+		color_jpl_kernel<<<nb, nt>>>(n, c, dAo, dAc, dRandoms, dColors);
+		cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark 
+		bm.sampleTimeToFlag(1);
+
+		// Count non-colored vertices on device
+		left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
+		bm.sampleTimeToFlag(4);
+	}
+
+	// Copy colors array from devuce
+	thrust::copy(dvColors.begin(), dvColors.end(), colors);
+	bm.sampleTimeToFlag(3);
+
+	return c;
+}
+
+__global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors) {
 	for (int i = threadIdx.x + blockIdx.x * blockDim.x;
 		i < n;
 		i += blockDim.x * gridDim.x)
 	{
-		//bool f = true; // true if you have max random
+
+		int color = c;
+		// true if you have max random
+		bool localmax = true;
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+		// true if you have min random
+		bool localmin = true;
+		color *= 2;
+#endif
 
 		// ignore nodes colored earlier
 		if (colors[i] != -1) continue;
-#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-		set[i] = 0;
-#endif
-#ifdef COLOR_MAX_INDEPENDENT_SET
-		set[i] = 1;
-#endif
-		int ir = randoms[i];
 
 		// look at neighbors to check their random number
 		for (int k = Ao[i]; k < Ao[i + 1]; k++) {
 			// ignore nodes colored earlier (and yourself)
 			int j = Ac[k];
-			int jc = colors[j];
-			if ((jc != -1) || (i == j)) continue;
+
+			if (color_jpl_ingore_neighbor(color, i, j, colors[j])) continue;
+
+			int ir = randoms[i];
 			int jr = randoms[j];
+
+			localmax &= ir > jr;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-			if (set[i] == 0 && ir <= jr) set[i] = 1;
-			else if (set[i] == 0 && ir > jr) set[i] = 2;
-			else if (set[i] == 1 && ir > jr) set[i] = 3;
-			else if (set[i] == 2 && ir <= jr) set[i] = 3;
-#endif
-#ifdef COLOR_MAX_INDEPENDENT_SET
-			if (ir <= jr) set[i] = 0;
+			localmin &= ir < jr;
 #endif
 		}
+		// assign color if you have the maximum (or minimum) random number
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-		if (set[i] == 0) set[i] = 1;
+		color_jpl_assign_color(color, &colors[i], localmax, localmin);
+#elif defined(COLOR_MAX_INDEPENDENT_SET)
+		color_jpl_assign_color(color, &colors[i], localmax);
 #endif
-		// assign color if you have the maximum random number
-		//if (f) colors[i] = c;
 	}
 }
 
-__global__ void expand_to_maximal_independent_set_kernel(int n, const int* Ao, const int* Ac, const int* colors, unsigned int* set) {
-	for (int i = threadIdx.x + blockIdx.x * blockDim.x;
-		i < n;
-		i += blockDim.x * gridDim.x)
-	{
-		// Ignore nodes colored earlier or already in set
-		if (colors[i] != -1 || set[i] != 0x0) continue;
+/*****************************************************************************************************
+* color_jpl implementation with Cooperative Groups (CUDA >= 9.0, CC >= 6.0)
+* Seems to not be working
+int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors) {
+	int c = -1;
+	int device = 0;
+	int nb;
+	int nt;
+	Benchmark& bm = *Benchmark::getInstance();
 
-		set[i] = 0x2;
+	cudaDeviceProp deviceProp;
+	cudaGetDeviceProperties(&deviceProp, device);
+	//cudaOccupancyMaxActiveBlocksPerMultiprocessor(&nb, color_jpl_coop, nt, 0);
+	//nb = std::min((n + nt - 1) / nt, nb);
+	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_coop_kernel, 0, 0);
 
-		for (int k = Ao[i]; k < Ao[i + 1]; k++) {
-			// ignore nodes colored earlier (and yourself)
-			int j = Ac[k];
-			int jc = colors[j];
-			if ((jc != -1) || (i == j)) continue;
-			// cannot be part of MIS if neighbor is in initial set
-			//  or if neighboring vertex with higher degree is trying to enter the MIS
-			if (set[j] == 0x1 ||
-				(set[j] == 0x2 && Ao[i + 1] - Ao[i] <= Ao[j + 1] - Ao[j])
-				)
-				set[i] = 0x0;
-		}
+	void* kernelArgs[] = {&n, &dAo, &dAc, &dRandoms, &dColors};
+	dim3 dimBlock(nt, 1, 1);
+	dim3 dimGrid(nb, 1, 1);
+	cudaLaunchCooperativeKernel((void*)color_jpl_coop_kernel, dimGrid, dimBlock, kernelArgs);
 
-		if (set[i] != 0x0) set[i] = 0x1;
-	}
+	cudaDeviceSynchronize();
+	bm.sampleTimeToFlag(1);
+
+	CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
+	bm.sampleTimeToFlag(3);
+
+	c = *std::max_element(colors, colors+n);
+	bm.sampleTimeToFlag(4);
+
+	return c;
 }
 
-__global__ void color_jpl_kernel(int n, int c, int* colors, const unsigned int* set) {
-	for (int i = threadIdx.x + blockIdx.x * blockDim.x;
-		i < n;
-		i += blockDim.x * gridDim.x)
-	{
+__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors) {
+	cooperative_groups::grid_group grid = cooperative_groups::this_grid();
+	int left = 1;
+
+	for (int c = 0; c < n && left > 0; ++c) {
+		left = 0;
+		for (int i = threadIdx.x + blockIdx.x * blockDim.x;
+			i < n;
+			i += blockDim.x * gridDim.x)
+		{
+
+			int color = c;
+			// true if you have max random
+			bool localmax = true;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-		if (colors[i] != -1 || set[i] == 0 || set[i] == 3) continue;
-		colors[i] = 2 * c + set[i] - 1;
+			// true if you have min random
+			bool localmin = true;
+			color *= 2;
 #endif
-#ifdef COLOR_MAX_INDEPENDENT_SET
-		if (colors[i] != -1) continue;
-		if(set[i] != 0) colors[i] = c;
+
+			// ignore nodes colored earlier
+			if (colors[i] != -1) continue;
+
+			// look at neighbors to check their random number
+			for (int k = Ao[i]; k < Ao[i + 1]; k++) {
+				// ignore nodes colored earlier (and yourself)
+				int j = Ac[k];
+
+				if (color_jpl_ingore_neighbor(color, i, j, colors[j])) continue;
+
+				int ir = randoms[i];
+				int jr = randoms[j];
+
+				localmax &= ir > jr;
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+				localmin &= ir < jr;
 #endif
+			}
+			// assign color if you have the maximum (or minimum) random number
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+			if (color_jpl_assign_color(color, &colors[i], localmax, localmin)) ++left;
+#elif defined(COLOR_MAX_INDEPENDENT_SET)
+			if (color_jpl_assign_color(color, &colors[i], localmax)) ++left;
+#endif
+		}
+		grid.sync();
 	}
+}*/
+
+__device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j, const int jc) {
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+	return ((jc != -1) && (jc != c) && (jc != c + 1)) || (i == j);
+#elif defined(COLOR_MAX_INDEPENDENT_SET)
+	return ((jc != -1) && (jc != c)) || (i == j);
+#endif
+}
+
+__device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin) {
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+	if (localmin) *color_i = c + 1;
+	else
+#endif
+	if (localmax) *color_i = c;
+
+	return localmax || localmin;
 }
 
 int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
