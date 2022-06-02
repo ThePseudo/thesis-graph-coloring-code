@@ -79,13 +79,11 @@ const int GebremedhinManne::solve() {
 	n_cols = this->colorGraph(n_cols);
 	++this->nIterations;
 	this->nConflicts += this->recolor.size();
-	bm.sampleTimeToFlag(2);
 
 	if (this->nConflicts > 0) {
 		int index = 0;
 		// Phase 3
 		n_cols = this->performRecoloring(n_cols);
-		bm.sampleTimeToFlag(3);
 		++this->nIterations;
 	}
 #endif
