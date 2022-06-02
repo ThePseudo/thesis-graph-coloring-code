@@ -12,8 +12,6 @@
 #include <thread>
 #endif
 
-#include "benchmark.h"
-
 AdjacencyMatrix::AdjacencyMatrix() : AdjacencyMatrix(0) { }
 
 AdjacencyMatrix::AdjacencyMatrix(int nV) {
@@ -100,10 +98,6 @@ struct vertex {
 };
 
 bool AdjacencyMatrix::parseInput(std::istream& is) {
-
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-
 	struct header head = {};
 	if (!readHeader(is, head)) {
 		return false;
@@ -189,8 +183,6 @@ bool AdjacencyMatrix::parseInput(std::istream& is) {
 #endif
 
 	this->_avgD = static_cast<float>(this->nE()) / this->nV();
-
-	bm.sampleTimeToFlag(0);
 
 	return true;
 }

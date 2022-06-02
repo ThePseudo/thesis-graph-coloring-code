@@ -7,36 +7,39 @@
 #include <fstream>
 #include <set>
 
-CusparseColoring::CusparseColoring(std::string const filepath) {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(0);
+CusparseColoring::CusparseColoring(std::string const filepath) : ColoringAlgorithm() {
+	Benchmark& bm = *Benchmark::getInstance(0);
 
 	this->_adj = new GRAPH_REPR_T();
 
 	std::ifstream fileIS;
 	fileIS.open(filepath);
 	std::istream& is = fileIS;
+
+	bm.sampleTime();
 	is >> *this->_adj;
+	bm.sampleTimeToFlag(0);
 
 	if (fileIS.is_open()) {
 		fileIS.close();
 	}
+}
 
-	this->col = std::vector<int>(this->adj().nV(), -1);
+void CusparseColoring::init() {
+	__super::init();
+}
+
+void CusparseColoring::reset() {
+	__super::reset();
 }
 
 const int CusparseColoring::startColoring() {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(1);
-	bm.clear(2);
-	bm.clear(3);
-
 #ifdef GRAPH_REPRESENTATION_CSR
 	int const n = this->adj().nV();
 	const int* Ao = this->adj().getRowPointers();
 	const int* Ac = this->adj().getColIndexes();
 	int* colors = this->col.data();
-	int possibly_wrong_return_value = color_cusparse(n, Ao, Ac, colors);
+	int possibly_wrong_return_value = color_cusparse(n, Ao, Ac, colors, __super::resetCount);
 	std::set<int> colorSet(colors, colors+n);
 	return colorSet.size();
 #else
@@ -52,7 +55,7 @@ void CusparseColoring::printExecutionInfo() const {
 void CusparseColoring::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
 	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 	std::cout << "TXfer from GPU:\t\t" << bm.getTimeOfFlag(3) << " s" << std::endl;

@@ -21,6 +21,7 @@ class ColoringAlgorithm {
 protected:
 	constexpr static int INVALID_COLOR = -1;
 
+	int resetCount;
 	GRAPH_REPR_T* _adj = nullptr;
 	std::vector<int> col;
 
@@ -30,6 +31,8 @@ public:
 	const GRAPH_REPR_T& adj() const;
 	const std::vector<int> getColors() const;
 
+	virtual void init();
+	virtual void reset();
 	virtual const int startColoring() = 0;
 
 	// Receive vertex index, number of colors used so far and pointer where to save the color.

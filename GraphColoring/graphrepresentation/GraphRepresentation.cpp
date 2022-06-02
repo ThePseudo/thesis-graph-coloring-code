@@ -46,6 +46,6 @@ void GraphRepresentation::printGraphInfo() const {
 }
 
 void GraphRepresentation::printBenchmarkInfo() const {
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(0);
 	std::cout << "File load:\t\t" << bm.getTimeOfFlag(0) << " s" << std::endl;
 }

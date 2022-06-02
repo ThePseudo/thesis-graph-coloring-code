@@ -3,8 +3,6 @@
 
 #ifdef COLORING_ALGORITHM_GREEDY
 
-//#include "configuration.h"
-
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -36,6 +34,9 @@ public:
 	int MAX_THREADS_SOLVE = std::thread::hardware_concurrency();
 
 	Greedy(std::string const filepath);
+
+	void init() override;
+	void reset() override;
 	const int startColoring() override;
 	
 	void printExecutionInfo() const override;

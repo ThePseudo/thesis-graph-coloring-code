@@ -25,7 +25,7 @@ inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abo
   }
 }
 
-int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors);
+int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors);
 __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
 
 //int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
@@ -34,11 +34,14 @@ __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const 
 __device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j, const int jc);
 __device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin = false);
 
-int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms) {
+int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms, int resetCount) {
+	int c = -1;
 	int* dAo;
 	int* dAc;
 	int* dRandoms;
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(resetCount);
+	bm.sampleTime();
+
 	thrust::device_vector<int> dvColors(n, -1);
 
 	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
@@ -49,13 +52,11 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
 	CUDA_SAFE_CALL(cudaMemcpy(dRandoms, randoms, n * sizeof(*randoms), cudaMemcpyHostToDevice));
 
-	bm.sampleTimeToFlag(2);
+	bm.sampleTimeToFlag(1);
 
 	//int device = 0;
 	//int supportsCoopLaunch = 0;
 	//cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, device);
-
-	int c = -1;
 	//if (supportsCoopLaunch) {
 	//	std::cout << "Launching in cooperative mode🤝" << std::endl;
 	//	// Get raw pointer for dColors
@@ -65,7 +66,12 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	//	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
 	//}
 
-	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
+	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors);
+	bm.sampleTimeToFlag(2);
+
+	// Copy colors array from devuce
+	thrust::copy(dvColors.begin(), dvColors.end(), colors);
+	bm.sampleTimeToFlag(3);
 
 	CUDA_SAFE_CALL(cudaFree(dAo));
 	CUDA_SAFE_CALL(cudaFree(dAc));
@@ -74,8 +80,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	return c;
 }
 
-int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, int* colors) {
-	Benchmark& bm = *Benchmark::getInstance();
+int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors) {
 	int c = -1;	// Number of colors used
 	int left = n;	// Number of non-colored vertices
 
@@ -91,17 +96,11 @@ int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vecto
 	for (c = 0; left > 0 && c < n; ++c) {
 		// Launch coloring iteration kernel
 		color_jpl_kernel<<<nb, nt>>>(n, c, dAo, dAc, dRandoms, dColors);
-		cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark 
-		bm.sampleTimeToFlag(1);
+		//cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark 
 
 		// Count non-colored vertices on device
 		left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
-		bm.sampleTimeToFlag(4);
 	}
-
-	// Copy colors array from devuce
-	thrust::copy(dvColors.begin(), dvColors.end(), colors);
-	bm.sampleTimeToFlag(3);
 
 	return c;
 }
@@ -248,13 +247,13 @@ __device__ bool color_jpl_assign_color(const int c, int* color_i, const bool loc
 	return localmax || localmin;
 }
 
-int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors) {
+int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int resetCount) {
 	float* dAv;
 	int* dAo;
 	int* dAc;
 	int* dColors;
 
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
 
 	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));

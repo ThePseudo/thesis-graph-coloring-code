@@ -39,6 +39,9 @@ public:
 	int MAX_THREADS_SOLVE = std::thread::hardware_concurrency();
 
 	GebremedhinManne(std::string const filepath);
+
+	void init() override;
+	void reset() override;
 	const int startColoring() override;
 
 	void printExecutionInfo() const override;

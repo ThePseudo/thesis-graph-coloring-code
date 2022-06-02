@@ -22,6 +22,8 @@
 #include "CompressedSparseRow.h"
 #endif
 
+#include "benchmark.h"
+
 #include <algorithm>
 #include <cstring>
 #include <fstream>
@@ -30,11 +32,13 @@
 #include <vector>
 
 bool print_colors = false;
+unsigned int num_runs = 1;
 
 void printUsage(int const argc, char** const argv) {
 	std::cout << "Usage: " << argv[0] << " [OPTIONS] <graph_path>" << std::endl;
 	std::cout << "OPTIONS:" << std::endl;
 	std::cout << "\t-c\tPrint assigned colors to stdout after running" << std::endl;
+	std::cout << "\t-r <int>\tRun algorithm <int> times (default: 1)" << std::endl;
 }
 
 char* getNextArgument(int* argc, char*** argv) {
@@ -61,12 +65,23 @@ void analyzeArgs(int const argc, char** const argv, std::string* graph_path) {
 
 		if (0 == strcmp(curr_arg, "-c")) {
 			print_colors = true;
-		}
-		else if (graph_path->empty()) {
+		} else if (0 == strcmp(curr_arg, "-r")) {
+			char* str_n_runs = getNextArgument(&rem, &args);
+			if (str_n_runs == nullptr) {
+				std::cout << "Expected positive int argument for option -r" << std::endl;
+				exit(1);
+			}
+			int n_runs = strtol(str_n_runs, nullptr, 10);
+			if (n_runs <= 0) {
+				std::cout << "Expected positive int argument for option -r, found '" << str_n_runs << "'" << std::endl;
+				exit(1);
+			}
+
+			num_runs = n_runs;
+		} else if (graph_path->empty()) {
 			// Assume graph name
 			*graph_path = std::string(curr_arg);
-		}
-		else {
+		} else {
 			// Unrecognized
 			std::cout << "Unrecognized argument '" << curr_arg << "'" << std::endl;
 		}
@@ -98,42 +113,68 @@ int main(int argc, char** argv) {
 	std::cout << "Graph succesfully loaded from file." << std::endl;
 	G.adj().printGraphInfo();
 
+	G.init();
+
 #if defined(PARALLEL_GRAPH_COLOR) && !defined(USE_CUDA_ALGORITHM) && !defined(COLORING_ALGORITHM_CUSPARSE)
 	std::cout << "Performing computation using " << G.MAX_THREADS_SOLVE << " threads." << std::endl;
 #endif
 
-	int n_cols = G.startColoring();
+	std::vector<int> n_colors(num_runs, -1);
 
-	if (n_cols < 0) {
-		std::cout << "An error occurred!" << std::endl;
-		return 0;
-	}
+	for (int i = 0; i < num_runs; ++i) {
 
-	std::cout << std::endl;
+		std::cout << "========================================================" << std::endl;
 
-	G.printExecutionInfo();
-	std::cout << "Used a total of " << n_cols << " colors." << std::endl;
+		G.reset();
 
-	std::cout << std::endl;
+		std::cout << i + 1 << "\t";
+		
+		n_colors[i] = G.startColoring();
 
-	G.printBenchmarkInfo();
-
-	std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
-	if (!incorrectPairs.empty()) {
-		std::cout <<
-			"*****************************************************************************" << std::endl <<
-			"There was an error while assigning colors. " << (incorrectPairs.size() >> 1) << " pairs of verteces have the same color." << std::endl <<
-			"*****************************************************************************" << std::endl;
-		if (print_colors) {
-			for (auto& p : incorrectPairs) {
-				if (p.first < p.second) {
-					std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
-				}
-			}
+		if (n_colors[i] < 0) {
+			std::cout << "ERROR" << std::endl;
+			continue;
 		}
+
+		Benchmark& bm = *Benchmark::getInstance(i);
+		std::cout << "num-cols: " << n_colors[i] << " \t";
+		std::cout << "time: " << bm.getTimeOfFlag(2) << " \t";
+
+		std::cout << std::endl;
 	}
 
-	if (print_colors)	G.printColors(std::cout);
+	std::cout << "========================================================" << std::endl;
+	
+	Benchmark& bm = *Benchmark::getInstance(0);
+	std::cout << "Load time: " << bm.getTimeOfFlag(0) << std::endl;
+	std::cout << "Avg preprocess time: " << Benchmark::getAvgOfFlag(1) << std::endl;
+	std::cout << "Avg process time: " << Benchmark::getAvgOfFlag(2) << std::endl;
+	std::cout << "Avg postprocess time: " << Benchmark::getAvgOfFlag(3) << std::endl;
+	std::cout << "Avg total time: " << Benchmark::getAvgOfTotal() << std::endl;
+
+	//std::cout << "Load time: " << 
+	//G.printExecutionInfo();
+
+	//std::cout << std::endl;
+
+	//G.printBenchmarkInfo();
+
+	//std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
+	//if (!incorrectPairs.empty()) {
+	//	std::cout <<
+	//		"*****************************************************************************" << std::endl <<
+	//		"There was an error while assigning colors. " << (incorrectPairs.size() >> 1) << " pairs of verteces have the same color." << std::endl <<
+	//		"*****************************************************************************" << std::endl;
+	//	if (print_colors) {
+	//		for (auto& p : incorrectPairs) {
+	//			if (p.first < p.second) {
+	//				std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+	//			}
+	//		}
+	//	}
+	//}
+
+	//if (print_colors)	G.printColors(std::cout);
 	//G.printDotFile(std::ofstream("output.txt"));
 
 	return 0;

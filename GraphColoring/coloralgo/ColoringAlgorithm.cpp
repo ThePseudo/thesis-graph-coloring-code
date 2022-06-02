@@ -100,6 +100,17 @@ const std::vector<int> ColoringAlgorithm::getColors() const {
 	return this->col;
 }
 
+void ColoringAlgorithm::init() {
+	this->resetCount = -1;
+	this->col = std::vector<int>(this->adj().nV());
+}
+
+void ColoringAlgorithm::reset() {
+	++this->resetCount;
+
+	std::fill(this->col.begin(), this->col.end(), ColoringAlgorithm::INVALID_COLOR);
+}
+
 const int ColoringAlgorithm::computeVertexColor(int const v, int const n_cols, int* targetCol) const {
 	int colorsNum = n_cols;
 	auto neighIt = this->adj().beginNeighs(v);
@@ -150,8 +161,6 @@ std::vector<std::pair<int, int>> ColoringAlgorithm::checkCorrectColoring() {
 void ColoringAlgorithm::printBenchmarkInfo() const {
 	std::cout << "TIME USAGE" << std::endl;
 	this->adj().printBenchmarkInfo();
-
-	Benchmark& bm = *Benchmark::getInstance();
 }
 
 void ColoringAlgorithm::printColors(std::ostream& os) const {

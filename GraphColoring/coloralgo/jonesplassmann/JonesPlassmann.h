@@ -54,6 +54,9 @@ public:
 #endif
 
 	JonesPlassmann(std::string const filepath);
+
+	void init() override;
+	void reset() override;
 	const int startColoring() override;
 
 	void printExecutionInfo() const override;

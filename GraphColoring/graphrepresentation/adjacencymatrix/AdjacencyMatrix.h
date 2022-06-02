@@ -7,8 +7,6 @@
 
 #include <vector>
 
-//#include "configuration.h"
-
 #if defined(PARALLEL_INPUT_LOAD) || defined(PARTITIONED_INPUT_LOAD)
 #include <mutex>
 #endif

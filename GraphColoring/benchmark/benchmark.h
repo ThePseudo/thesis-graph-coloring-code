@@ -11,12 +11,15 @@ private:
 	clock_t prev;
 	clock_t now;
 
-	static Benchmark* _instance;
+	static std::vector<Benchmark*> _instances;
 	Benchmark();
 
 public:
 
-	static Benchmark* getInstance();
+	static Benchmark* getInstance(int z);
+	static float getAvgOfFlag(int flagId);
+	static float getAvgOfTotal();
+
 	void clear(const int flagId);
 	void sampleTime();
 	void sampleTimeToFlag(const int flagId);

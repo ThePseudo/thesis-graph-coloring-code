@@ -8,57 +8,66 @@
 #include <random>
 
 JonesPlassmann::JonesPlassmann(std::string const filepath) {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(0);
+	Benchmark& bm = *Benchmark::getInstance(0);
 
 	this->_adj = new GRAPH_REPR_T();
 
 	std::ifstream fileIS;
 	fileIS.open(filepath);
 	std::istream& is = fileIS;
+
+	bm.sampleTime();
 	is >> *this->_adj;
+	bm.sampleTimeToFlag(0);
 
 	if (fileIS.is_open()) {
 		fileIS.close();
 	}
 
-	this->col = std::vector<int>(this->adj().nV());
+#ifdef PARALLEL_GRAPH_COLOR
+	this->barrier = nullptr;
+#endif
+	this->nIterations = 0;
+}
+
+void JonesPlassmann::init() {
+	__super::init();
+
 	this->vWeights = std::vector<int>(this->adj().nV());
-	
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	this->nWaits = std::vector<int>(this->adj().nV());
-#endif
-#ifdef PARALLEL_GRAPH_COLOR
+#elif defined(PARALLEL_GRAPH_COLOR)
 	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
 	this->firstAndLasts = std::vector<std::pair<int, int>>(this->MAX_THREADS_SOLVE);
-	this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE, 0);
+	this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE);
 #endif
+}
+
+void JonesPlassmann::reset() {
+	__super::reset();
+
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
+	bm.sampleTime();
 
 	srand(static_cast<unsigned>(time(0)));
-	// TODO: Remove static random seed
-	//srand(static_cast<unsigned>(121));
 
 	for (int i = 0; i < this->adj().nV(); ++i) {
-		this->col[i] = this->INVALID_COLOR;
 		this->vWeights[i] = i;
-		//this->vWeights[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+		this->nWaits[i] = 0;
 	}
 	std::random_device rd;
 	std::mt19937 g(rd());
 	std::shuffle(this->vWeights.begin(), this->vWeights.end(), g);
 
 	this->nIterations = 0;
+
+	bm.sampleTimeToFlag(1);
 }
 
 const int JonesPlassmann::startColoring() {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(1);
 #if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-	bm.clear(2);
-	bm.clear(3);
-	bm.clear(4);
 	return this->colorWithCuda();
 #else
 	return this->solve();
@@ -66,9 +75,9 @@ const int JonesPlassmann::startColoring() {
 }
 
 const int JonesPlassmann::solve() {
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
 	int n_cols = 0;
 
-	Benchmark& bm = *Benchmark::getInstance();
 	bm.sampleTime();
 
 #ifdef SEQUENTIAL_GRAPH_COLOR
@@ -95,7 +104,7 @@ const int JonesPlassmann::solve() {
 	n_cols = *std::max_element(this->n_colors.begin(), this->n_colors.end());
 #endif
 
-	bm.sampleTimeToFlag(1);
+	bm.sampleTimeToFlag(2);
 
 	return n_cols;
 }
@@ -214,7 +223,7 @@ const int JonesPlassmann::colorWithCuda() {
 	//size_t total_size = (n + 1) * sizeof(*Ao) + Ao[n] * sizeof(Ac) + n * sizeof(*colors) + n * sizeof(*randoms);
 	//std::cout << "Transfering " << total_size << " bytes to GPU memory." << std::endl;	
 
-	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms);
+	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms, __super::resetCount);
 
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
 	return *std::max_element(this->col.begin(), this->col.end()) + 1;
@@ -232,7 +241,7 @@ void JonesPlassmann::printExecutionInfo() const {
 void JonesPlassmann::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
 #if defined(GRAPH_REPRESENTATION_CSR) && defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
 	std::cout << "TXfer to GPU:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #endif

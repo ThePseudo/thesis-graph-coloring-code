@@ -1,6 +1,5 @@
 #ifdef COLORING_ALGORITHM_GREEDY
 #include "Greedy.h"
-//#include "configuration.h"
 
 #include "benchmark.h"
 
@@ -8,22 +7,38 @@
 #include <fstream>
 
 Greedy::Greedy(std::string const filepath) {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(0);
+	Benchmark& bm = *Benchmark::getInstance(0);
 
 	this->_adj = new GRAPH_REPR_T();
 
 	std::ifstream fileIS;
 	fileIS.open(filepath);
 	std::istream& is = fileIS;
+
+	bm.sampleTime();
 	is >> *this->_adj;
+	bm.sampleTimeToFlag(0);
 
 	if (fileIS.is_open()) {
 		fileIS.close();
 	}
 
-	this->col = std::vector<int>(this->adj().nV(), -1);
+	this->nConflicts = 0;
+	this->nIterations = 0;
+}
+
+void Greedy::init() {
+	__super::init();
+	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
 	this->recolor = std::vector<int>(this->adj().nV());
+}
+
+void Greedy::reset() {
+	__super::reset();
+
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
+	bm.sampleTime();
+
 	for (int i = 0; i < this->adj().nV(); ++i) {
 		this->recolor[i] = i;
 	}
@@ -31,24 +46,60 @@ Greedy::Greedy(std::string const filepath) {
 	this->nConflicts = 0;
 	this->nIterations = 0;
 
-	this->MAX_THREADS_SOLVE = std::min(this->adj().nV(), this->MAX_THREADS_SOLVE);
+	bm.sampleTimeToFlag(1);
 }
 
 const int Greedy::startColoring() {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.clear(1);
-	bm.clear(2);
-#ifdef PARALLEL_GRAPH_COLOR
-	bm.clear(3);
-#endif
-
 	return this->solve();
 }
 
-int Greedy::colorGraph(int n_cols) {
-	Benchmark& bm = *Benchmark::getInstance();
+const int Greedy::solve() {
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
+	int n_cols = 0;
+
 	bm.sampleTime();
 
+#ifdef SEQUENTIAL_GRAPH_COLOR
+	this->sortGraphVerts();
+	n_cols = this->colorGraph(n_cols);
+#endif
+#ifdef PARALLEL_GRAPH_COLOR
+#ifdef PARALLEL_RECOLOR
+	int partial_confs;
+	do {
+		this->sortGraphVerts();
+		n_cols = this->colorGraph(n_cols);
+
+		++this->nIterations;
+
+		partial_confs = this->detectConflicts();
+		this->nConflicts += partial_confs;
+	} while (partial_confs > 0);
+#endif
+#ifdef SEQUENTIAL_RECOLOR
+	this->sortGraphVerts();
+	n_cols = this->colorGraph(n_cols);
+	++this->nIterations;
+	this->nConflicts = this->detectConflicts();
+
+	if (this->nConflicts > 0) {
+		this->sortGraphVerts();
+		int index = 0;
+
+		n_cols = this->colorGraphParallel(n_cols, index);
+
+		bm.sampleTimeToFlag(1);
+		++this->nIterations;
+	}
+#endif
+#endif
+
+	bm.sampleTimeToFlag(2);
+
+	return n_cols;
+}
+
+int Greedy::colorGraph(int n_cols) {
 #ifdef PARALLEL_GRAPH_COLOR
 	std::vector<std::thread> threadPool;
 	int parallelIdx = 0;
@@ -70,8 +121,6 @@ int Greedy::colorGraph(int n_cols) {
 	}
 #endif
 
-	bm.sampleTimeToFlag(2);
-
 	return n_cols;
 }
 
@@ -92,22 +141,15 @@ int Greedy::colorGraphParallel(int n_cols, int& i) {
 }
 
 int Greedy::detectConflicts() {
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-
 	this->recolor.clear();
 	std::vector<std::thread> threadPool;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 		threadPool.emplace_back([&, i] { this->detectConflictsParallel(i); });
 	}
-
 	for (auto& t : threadPool) {
 		t.join();
 	}
-
 	int recolorSize = this->recolor.size();
-
-	bm.sampleTimeToFlag(3);
 
 	return recolorSize;
 }
@@ -153,57 +195,7 @@ void Greedy::sortGraphVerts() {
 #ifdef SORT_VERTEX_ORDER_REVERSED
 	auto sort_lambda = [&](const int v, const int w) { return v > w; };
 #endif
-
-	Benchmark& bm = *Benchmark::getInstance();
-	bm.sampleTime();
-
 	std::sort(this->recolor.begin(), this->recolor.end(), sort_lambda);
-
-	bm.sampleTimeToFlag(1);
-}
-
-const int Greedy::solve() {
-	int n_cols = 0;
-
-#ifdef SEQUENTIAL_GRAPH_COLOR
-	this->sortGraphVerts();
-	n_cols = this->colorGraph(n_cols);
-#endif
-#ifdef PARALLEL_GRAPH_COLOR
-#ifdef PARALLEL_RECOLOR
-	int partial_confs;
-	do {
-		this->sortGraphVerts();
-		n_cols = this->colorGraph(n_cols);
-
-		++this->nIterations;
-
-		partial_confs = this->detectConflicts();
-		this->nConflicts += partial_confs;
-	} while (partial_confs > 0);
-#endif
-#ifdef SEQUENTIAL_RECOLOR
-	this->sortGraphVerts();
-	n_cols = this->colorGraph(n_cols);
-	++this->nIterations;
-	this->nConflicts = this->detectConflicts();
-
-	if (this->nConflicts > 0) {
-		this->sortGraphVerts();
-		int index = 0;
-
-		Benchmark& bm = *Benchmark::getInstance();
-		bm.sampleTime();
-
-		n_cols = this->colorGraphParallel(n_cols, index);
-
-		bm.sampleTimeToFlag(1);
-		++this->nIterations;
-	}
-#endif
-#endif
-
-	return n_cols;
 }
 
 const int Greedy::getConflicts() const {
@@ -226,7 +218,7 @@ void Greedy::printExecutionInfo() const {
 void Greedy::printBenchmarkInfo() const {
 	__super::printBenchmarkInfo();
 
-	Benchmark& bm = *Benchmark::getInstance();
+	Benchmark& bm = *Benchmark::getInstance(__super::resetCount);
 	std::cout << "Vertex sort:\t\t" << bm.getTimeOfFlag(1) << " s" << std::endl;
 	std::cout << "Vertex color:\t\t" << bm.getTimeOfFlag(2) << " s" << std::endl;
 #ifdef PARALLEL_GRAPH_COLOR

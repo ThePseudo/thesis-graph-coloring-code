@@ -4,6 +4,6 @@
 //#include "configuration.h"
 #include "benchmark.h"
 
-int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms);
-int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors);
+int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms, int resetCount);
+int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int resetCount);
 #endif // !_CUDA_KERNELS_H
