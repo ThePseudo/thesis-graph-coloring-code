@@ -19,7 +19,7 @@
 
 class ColoringAlgorithm {
 protected:
-	constexpr static int INVALID_COLOR = -1;
+        static int INVALID_COLOR;
 
 	int resetCount;
 	GRAPH_REPR_T* _adj = nullptr;

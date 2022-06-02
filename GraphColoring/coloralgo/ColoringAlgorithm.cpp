@@ -4,6 +4,8 @@
 
 #include "benchmark.h"
 
+int ColoringAlgorithm::INVALID_COLOR = -1;
+
 void ColoringAlgorithm::printColorAlgorithmConfs() {
 	std::cout << "Coloring Algorithm: ";
 #ifdef COLORING_ALGORITHM_CUSPARSE
@@ -108,7 +110,7 @@ void ColoringAlgorithm::init() {
 void ColoringAlgorithm::reset() {
 	++this->resetCount;
 
-	std::fill(this->col.begin(), this->col.end(), ColoringAlgorithm::INVALID_COLOR);
+	std::fill(this->col.begin(), this->col.end(), this->INVALID_COLOR);
 }
 
 const int ColoringAlgorithm::computeVertexColor(int const v, int const n_cols, int* targetCol) const {
