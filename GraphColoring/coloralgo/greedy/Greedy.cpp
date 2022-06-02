@@ -88,7 +88,6 @@ const int Greedy::solve() {
 
 		n_cols = this->colorGraphParallel(n_cols, index);
 
-		bm.sampleTimeToFlag(1);
 		++this->nIterations;
 	}
 #endif
