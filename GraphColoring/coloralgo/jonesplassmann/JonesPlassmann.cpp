@@ -41,6 +41,7 @@ void JonesPlassmann::init() {
 	this->barrier = new Barrier(this->MAX_THREADS_SOLVE);
 	this->nWaits = std::vector<std::atomic_int>(this->adj().nV());
 	this->firstAndLasts = std::vector<std::pair<int, int>>(this->MAX_THREADS_SOLVE);
+	this->partitionVertices();
 	this->n_colors = std::vector<int>(this->MAX_THREADS_SOLVE);
 #endif
 }
@@ -84,11 +85,9 @@ const int JonesPlassmann::solve() {
 	this->coloringHeuristic(0, this->adj().nV(), n_cols);
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
-	std::vector<std::thread> threadPool;
+	std::vector<std::thread> threadPool(this->MAX_THREADS_SOLVE);
+	bm.sampleTimeToFlag(1);
 	
-	this->partitionVertices();
-	
-	threadPool.reserve(this->MAX_THREADS_SOLVE);
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 		auto& firstAndLast = this->firstAndLasts[i];
 		auto& ncols = this->n_colors[i];
