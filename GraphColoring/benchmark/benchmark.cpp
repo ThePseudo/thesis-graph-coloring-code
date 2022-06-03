@@ -3,9 +3,9 @@
 std::vector<Benchmark*> Benchmark::_instances = std::vector<Benchmark*>(0);
 
 Benchmark::Benchmark() {
-	this->timeMap = new std::unordered_map<int, clock_t>();
-	this->prev = 0;
-	this->now = 0;
+	this->timeMap = new std::unordered_map<int, long long int>();
+	this->prev = {};
+	this->now = {};
 
 	this->clear(0);	// File load
 	this->clear(1);	// Preprocess
@@ -24,18 +24,18 @@ Benchmark* Benchmark::getInstance(int z) {
 	return Benchmark::_instances[z];
 }
 
-float Benchmark::getAvgOfFlag(int flagId) {
-	clock_t sum = 0;
+double Benchmark::getAvgOfFlag(int flagId) {
+	long long int sum = 0.0;
 
 	for (auto& inst : Benchmark::_instances) {
 		sum += inst->timeMap->at(flagId);
 	}
 
-	return ((float)sum) / Benchmark::_instances.size() / CLOCKS_PER_SEC;
+	return (double)(sum) / Benchmark::_instances.size() / 1000 / 1000;
 }
 
-float Benchmark::getAvgOfTotal() {
-	clock_t sum = 0;
+double Benchmark::getAvgOfTotal() {
+	long long int sum = 0;
 
 	for (auto& inst : Benchmark::_instances) {
 		for (auto& it : *inst->timeMap) {
@@ -43,31 +43,31 @@ float Benchmark::getAvgOfTotal() {
 		}
 	}
 
-	return ((float)sum) / Benchmark::_instances.size() / CLOCKS_PER_SEC;
+	return (double)(sum) / Benchmark::_instances.size() / 1000 / 1000;
 }
 
 void Benchmark::clear(const int flagId) {
-	this->timeMap->emplace(flagId, 0);
+	this->timeMap->emplace(flagId, 0.0);
 }
 
 void Benchmark::sampleTime() {
 	this->prev = this->now;
-	now = clock();
+	now = std::chrono::steady_clock::now();
 }
 
 void Benchmark::sampleTimeToFlag(const int flagId) {
 	this->sampleTime();
-	this->timeMap->at(flagId) += now - prev;
+	this->timeMap->at(flagId) += std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count();
 }
 
-float Benchmark::getTimeOfFlag(const int flagId) {
-	return (float)(this->timeMap->at(flagId)) / CLOCKS_PER_SEC;
+double Benchmark::getTimeOfFlag(const int flagId) {
+	return (double)(this->timeMap->at(flagId)) / 1000 / 1000;
 }
 
-float Benchmark::getTotalTime() {
-	clock_t sum = 0;
+double Benchmark::getTotalTime() {
+	long long int sum = 0;
 	for (auto& it : *this->timeMap) {
 		sum += it.second;
 	}
-	return (float)(sum) / CLOCKS_PER_SEC;
+	return (double)(sum) / 1000 / 1000;
 }
