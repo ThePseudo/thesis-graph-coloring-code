@@ -85,7 +85,8 @@ const int JonesPlassmann::solve() {
 	this->coloringHeuristic(0, this->adj().nV(), n_cols);
 #endif
 #ifdef PARALLEL_GRAPH_COLOR
-	std::vector<std::thread> threadPool(this->MAX_THREADS_SOLVE);
+	std::vector<std::thread> threadPool;
+	threadPool.reserve(this->MAX_THREADS_SOLVE);
 	bm.sampleTimeToFlag(1);
 	
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
