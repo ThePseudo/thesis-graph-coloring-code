@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
 	std::cout << "Avg preprocess time: " << Benchmark::getAvgOfFlag(1) << std::endl;
 	std::cout << "Avg process time: " << Benchmark::getAvgOfFlag(2) << std::endl;
 	std::cout << "Avg postprocess time: " << Benchmark::getAvgOfFlag(3) << std::endl;
-	std::cout << "Avg total time: " << Benchmark::getAvgOfTotal() << std::endl;
+	std::cout << "Avg total time: " << Benchmark::getEffectiveAvg() << std::endl;
 	std::cout << "Avg number colors: " << (int)round(std::accumulate(n_colors.begin(), n_colors.end(), 0.0f) / num_runs) << std::endl;
 
 	//std::cout << "Load time: " << 

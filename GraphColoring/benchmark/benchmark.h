@@ -14,11 +14,16 @@ private:
 	static std::vector<Benchmark*> _instances;
 	Benchmark();
 
+	static double countToMicroseconds(long long int count);
+	static double countToMilliseconds(long long int count);
+	static double countToSeconds(long long int count);
+
 public:
 
 	static Benchmark* getInstance(int z);
 	static double getAvgOfFlag(int flagId);
 	static double getAvgOfTotal();
+	static double getEffectiveAvg();
 
 	void clear(const int flagId);
 	void sampleTime();

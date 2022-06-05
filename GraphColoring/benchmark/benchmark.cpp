@@ -13,6 +13,18 @@ Benchmark::Benchmark() {
 	this->clear(3);	// Postprocess
 }
 
+double Benchmark::countToMicroseconds(long long int count) {
+	return (double)count;
+}
+
+double Benchmark::countToMilliseconds(long long int count) {
+	return Benchmark::countToMicroseconds(count) / 1000;
+}
+
+double Benchmark::countToSeconds(long long int count) {
+	return Benchmark::countToMilliseconds(count) / 1000;
+}
+
 Benchmark* Benchmark::getInstance(int z) {
 	if (Benchmark::_instances.size() <= z) {
 		int old_size = Benchmark::_instances.size();
@@ -25,13 +37,13 @@ Benchmark* Benchmark::getInstance(int z) {
 }
 
 double Benchmark::getAvgOfFlag(int flagId) {
-	long long int sum = 0.0;
+	long long int sum = 0;
 
 	for (auto& inst : Benchmark::_instances) {
 		sum += inst->timeMap->at(flagId);
 	}
 
-	return (double)(sum) / Benchmark::_instances.size() / 1000 / 1000;
+	return Benchmark::countToSeconds(sum) / Benchmark::_instances.size();
 }
 
 double Benchmark::getAvgOfTotal() {
@@ -43,7 +55,16 @@ double Benchmark::getAvgOfTotal() {
 		}
 	}
 
-	return (double)(sum) / Benchmark::_instances.size() / 1000 / 1000;
+	return Benchmark::countToSeconds(sum) / Benchmark::_instances.size();
+}
+
+double Benchmark::getEffectiveAvg() {
+	double avg = Benchmark::getAvgOfFlag(1)
+		+ Benchmark::getAvgOfFlag(2)
+		+ Benchmark::getAvgOfFlag(3);
+	long long int load_time = Benchmark::_instances[0]->timeMap->at(0);
+
+	return avg + Benchmark::countToSeconds(load_time);
 }
 
 void Benchmark::clear(const int flagId) {
@@ -61,7 +82,7 @@ void Benchmark::sampleTimeToFlag(const int flagId) {
 }
 
 double Benchmark::getTimeOfFlag(const int flagId) {
-	return (double)(this->timeMap->at(flagId)) / 1000 / 1000;
+	return Benchmark::countToSeconds(this->timeMap->at(flagId));
 }
 
 double Benchmark::getTotalTime() {
@@ -69,5 +90,5 @@ double Benchmark::getTotalTime() {
 	for (auto& it : *this->timeMap) {
 		sum += it.second;
 	}
-	return (double)(sum) / 1000 / 1000;
+	return  Benchmark::countToSeconds(sum);
 }
