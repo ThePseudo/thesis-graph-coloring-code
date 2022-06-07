@@ -95,18 +95,18 @@ const int GebremedhinManne::solve() {
 
 int GebremedhinManne::colorGraph(int n_cols) {
 #ifdef PARALLEL_GRAPH_COLOR
-	std::vector<std::thread> threadPool;
+	std::vector<std::future<void>> threadPool;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
 #ifdef USE_STANDARD_ALGORITHM
-		threadPool.emplace_back([=] { this->partitionBasedColoring(n_cols, i, this->MAX_THREADS_SOLVE); });
+		threadPool.push_back(std::async(std::launch::async, &GebremedhinManne::partitionBasedColoring, this, n_cols, i, this->MAX_THREADS_SOLVE));
 #endif
 #ifdef USE_IMPROVED_ALGORITHM
-		threadPool.emplace_back([=] { this->improvedPartitionBasedColoring(n_cols, i, this->MAX_THREADS_SOLVE); });
+		threadPool.push_back(std::async(std::launch::async, &GebremedhinManne::improvedPartitionBasedColoring, this, n_cols, i, this->MAX_THREADS_SOLVE));
 #endif
 	}
 
 	for (auto& t : threadPool) {
-		t.join();
+		t.get();
 	}
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR

@@ -11,6 +11,7 @@
 
 #ifdef PARALLEL_GRAPH_COLOR
 #include <atomic>
+#include <future>
 #include <thread>
 #include <mutex>
 

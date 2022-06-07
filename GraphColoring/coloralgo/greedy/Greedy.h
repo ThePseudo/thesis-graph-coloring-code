@@ -3,6 +3,7 @@
 
 #ifdef COLORING_ALGORITHM_GREEDY
 
+#include <future>
 #include <vector>
 #include <thread>
 #include <mutex>

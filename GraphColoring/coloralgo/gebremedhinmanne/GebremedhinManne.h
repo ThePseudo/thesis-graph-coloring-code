@@ -3,6 +3,7 @@
 
 //#include "configuration.h"
 
+#include <future>
 #include <vector>
 #include <thread>
 #include <unordered_map>

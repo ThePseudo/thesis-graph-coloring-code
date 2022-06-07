@@ -100,17 +100,17 @@ const int Greedy::solve() {
 
 int Greedy::colorGraph(int n_cols) {
 #ifdef PARALLEL_GRAPH_COLOR
-	std::vector<std::thread> threadPool;
+	std::vector<std::future<int>> threadPool;
 	int parallelIdx = 0;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
-		threadPool.emplace_back([&, n_cols] { this->colorGraphParallel(n_cols, parallelIdx); });
+		threadPool.push_back(std::async(std::launch::async, &Greedy::colorGraphParallel, this, n_cols, std::ref(parallelIdx)));
 	}
 
 	for (auto& t : threadPool) {
-		t.join();
+		n_cols = std::max(n_cols, t.get());
 	}
 
-	n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
+	//n_cols = *std::max_element(this->col.begin(), this->col.end()) + 1;
 #endif
 #ifdef SEQUENTIAL_GRAPH_COLOR
 	auto const end = this->recolor.end();
@@ -141,12 +141,12 @@ int Greedy::colorGraphParallel(int n_cols, int& i) {
 
 int Greedy::detectConflicts() {
 	this->recolor.clear();
-	std::vector<std::thread> threadPool;
+	std::vector<std::future<void>> threadPool;
 	for (int i = 0; i < this->MAX_THREADS_SOLVE; ++i) {
-		threadPool.emplace_back([&, i] { this->detectConflictsParallel(i); });
+		threadPool.push_back(std::async(std::launch::async, &Greedy::detectConflictsParallel, this, i));
 	}
 	for (auto& t : threadPool) {
-		t.join();
+		t.get();
 	}
 	int recolorSize = this->recolor.size();
 
