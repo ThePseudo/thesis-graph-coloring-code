@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13.2)
 
 project(GraphColoring
-		VERSION 2022.05.07
+		VERSION 2022.06.07
 		LANGUAGES CUDA CXX)
 
 # begin /* Suppress all warnings from gcc */
