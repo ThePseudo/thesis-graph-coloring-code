@@ -84,12 +84,12 @@ int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vecto
 	int c = -1;	// Number of colors used
 	int left = n;	// Number of non-colored vertices
 
-	int nb;	// Number of blocks to be launched
-	int nt;	// Number of threads per block to be launched
+	int nb = 1973;	// Number of blocks to be launched
+	int nt = 256;	// Number of threads per block to be launched
 	// Get optimal number of blocks and threads to launch to fill SMs
-	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_kernel, 0, 0);
+//	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_kernel, 0, 0);
 	// Limit blocks ti be launched by the number of vertices
-	nb = std::min((n + nt - 1) / nt, nb);
+//	nb = std::min((n + nt - 1) / nt, nb);
 
 	// Get raw pointer to device array
 	int* dColors = thrust::raw_pointer_cast(dvColors.data());
