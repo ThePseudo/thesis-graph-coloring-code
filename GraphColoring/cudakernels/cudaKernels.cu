@@ -56,7 +56,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	float occuparcyPerc = checkDeviceMemOccupancy(occupancyBytes);
 	if (occuparcyPerc > 1.0) {
 		printf("Required %.2f%% of global memory.\n", occuparcyPerc * 100);
-		std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
+		std::cout << "Unavailable resources. Program will be stopped." << std::endl;
 		return - 1;
 	}
 

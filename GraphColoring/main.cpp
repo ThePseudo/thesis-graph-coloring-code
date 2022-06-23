@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 
 		if (n_colors[i] < 0) {
 			std::cout << "ERROR" << std::endl;
-			continue;
+			exit(1);
 		}
 
 		Benchmark& bm = *Benchmark::getInstance(i);

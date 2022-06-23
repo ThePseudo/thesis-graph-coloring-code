@@ -40,7 +40,12 @@ const int CusparseColoring::startColoring() {
 	const int* Ac = this->adj().getColIndexes();
 	int* colors = this->col.data();
 	int possibly_wrong_return_value = color_cusparse(n, Ao, Ac, colors, __super::resetCount);
-	std::set<int> colorSet(colors, colors+n);
+	
+	if (possibly_wrong_return_value == -1) {	// Error
+		return possibly_wrong_return_value;
+	}
+
+	std::set<int> colorSet(colors, colors + n);
 	return colorSet.size();
 #else
 	std::cout << "Please enable GRAPH_REPRESENTATION_CSR to use this algorithm." << std::endl;
