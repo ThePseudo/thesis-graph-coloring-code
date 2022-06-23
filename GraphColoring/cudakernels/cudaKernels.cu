@@ -25,6 +25,16 @@ inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abo
   }
 }
 
+float checkDeviceMemOccupancy(size_t required) {
+	int device = 0;
+	size_t totalGlobalMemory = 0;
+	cudaDeviceProp prop;
+	cudaGetDeviceProperties(&prop, device);
+	totalGlobalMemory = prop.totalGlobalMem;
+
+	return required * 1.0f / totalGlobalMemory;
+}
+
 int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors);
 __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
 
@@ -41,6 +51,14 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	int* dRandoms;
 	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
+
+	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + n * sizeof(*dRandoms);
+	float occuparcyPerc = checkDeviceMemOccupancy(occupancyBytes);
+	if (occuparcyPerc > 1.0) {
+		printf("Required %.2f%% of global memory.\n", occuparcyPerc * 100);
+		std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
+		return - 1;
+	}
 
 	thrust::device_vector<int> dvColors(n, -1);
 
@@ -84,10 +102,10 @@ int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vecto
 	int c = -1;	// Number of colors used
 	int left = n;	// Number of non-colored vertices
 
-	int nb;	// Number of blocks to be launched
 	int nt = 256;	// Number of threads per block to be launched
+	int nb = (n + nt - 1) / nt;	// Number of blocks to be launched
 	// Limit blocks to be launched by the number of vertices (one thread per vertex)
-	nb = std::min((n + nt - 1) / nt, nb);
+
 	// Get optimal number of blocks and threads to launch to fill SMs
 //	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_kernel, 0, 0);
 	
@@ -256,6 +274,14 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 
 	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
+
+	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + Ao[n] * sizeof(*dAv);
+	float occuparcyPerc = checkDeviceMemOccupancy(occupancyBytes);
+	if (occuparcyPerc > 1.0) {
+		printf("Required %.2f%% of global memory.\n", occuparcyPerc * 100);
+		std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
+		return -1;
+	}
 
 	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
 	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
