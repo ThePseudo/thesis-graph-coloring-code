@@ -53,9 +53,9 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	bm.sampleTime();
 
 	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + n * sizeof(*dRandoms);
-	float occuparcyPerc = checkDeviceMemOccupancy(occupancyBytes);
-	if (occuparcyPerc > 1.0) {
-		printf("Required %.2f%% of global memory.\n", occuparcyPerc * 100);
+	float occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
+	if (occupancyPerc > 1.0) {
+		printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
 		std::cout << "Unavailable resources. Program will be stopped." << std::endl;
 		return - 1;
 	}
@@ -276,9 +276,9 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	bm.sampleTime();
 
 	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + Ao[n] * sizeof(*dAv);
-	float occuparcyPerc = checkDeviceMemOccupancy(occupancyBytes);
-	if (occuparcyPerc > 1.0) {
-		printf("Required %.2f%% of global memory.\n", occuparcyPerc * 100);
+	float occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
+	if (occupancyPerc > 1.0) {
+		printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
 		std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
 		return -1;
 	}
