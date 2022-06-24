@@ -1,4 +1,4 @@
-﻿#include "cuda_runtime.h"
+#include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <thrust/count.h>
 #include <thrust/device_vector.h>
@@ -35,6 +35,15 @@ float checkDeviceMemOccupancy(size_t required) {
 	return required * 1.0f / totalGlobalMemory;
 }
 
+size_t calc_jpl_memory_occupancy(int const first, int const last, const int* Ao) {
+	return sizeof(*Ao) * (3 * (last - first) + Ao[last] - Ao[first] + 1);
+}
+
+size_t calc_cusparse_memory_occupancy(int const first, int const last, const int* Ao) {
+	return sizeof(*Ao) * (2 * (last - first) + Ao[last] - Ao[first] + 1) +
+		sizeof(float) * (Ao[last] - Ao[first]);
+}
+
 int launch_kernel(int n, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors);
 __global__ void color_jpl_kernel(const int n, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
 
@@ -52,7 +61,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
 
-	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + n * sizeof(*dRandoms);
+	size_t occupancyBytes = calc_jpl_memory_occupancy(0, n, Ao);
 	float occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
 	if (occupancyPerc > 1.0) {
 		printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
@@ -71,18 +80,6 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	CUDA_SAFE_CALL(cudaMemcpy(dRandoms, randoms, n * sizeof(*randoms), cudaMemcpyHostToDevice));
 
 	bm.sampleTimeToFlag(1);
-
-	//int device = 0;
-	//int supportsCoopLaunch = 0;
-	//cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, device);
-	//if (supportsCoopLaunch) {
-	//	std::cout << "Launching in cooperative mode🤝" << std::endl;
-	//	// Get raw pointer for dColors
-	//	int* dColors = thrust::raw_pointer_cast(dvColors.data());
-	//	c = launch_kernel_coop(n, dAo, dAc, dRandoms, dColors, colors);
-	//} else {
-	//	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors, colors);
-	//}
 
 	c = launch_kernel(n, dAo, dAc, dRandoms, dvColors);
 	bm.sampleTimeToFlag(2);
@@ -275,7 +272,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
 
-	size_t occupancyBytes = (n + 1) * sizeof(*dAo) + Ao[n] * sizeof(*dAc) + n * sizeof(*colors) + Ao[n] * sizeof(*dAv);
+	size_t occupancyBytes = calc_cusparse_memory_occupancy(0, n, Ao);
 	float occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
 	if (occupancyPerc > 1.0) {
 		printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
