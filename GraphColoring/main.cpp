@@ -147,6 +147,19 @@ int main(int argc, char** argv) {
 			std::cout << "ERROR" << std::endl;
 			exit(1);
 		}
+		std::vector<std::pair<int, int>> incorrectPairs = G.checkCorrectColoring();
+		if (!incorrectPairs.empty()) {
+			std::cout << std::endl <<
+				"There was an error while assigning colors. " <<
+				(incorrectPairs.size() >> 1) << " pairs of verteces have the same color." << std::endl;
+			if (print_colors) {
+				for (auto& p : incorrectPairs) {
+					if (p.first < p.second) {
+						std::cout << "v: " << p.first << " w: " << p.second << "  COLOR: " << G.getColors()[p.first] << std::endl;
+					}
+				}
+			}
+		}
 
 		Benchmark& bm = *Benchmark::getInstance(i);
 		std::cout << "num-cols: " << n_colors[i] << " \t";
