@@ -115,7 +115,7 @@ endif ()
 if (CUDA_VERSION VERSION_EQUAL "9.0" OR CUDA_VERSION VERSION_GREATER "9.0")
   option(GC_GENCODE_SM70
     "ON to generate code for Compute Capability 7.0 devices (e.g. Volta V100)"
-    ON)
+    OFF)
   option(GC_GENCODE_SM72
     "ON to generate code for Compute Capability 7.2 devices (e.g. Jetson AGX Xavier)"
     OFF)
@@ -132,7 +132,7 @@ endif ()
 if (CUDA_VERSION VERSION_EQUAL "11.0" OR CUDA_VERSION VERSION_GREATER "11.0")
   option(GC_GENCODE_SM80
     "ON to generate code for Compute Capability 8.0 devices"
-    OFF)
+    ON)
 endif ()
 
 option (CUDA_AUTODETECT_GENCODE
