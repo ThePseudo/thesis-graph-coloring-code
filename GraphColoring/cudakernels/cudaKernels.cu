@@ -282,8 +282,6 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	int* dAo;
 	int* dAc;
 	int* dColors;
-	int first;
-	int last;
 
 	int c;
 	float fractionToColor = 1.0;
@@ -292,65 +290,58 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	cusparseHandle_t handle;
 	cusparseMatDescr_t matrixDesc;
 	cusparseColorInfo_t colorInfo;
+	
+	Benchmark& bm = *Benchmark::getInstance(resetCount);
+	bm.sampleTime();
 
 	status = cusparseCreate(&handle);
 	status = cusparseCreateMatDescr(&matrixDesc);
 	status = cusparseCreateColorInfo(&colorInfo);
 
-	Benchmark& bm = *Benchmark::getInstance(resetCount);
-
-	for (first = 0, last = n; first < n; first = last, last = n) {
-		bm.sampleTime();
-
-		size_t occupancyBytes;
-		float occupancyPerc;
-		do {
-			occupancyBytes = calc_cusparse_memory_occupancy(first, last, Ao);
-			occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
-			if (occupancyPerc > 1.0) {
-				//printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
-				//std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
-				//return -1;
-				last *= 1.0f / occupancyPerc;
-			}
-		} while (occupancyPerc >= 1.0f);
-
-		CUDA_SAFE_CALL(cudaMalloc(&dAo, (last - first + 1) * sizeof(*dAo)));
-		CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao + first, (last - first + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
-
-		CUDA_SAFE_CALL(cudaMalloc(&dAc, (Ao[last] - Ao[first]) * sizeof(*dAc)));
-		CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac + first, (Ao[last] - Ao[first]) * sizeof(*Ac), cudaMemcpyHostToDevice));
-
-		CUDA_SAFE_CALL(cudaMalloc(&dColors, (last - first) * sizeof(*dColors)));
-		CUDA_SAFE_CALL(cudaMemcpy(dColors, colors + first, (last - first) * sizeof(*colors), cudaMemcpyHostToDevice));
-
-		CUDA_SAFE_CALL(cudaMalloc(&dAv, (Ao[last] - Ao[first]) * sizeof(*dAv)));
-
-		bm.sampleTimeToFlag(1);
-		status = cusparseScsrcolor(handle,
-			last - first,
-			Ao[last] - Ao[first],
-			matrixDesc,
-			dAv,
-			dAo,
-			dAc,
-			&fractionToColor,
-			&c,
-			dColors,
-			NULL,
-			colorInfo);
-
-		cudaDeviceSynchronize();
-		bm.sampleTimeToFlag(2);
-
-		CUDA_SAFE_CALL(cudaMemcpy(colors + first, dColors, (last - first) * sizeof(*colors), cudaMemcpyDeviceToHost));
-
-		bm.sampleTimeToFlag(3);
-		CUDA_SAFE_CALL(cudaFree(dAv));
-		CUDA_SAFE_CALL(cudaFree(dAo));
-		CUDA_SAFE_CALL(cudaFree(dAc));
-		CUDA_SAFE_CALL(cudaFree(dColors));
+	size_t occupancyBytes = calc_cusparse_memory_occupancy(0, n, Ao);
+	float occupancyPerc = checkDeviceMemOccupancy(occupancyBytes);
+	if (occupancyPerc > 1.0) {
+		printf("Required %.2f%% of global memory.\n", occupancyPerc * 100);
+		std::cout << "ERROR: Unavailable resources. Program will be stopped." << std::endl;
+		return -1;
 	}
+
+	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
+	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc(&dAc, Ao[n] * sizeof(*dAc)));
+	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc(&dColors, n * sizeof(*dColors)));
+	CUDA_SAFE_CALL(cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc(&dAv, Ao[n] * sizeof(*dAv)));
+
+	bm.sampleTimeToFlag(1);
+	status = cusparseScsrcolor(handle,
+		n,
+		Ao[n],
+		matrixDesc,
+		dAv,
+		dAo,
+		dAc,
+		&fractionToColor,
+		&c,
+		dColors,
+		NULL,
+		colorInfo);
+
+	cudaDeviceSynchronize();
+	bm.sampleTimeToFlag(2);
+
+	CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
+
+	bm.sampleTimeToFlag(3);
+	CUDA_SAFE_CALL(cudaFree(dAv));
+	CUDA_SAFE_CALL(cudaFree(dAo));
+	CUDA_SAFE_CALL(cudaFree(dAc));
+	CUDA_SAFE_CALL(cudaFree(dColors));
+	
 
 	cusparseDestroyMatDescr(matrixDesc);
 	cusparseDestroyColorInfo(colorInfo);
