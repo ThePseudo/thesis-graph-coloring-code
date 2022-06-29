@@ -225,12 +225,37 @@ const int JonesPlassmann::colorWithCuda() {
 
 	this->nIterations = color_jpl(n, Ao, Ac, colors, randoms, __super::resetCount);
 
-#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-	return *std::max_element(this->col.begin(), this->col.end()) + 1;
-#endif
-#ifdef COLOR_MAX_INDEPENDENT_SET
-	return this->nIterations;
-#endif
+	Benchmark& bm = *Benchmark::getInstance(this->resetCount);
+	bm.sampleTime();
+
+	if (this->nIterations < 0) {	// Conflicts present
+		this->nIterations *= -1;
+		std::vector<int> vertConflicts(0);
+
+		for (int v = 0; v < this->adj().nV(); ++v) {
+			if (this->col[v] == this->INVALID_COLOR) return -1;
+			
+			auto end = this->adj().endNeighs(v);
+			for (auto it = this->adj().beginNeighs(v); it != end; ++it) {
+				int w = *it;
+
+				if (v >= w) continue;
+				if (this->col[v] == this->col[w]) {
+					this->col[v] = this->INVALID_COLOR;
+					vertConflicts.push_back(v);
+					break;
+				}
+			}
+		}
+
+		for (auto& v : vertConflicts) {
+			this->computeVertexColor(v, this->nIterations, &this->col[v]);
+		}
+	}
+	int num_cols = std::set<int>(this->col.begin(), this->col.end()).size();
+	bm.sampleTimeToFlag(3);
+
+	return num_cols;
 }
 #endif
 
