@@ -238,7 +238,9 @@ void GebremedhinManne::improvedPartitionBasedColoring(int n_cols, int const init
 		}
 
 		// Synchronize thread for every color class
-		//this->barrier->wait();
+#ifdef COLORING_SYNCHRONOUS
+		this->barrier->wait();
+#endif
 	}
 #ifdef PARALLEL_GRAPH_COLOR
 	this->barrier->wait();
