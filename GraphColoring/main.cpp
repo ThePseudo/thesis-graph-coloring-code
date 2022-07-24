@@ -35,12 +35,15 @@
 
 bool print_colors = false;
 char* print_color_file = nullptr;
+bool print_histo = false;
+char* print_histo_file = nullptr;
 unsigned int num_runs = 1;
 
 void printUsage(int const argc, char** const argv) {
 	std::cout << "Usage: " << argv[0] << " [OPTIONS] <graph_path>" << std::endl;
 	std::cout << "OPTIONS:" << std::endl;
 	std::cout << "\t-c[=FOUT]\tPrint assigned colors to FOUT after last run (default: stdout)" << std::endl;
+	std::cout << "\t-H[=FOUT]\tPrint histogram of colors to FOUT after last run (default: stdout)" << std::endl;
 	std::cout << "\t-r <int>\tRun algorithm <int> times (default: 1)" << std::endl;
 }
 
@@ -73,6 +76,17 @@ void analyzeArgs(int const argc, char** const argv, std::string* graph_path) {
 				char* fOut = &curr_arg[3];
 				if (strlen(fOut) > 0) {
 					print_color_file = fOut;
+				}
+			} else {	// Output to stdout
+				// Do nothing
+			}
+		} else if (0 == strncmp(curr_arg, "-H", 2)) {
+			print_histo = true;
+
+			if (curr_arg[2] == '=') {	// Custom output file
+				char* fOut = &curr_arg[3];
+				if (strlen(fOut) > 0) {
+					print_histo_file = fOut;
 				}
 			} else {	// Output to stdout
 				// Do nothing
@@ -208,6 +222,14 @@ int main(int argc, char** argv) {
 		}
 
 		G.printColors(*os);
+	}
+	if (print_histo) {
+		std::ostream* os = &std::cout;
+		if (print_histo_file != nullptr) {
+			os = new std::ofstream(print_histo_file, std::ios::out);
+		}
+
+		G.printHisto(*os);
 	}
 	//G.printDotFile(std::ofstream("output.txt"));
 

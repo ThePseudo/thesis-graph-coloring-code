@@ -1,6 +1,7 @@
 #include "ColoringAlgorithm.h"
 
 #include <algorithm>
+#include <map>
 
 #include "benchmark.h"
 
@@ -168,6 +169,21 @@ void ColoringAlgorithm::printBenchmarkInfo() const {
 void ColoringAlgorithm::printColors(std::ostream& os) const {
 	for (int v = 0; v < this->adj().nV(); ++v) {
 		os << v << ": " << this->col[v] << std::endl;
+	}
+}
+
+void ColoringAlgorithm::printHisto(std::ostream& os) const {
+	std::map<int, int, std::less<int>> colorHisto;
+
+	for (const auto& color : this->col) {
+		if (colorHisto.find(color) == colorHisto.end()) {
+			colorHisto.insert(std::pair<int, int>(color, 0));
+		}
+		colorHisto[color] += 1;
+	}
+
+	for (const auto& histoCol : colorHisto) {
+		os << histoCol.first << ": " << histoCol.second << std::endl;
 	}
 }
 

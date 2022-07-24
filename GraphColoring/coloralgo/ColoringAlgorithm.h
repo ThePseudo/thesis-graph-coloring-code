@@ -45,6 +45,7 @@ public:
 	virtual void printBenchmarkInfo() const;
 
 	void printColors(std::ostream& os) const;
+	void printHisto(std::ostream& os) const;
 	void printDotFile(std::ostream& os) const;
 };
 
