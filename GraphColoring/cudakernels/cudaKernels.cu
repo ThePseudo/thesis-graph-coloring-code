@@ -161,8 +161,15 @@ __global__ void color_jpl_kernel(const int first, const int last, const int c, c
 			// ignore nodes colored earlier (and yourself)
 			if (j < 0 || j >= last - first || color_jpl_ingore_neighbor(color, i, j, colors[j])) continue;
 
-			int ir = randoms[i];
-			int jr = randoms[j];
+			int ir, jr;
+#ifdef COLOR_MIN_MAX_INDEPENDENT_SET
+			ir = randoms[(i + (color<<1 / 2)) % (last - first)];
+			jr = randoms[(j + (color<<1 / 2)) % (last - first)];
+#endif
+#ifdef COLOR_MAX_INDEPENDENT_SET
+			ir = randoms[(i + color / 2) % (last - first)];
+			jr = randoms[(j + color / 2) % (last - first)];
+#endif
 
 			localmax &= ir > jr;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
