@@ -270,9 +270,11 @@ __device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j,
 
 __device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin) {
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-	if (localmin) *color_i = c + 1;
+	*color_i += (c+2) * (localmin && !localmax) + (c+1) * localmax;
 #endif
-	if (localmax) *color_i = c;
+#ifdef COLOR_MAX_INDEPENDENT_SET
+	*color_i += (c+1) * localmax;
+#endif
 
 	return localmax || localmin;
 }
