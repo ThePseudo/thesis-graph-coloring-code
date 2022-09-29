@@ -163,12 +163,12 @@ __global__ void color_jpl_kernel(const int first, const int last, const int c, c
 
 			int ir, jr;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-			ir = randoms[(i + (color<<1 / 2)) % (last - first)];
-			jr = randoms[(j + (color<<1 / 2)) % (last - first)];
+			ir = randoms[(i + (color<<1)) % (last - first)];
+			jr = randoms[(j + (color<<1)) % (last - first)];
 #endif
 #ifdef COLOR_MAX_INDEPENDENT_SET
-			ir = randoms[(i + color / 2) % (last - first)];
-			jr = randoms[(j + color / 2) % (last - first)];
+			ir = randoms[(i + color) % (last - first)];
+			jr = randoms[(j + color) % (last - first)];
 #endif
 
 			localmax &= ir > jr;
