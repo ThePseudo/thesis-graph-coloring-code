@@ -179,6 +179,9 @@ void JonesPlassmann::calcWaitTime(int const first, int const last) {
 			neighIt != end; ++neighIt) {
 			int w = *neighIt;
 			
+			// Skip self loops
+			if (v == w) continue;
+
 			// Ordering by random weight
 			if (this->vWeights[w] > this->vWeights[v]) {
 				++this->nWaits[v];
