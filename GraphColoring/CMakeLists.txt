@@ -236,7 +236,7 @@ add_executable(greedy_a2 main.cpp)
 # target_compile_definitions(greedy_a2 PUBLIC ${D_COLORALGO_GREEDY_A2} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(greedy_a2 ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(greedy_a2 PRIVATE barrier benchmark coloralgo_greedy_a2 graphrepresentation_csr)
-target_link_libraries(greedy_a2 barrier benchmark coloralgo_greedy_a1 graphrepresentation_csr)
+target_link_libraries(greedy_a2 barrier benchmark coloralgo_greedy_a2 graphrepresentation_csr)
 
 add_executable(greedy_a3 main.cpp)
 # target_compile_definitions(greedy_a3 PUBLIC ${D_COLORALGO_GREEDY_A3} ${D_GRAPHREPRESENTATION_CSR})
