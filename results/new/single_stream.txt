@@ -46,9 +46,9 @@ V: 0, E: 0, maxD: 0, minD: 2147483647, avgD: 0
 ========================================================
 20	num-cols: 0 	time: 0 	
 ========================================================
-Load time: 4.4e-05
-Avg preprocess time: 2.05e-06
+Load time: 0.009788
+Avg preprocess time: 3.15e-06
 Avg process time: 0
 Avg postprocess time: 0
-Avg total time: 4.605e-05
+Avg total time: 0.00979115
 Avg number colors: 0
