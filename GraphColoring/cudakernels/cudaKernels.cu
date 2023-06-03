@@ -44,8 +44,8 @@ size_t calc_cusparse_memory_occupancy(int const first, int const last, const int
 		sizeof(float) * (Ao[last] - Ao[first]);
 }
 
-int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors);
-__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors);
+int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, cudaStream_t stream);
+__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, char* finished);
 
 //int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
 //__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors);
@@ -84,33 +84,48 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		} while (occupancyPerc >= 1.0f);
 
 		thrust::device_vector<int> dvColors(last - first, -1);
+		cudaStream_t stream_mem1, stream_mem2, stream_mem3;
 
-		CUDA_SAFE_CALL(cudaMalloc(&dAo, (last - first + 1) * sizeof(*dAo)));
-		CUDA_SAFE_CALL(cudaMalloc(&dAc, (Ao[last] - Ao[first]) * sizeof(*dAc)));
-		CUDA_SAFE_CALL(cudaMalloc(&dRandoms, (last - first) * sizeof(*dRandoms)));
+		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem1, cudaStreamNonBlocking));
+		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem2, cudaStreamNonBlocking));
+		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem3, cudaStreamNonBlocking));
 
-		CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao + first, (last - first + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
-		CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac + Ao[first], (Ao[last] - Ao[first]) * sizeof(*Ac), cudaMemcpyHostToDevice));
-		CUDA_SAFE_CALL(cudaMemcpy(dRandoms, randoms + first, (last - first) * sizeof(*randoms), cudaMemcpyHostToDevice));
+
+		CUDA_SAFE_CALL(cudaMallocAsync(&dAo, (last - first + 1) * sizeof(*dAo), stream_mem1));
+		CUDA_SAFE_CALL(cudaMallocAsync(&dAc, (Ao[last] - Ao[first]) * sizeof(*dAc), stream_mem2));
+		CUDA_SAFE_CALL(cudaMallocAsync(&dRandoms, (last - first) * sizeof(*dRandoms), stream_mem3));
+
+		CUDA_SAFE_CALL(cudaMemcpyAsync(dAo, Ao + first, (last - first + 1) * sizeof(*Ao), cudaMemcpyHostToDevice, stream_mem1));
+		CUDA_SAFE_CALL(cudaMemcpyAsync(dAc, Ac + Ao[first], (Ao[last] - Ao[first]) * sizeof(*Ac), cudaMemcpyHostToDevice, stream_mem2));
+		CUDA_SAFE_CALL(cudaMemcpyAsync(dRandoms, randoms + first, (last - first) * sizeof(*randoms), cudaMemcpyHostToDevice, stream_mem3));
+		cudaStreamSynchronize(stream_mem1);
+		cudaStreamSynchronize(stream_mem2);
+		cudaStreamSynchronize(stream_mem3);
 
 		bm.sampleTimeToFlag(1);
 
-		c += launch_kernel(first, last, dAo, dAc, dRandoms, dvColors);
+		c += launch_kernel(first, last, dAo, dAc, dRandoms, dvColors, stream_mem1);
+		//cudaStreamSynchronize(stream);
 		bm.sampleTimeToFlag(2);
 
 		// Copy colors array from device
 		thrust::copy(dvColors.begin(), dvColors.end(), colors + first);
+		cudaStreamSynchronize(stream_mem1);
 		bm.sampleTimeToFlag(3);
 
 		CUDA_SAFE_CALL(cudaFree(dAo));
 		CUDA_SAFE_CALL(cudaFree(dAc));
 		CUDA_SAFE_CALL(cudaFree(dRandoms));
+		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem1));
+		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem2));
+		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem3));
+
 	}
 
 	return needConflictCheck ? -c : c;
 }
 
-int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors) {
+int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, cudaStream_t stream) {
 	int c = -1;	// Number of colors used
 	int left = last - first;	// Number of non-colored vertices
 
@@ -120,23 +135,33 @@ int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRan
 
 	// Get optimal number of blocks and threads to launch to fill SMs
 //	cudaOccupancyMaxPotentialBlockSize(&nb, &nt, color_jpl_kernel, 0, 0);
-	
+
 
 	// Get raw pointer to device array
 	int* dColors = thrust::raw_pointer_cast(dvColors.data());
-	for (c = 0; left > 0 && c < last - first; ++c) {
+
+	char finished = true;
+	char trulyFinished = false;
+	char* dFinished;
+	CUDA_SAFE_CALL(cudaMallocAsync(&dFinished, sizeof(char), stream));
+	for (c = 0; !trulyFinished; ++c) {
+		CUDA_SAFE_CALL(cudaMemcpyAsync(dFinished, &finished,  sizeof(finished), cudaMemcpyHostToDevice, stream));
 		// Launch coloring iteration kernel
-		color_jpl_kernel<<<nb, nt>>>(first, last, c, dAo, dAc, dRandoms, dColors);
-		//cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark 
+		//std::cout << "To GPU!" << std::endl;
+		color_jpl_kernel<<<nb, nt, 0, stream>>>(first, last, c, dAo, dAc, dRandoms, dColors, dFinished);
+		//cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark
 
 		// Count non-colored vertices on device
-		left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
+		//left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
+		CUDA_SAFE_CALL(cudaMemcpyAsync(&trulyFinished, dFinished, sizeof(char), cudaMemcpyDeviceToHost, stream));
+		//cudaStreamSynchronize(stream);
 	}
+	CUDA_SAFE_CALL(cudaFree(dFinished));
 
 	return c;
 }
 
-__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors) {
+__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, char *finished) {
 	for (int i = threadIdx.x + blockIdx.x * blockDim.x;
 		i < last - first;
 		i += blockDim.x * gridDim.x)
@@ -177,11 +202,15 @@ __global__ void color_jpl_kernel(const int first, const int last, const int c, c
 #endif
 		}
 		// assign color if you have the maximum (or minimum) random number
+		bool assigned_color = true;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-		color_jpl_assign_color(color, &colors[i], localmax, localmin);
+		assigned_color = color_jpl_assign_color(color, &colors[i], localmax, localmin);
 #elif defined(COLOR_MAX_INDEPENDENT_SET)
-		color_jpl_assign_color(color, &colors[i], localmax);
+		assigned_color = color_jpl_assign_color(color, &colors[i], localmax);
 #endif
+		if (!assigned_color && *finished) {
+			*finished = false;
+		}
 	}
 }
 
@@ -297,7 +326,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	cusparseHandle_t handle;
 	cusparseMatDescr_t matrixDesc;
 	cusparseColorInfo_t colorInfo;
-	
+
 	Benchmark& bm = *Benchmark::getInstance(resetCount);
 	bm.sampleTime();
 
@@ -348,7 +377,7 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	CUDA_SAFE_CALL(cudaFree(dAo));
 	CUDA_SAFE_CALL(cudaFree(dAc));
 	CUDA_SAFE_CALL(cudaFree(dColors));
-	
+
 
 	cusparseDestroyMatDescr(matrixDesc);
 	cusparseDestroyColorInfo(colorInfo);

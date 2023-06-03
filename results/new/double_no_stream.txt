@@ -1,0 +1,5 @@
+Graph Coloring - v2022.9.26
+Graph Representation: Compressed Sparse Row
+Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
+
+Loading graph from /home/cardone/Desktop/graphs/gra/new
