@@ -15,6 +15,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <chrono>
 
 #define CUDA_SAFE_CALL(ans) { cudaSafeCheck((ans), __FILE__, __LINE__);}
 inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abort=true){
@@ -54,6 +55,7 @@ __device__ bool color_jpl_ingore_neighbor(const int c, const int i, const int j,
 __device__ bool color_jpl_assign_color(const int c, int* color_i, const bool localmax, const bool localmin = false);
 
 int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int* randoms, int resetCount) {
+	auto start_proc = std::chrono::high_resolution_clock::now();
 	int c = -1;
 	int* dAo;
 	int* dAc;
@@ -62,8 +64,8 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	int last;
 	bool needConflictCheck = false;
 
-	Benchmark& bm = *Benchmark::getInstance(resetCount);
-	bm.sampleTime();
+	//Benchmark& bm = *Benchmark::getInstance(resetCount);
+	//bm.sampleTime();
 
 	for (first = 0, last = n; first < n; first = last, last = n) {
 		size_t occupancyBytes;
@@ -84,34 +86,46 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		} while (occupancyPerc >= 1.0f);
 
 		thrust::device_vector<int> dvColors(last - first, -1);
-		cudaStream_t stream_mem1, stream_mem2, stream_mem3;
-
+	cudaStream_t stream_mem1, stream_mem2, stream_mem3;
+		auto start = std::chrono::high_resolution_clock::now();
 		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem1, cudaStreamNonBlocking));
 		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem2, cudaStreamNonBlocking));
 		CUDA_SAFE_CALL(cudaStreamCreateWithFlags(&stream_mem3, cudaStreamNonBlocking));
-
-
 		CUDA_SAFE_CALL(cudaMallocAsync(&dAo, (last - first + 1) * sizeof(*dAo), stream_mem1));
 		CUDA_SAFE_CALL(cudaMallocAsync(&dAc, (Ao[last] - Ao[first]) * sizeof(*dAc), stream_mem2));
 		CUDA_SAFE_CALL(cudaMallocAsync(&dRandoms, (last - first) * sizeof(*dRandoms), stream_mem3));
+		cudaStreamSynchronize(stream_mem1);
+		cudaStreamSynchronize(stream_mem2);
+		cudaStreamSynchronize(stream_mem3);
+		//bm.sampleTimeToFlag(1);
+		auto end = std::chrono::high_resolution_clock::now();
+		NewBenchmark::get().ms_allocation += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
+		start = std::chrono::high_resolution_clock::now();
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dAo, Ao + first, (last - first + 1) * sizeof(*Ao), cudaMemcpyHostToDevice, stream_mem1));
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dAc, Ac + Ao[first], (Ao[last] - Ao[first]) * sizeof(*Ac), cudaMemcpyHostToDevice, stream_mem2));
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dRandoms, randoms + first, (last - first) * sizeof(*randoms), cudaMemcpyHostToDevice, stream_mem3));
 		cudaStreamSynchronize(stream_mem1);
 		cudaStreamSynchronize(stream_mem2);
 		cudaStreamSynchronize(stream_mem3);
+		end = std::chrono::high_resolution_clock::now();
+		NewBenchmark::get().ms_transfer_to_gpu += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+		//bm.sampleTimeToFlag(2);
 
-		bm.sampleTimeToFlag(1);
-
+		start = std::chrono::high_resolution_clock::now();
 		c += launch_kernel(first, last, dAo, dAc, dRandoms, dvColors, stream_mem1);
-		//cudaStreamSynchronize(stream);
-		bm.sampleTimeToFlag(2);
+		cudaStreamSynchronize(stream_mem1);
+		//bm.sampleTimeToFlag(3);
+		end = std::chrono::high_resolution_clock::now();
+		NewBenchmark::get().ms_execute += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
 		// Copy colors array from device
+		start = std::chrono::high_resolution_clock::now();
 		thrust::copy(dvColors.begin(), dvColors.end(), colors + first);
 		cudaStreamSynchronize(stream_mem1);
-		bm.sampleTimeToFlag(3);
+		end = std::chrono::high_resolution_clock::now();
+		NewBenchmark::get().ms_transfer_to_cpu += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+		//bm.sampleTimeToFlag(4);
 
 		CUDA_SAFE_CALL(cudaFree(dAo));
 		CUDA_SAFE_CALL(cudaFree(dAc));
@@ -119,8 +133,9 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem1));
 		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem2));
 		CUDA_SAFE_CALL(cudaStreamDestroy(stream_mem3));
-
 	}
+	auto end_proc = std::chrono::high_resolution_clock::now();
+	NewBenchmark::get().ms_total_process += std::chrono::duration_cast<std::chrono::microseconds>(end_proc - start_proc).count() / 1000.0f;
 
 	return needConflictCheck ? -c : c;
 }
@@ -327,8 +342,8 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	cusparseMatDescr_t matrixDesc;
 	cusparseColorInfo_t colorInfo;
 
-	Benchmark& bm = *Benchmark::getInstance(resetCount);
-	bm.sampleTime();
+	//Benchmark& bm = *Benchmark::getInstance(resetCount);
+	//bm.sampleTime();
 
 	status = cusparseCreate(&handle);
 	status = cusparseCreateMatDescr(&matrixDesc);
@@ -343,17 +358,17 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 	}
 
 	CUDA_SAFE_CALL(cudaMalloc(&dAo, (n + 1) * sizeof(*dAo)));
-	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
-
 	CUDA_SAFE_CALL(cudaMalloc(&dAc, Ao[n] * sizeof(*dAc)));
-	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
-
 	CUDA_SAFE_CALL(cudaMalloc(&dColors, n * sizeof(*dColors)));
+	CUDA_SAFE_CALL(cudaMalloc(&dAv, Ao[n] * sizeof(*dAv)));
+	//bm.sampleTimeToFlag(1);
+
+	CUDA_SAFE_CALL(cudaMemcpy(dAo, Ao, (n + 1) * sizeof(*Ao), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(dAc, Ac, Ao[n] * sizeof(*Ac), cudaMemcpyHostToDevice));
 	CUDA_SAFE_CALL(cudaMemcpy(dColors, colors, n * sizeof(*colors), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc(&dAv, Ao[n] * sizeof(*dAv)));
 
-	bm.sampleTimeToFlag(1);
+	//bm.sampleTimeToFlag(2);
 	status = cusparseScsrcolor(handle,
 		n,
 		Ao[n],
@@ -368,11 +383,11 @@ int color_cusparse(int const n, const int* Ao, const int* Ac, int* colors, int r
 		colorInfo);
 
 	cudaDeviceSynchronize();
-	bm.sampleTimeToFlag(2);
+	//bm.sampleTimeToFlag(3);
 
 	CUDA_SAFE_CALL(cudaMemcpy(colors, dColors, n * sizeof(*colors), cudaMemcpyDeviceToHost));
 
-	bm.sampleTimeToFlag(3);
+	//bm.sampleTimeToFlag(4);
 	CUDA_SAFE_CALL(cudaFree(dAv));
 	CUDA_SAFE_CALL(cudaFree(dAo));
 	CUDA_SAFE_CALL(cudaFree(dAc));

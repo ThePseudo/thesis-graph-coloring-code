@@ -12,12 +12,14 @@ set(INCLUDE_DIRS	barrier
 					graphrepresentation/csr
 )
 
+find_package(OpenMP REQUIRED)
+
 # start source files definition
 set(SRC_BARRIER barrier/barrier.cpp)
 set(SRC_BENCHMARK benchmark/benchmark.cpp)
 set(SRC_COLORALGO	coloralgo/ColoringAlgorithm.cpp
 					coloralgo/cusparse/CusparseColoring.cpp
-					coloralgo/gebremedhinmanne/GebremedhinManne.cpp 
+					coloralgo/gebremedhinmanne/GebremedhinManne.cpp
 					coloralgo/greedy/Greedy.cpp
 					coloralgo/jonesplassmann/JonesPlassmann.cpp
 )
@@ -131,82 +133,82 @@ add_library(benchmark STATIC EXCLUDE_FROM_ALL ${SRC_BENCHMARK})
 
 add_library(coloralgo_cusparse STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_cusparse PUBLIC ${D_COLORALGO_CUSPARSE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_cusparse benchmark)
+target_link_libraries(coloralgo_cusparse benchmark OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_jp_seq STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_seq PUBLIC ${D_COLORALGO_JP_SEQ} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_seq benchmark)
+target_link_libraries(coloralgo_jp_seq benchmark OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_jp_par STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_par PUBLIC ${D_COLORALGO_JP_PAR} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_par benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_jp_par benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_jp_cuda_single STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_cuda_single PUBLIC ${D_COLORALGO_JP_CUDA_SINGLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_cuda_single benchmark barrier)
+target_link_libraries(coloralgo_jp_cuda_single benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_jp_cuda_double STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_cuda_double PUBLIC ${D_COLORALGO_JP_CUDA_DOUBLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_jp_cuda_double benchmark barrier)
+target_link_libraries(coloralgo_jp_cuda_double benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_greedy_seq STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_greedy_seq PUBLIC ${D_COLORALGO_GREEDY_SEQ} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_greedy_seq benchmark ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_greedy_seq benchmark ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_greedy_par STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_greedy_par PUBLIC ${D_COLORALGO_GREEDY_PAR} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_greedy_par benchmark ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_greedy_par benchmark ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_seq_sync_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_sync_std PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_sync_std benchmark barrier)
+target_link_libraries(coloralgo_gm_seq_sync_std benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_seq_sync_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_sync_imp PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_sync_imp benchmark barrier)
+target_link_libraries(coloralgo_gm_seq_sync_imp benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_seq_async_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_async_std PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_async_std benchmark barrier)
+target_link_libraries(coloralgo_gm_seq_async_std benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_seq_async_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_seq_async_imp PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_seq_async_imp benchmark barrier)
+target_link_libraries(coloralgo_gm_seq_async_imp benchmark barrier OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_par_sync_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_sync_std PUBLIC ${D_COLORALGO_GM_PAR_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_sync_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_gm_par_sync_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_par_sync_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_sync_imp PUBLIC ${D_COLORALGO_GM_PAR_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_sync_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_gm_par_sync_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_par_async_std STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_async_std PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_async_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_gm_par_async_std benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(coloralgo_gm_par_async_imp STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_gm_par_async_imp PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(coloralgo_gm_par_async_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coloralgo_gm_par_async_imp benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(cudakernels STATIC EXCLUDE_FROM_ALL ${SRC_CUDAKERNELS})
 target_compile_definitions(cudakernels PUBLIC ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(cudakernels ${CUDA_LIBRARIES} benchmark)
+target_link_libraries(cudakernels ${CUDA_LIBRARIES} benchmark OpenMP::OpenMP_CXX)
 
 add_library(cudakernels_jp_single STATIC EXCLUDE_FROM_ALL ${SRC_CUDAKERNELS})
 target_compile_definitions(cudakernels_jp_single PUBLIC ${D_COLORALGO_JP_CUDA_SINGLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(cudakernels_jp_single ${CUDA_LIBRARIES} benchmark)
+target_link_libraries(cudakernels_jp_single ${CUDA_LIBRARIES} benchmark OpenMP::OpenMP_CXX)
 
 add_library(cudakernels_jp_double STATIC EXCLUDE_FROM_ALL ${SRC_CUDAKERNELS})
 target_compile_definitions(cudakernels_jp_double PUBLIC ${D_COLORALGO_JP_CUDA_DOUBLE} ${D_GRAPHREPRESENTATION_CSR})
-target_link_libraries(cudakernels_jp_double ${CUDA_LIBRARIES} benchmark)
+target_link_libraries(cudakernels_jp_double ${CUDA_LIBRARIES} benchmark OpenMP::OpenMP_CXX)
 
 add_library(graphrepresentation_adjm STATIC EXCLUDE_FROM_ALL ${SRC_GRAPHREPRESENTATION})
 target_compile_definitions(graphrepresentation_adjm PUBLIC ${D_GRAPHREPRESENTATION_ADJM})
-target_link_libraries(graphrepresentation_adjm benchmark ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(graphrepresentation_adjm benchmark ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
 
 add_library(graphrepresentation_csr STATIC EXCLUDE_FROM_ALL ${SRC_GRAPHREPRESENTATION})
-target_compile_definitions(graphrepresentation_csr PUBLIC ${D_GRAPHREPRESENTATION_CSR})
+target_compile_definitions(graphrepresentation_csr PUBLIC ${D_GRAPHREPRESENTATION_CSR} OpenMP::OpenMP_CXX)
 target_link_libraries(graphrepresentation_csr benchmark)
 # end libraries definition
 
@@ -215,91 +217,91 @@ add_executable(cusparse main.cpp)
 # target_compile_definitions(cusparse PUBLIC ${D_COLORALGO_CUSPARSE} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(cusparse ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(cusparse PRIVATE barrier benchmark coloralgo_cusparse cudakernels graphrepresentation_csr)
-target_link_libraries(cusparse barrier benchmark coloralgo_cusparse cudakernels graphrepresentation_csr)
+target_link_libraries(cusparse barrier benchmark coloralgo_cusparse cudakernels graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(jp_seq main.cpp)
 # target_compile_definitions(jp_seq PUBLIC ${D_COLORALGO_JP_SEQ} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(jp_seq ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(jp_seq PRIVATE barrier benchmark coloralgo_jp_seq graphrepresentation_csr)
-target_link_libraries(jp_seq barrier benchmark coloralgo_jp_seq graphrepresentation_csr)
+target_link_libraries(jp_seq barrier benchmark coloralgo_jp_seq graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(jp_par main.cpp)
 # target_compile_definitions(jp_par PUBLIC ${D_COLORALGO_JP_PAR} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(jp_par ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(jp_par PRIVATE barrier benchmark coloralgo_jp_par graphrepresentation_csr)
-target_link_libraries(jp_par barrier benchmark coloralgo_jp_par graphrepresentation_csr)
+target_link_libraries(jp_par barrier benchmark coloralgo_jp_par graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(jp_cuda_single main.cpp)
 # target_compile_definitions(jp_cuda_single PUBLIC ${D_COLORALGO_JP_CUDA_SINGLE} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(jp_cuda_single ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(jp_cuda_single PRIVATE barrier benchmark coloralgo_jp_cuda_single cudakernels_jp_single graphrepresentation_csr)
-target_link_libraries(jp_cuda_single barrier benchmark coloralgo_jp_cuda_single cudakernels_jp_single graphrepresentation_csr)
+target_link_libraries(jp_cuda_single barrier benchmark coloralgo_jp_cuda_single cudakernels_jp_single graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(jp_cuda_double main.cpp)
 # target_compile_definitions(jp_cuda_double PUBLIC ${D_COLORALGO_JP_CUDA_DOUBLE} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(jp_cuda_double ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(jp_cuda_double PRIVATE barrier benchmark coloralgo_jp_cuda_double cudakernels_jp_double graphrepresentation_csr)
-target_link_libraries(jp_cuda_double barrier benchmark coloralgo_jp_cuda_double cudakernels_jp_double graphrepresentation_csr)
+target_link_libraries(jp_cuda_double barrier benchmark coloralgo_jp_cuda_double cudakernels_jp_double graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(greedy_seq main.cpp)
 # target_compile_definitions(greedy_seq PUBLIC ${D_COLORALGO_GREEDY_SEQ} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(greedy_seq ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(greedy_seq PRIVATE barrier benchmark coloralgo_greedy_seq graphrepresentation_csr)
-target_link_libraries(greedy_seq barrier benchmark coloralgo_greedy_seq graphrepresentation_csr)
+target_link_libraries(greedy_seq barrier benchmark coloralgo_greedy_seq graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(greedy_par main.cpp)
 # target_compile_definitions(greedy_par PUBLIC ${D_COLORALGO_GREEDY_PAR} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(greedy_par ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(greedy_par PRIVATE barrier benchmark coloralgo_greedy_par graphrepresentation_csr)
-target_link_libraries(greedy_par barrier benchmark coloralgo_greedy_par graphrepresentation_csr)
+target_link_libraries(greedy_par barrier benchmark coloralgo_greedy_par graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_seq_sync_std main.cpp)
 # target_compile_definitions(gm_seq_sync_std PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(gm_seq_sync_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_seq_sync_std PRIVATE barrier benchmark coloralgo_gm_seq_sync_std graphrepresentation_csr)
-target_link_libraries(gm_seq_sync_std barrier benchmark coloralgo_gm_seq_sync_std graphrepresentation_csr)
+target_link_libraries(gm_seq_sync_std barrier benchmark coloralgo_gm_seq_sync_std graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_par_sync_imp main.cpp)
 # target_compile_definitions(gm_par_sync_imp PUBLIC ${D_COLORALGO_GM_PAR_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(gm_par_sync_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_par_sync_imp PRIVATE barrier benchmark coloralgo_gm_par_sync_imp graphrepresentation_csr)
-target_link_libraries(gm_par_sync_imp barrier benchmark coloralgo_gm_par_sync_imp graphrepresentation_csr)
+target_link_libraries(gm_par_sync_imp barrier benchmark coloralgo_gm_par_sync_imp graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_par_async_std main.cpp)
 # target_compile_definitions(gm_par_async_std PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
 include_directories(gm_par_async_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_par_async_std PRIVATE barrier benchmark coloralgo_gm_par_async_std graphrepresentation_csr)
-target_link_libraries(gm_par_async_std barrier benchmark coloralgo_gm_par_async_std graphrepresentation_csr)
+target_link_libraries(gm_par_async_std barrier benchmark coloralgo_gm_par_async_std graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_par_async_imp main.cpp)
 # target_compile_definitions(gm_par_async_imp PUBLIC ${D_COLORALGO_GM_PAR_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(gm_par_async_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME}) 
+include_directories(gm_par_async_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_par_async_imp PRIVATE barrier benchmark coloralgo_gm_par_async_imp graphrepresentation_csr)
-target_link_libraries(gm_par_async_imp barrier benchmark coloralgo_gm_par_async_imp graphrepresentation_csr)
+target_link_libraries(gm_par_async_imp barrier benchmark coloralgo_gm_par_async_imp graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_par_sync_std main.cpp)
 # target_compile_definitions(gm_par_sync_std PUBLIC ${D_COLORALGO_GM_PAR_SYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(gm_par_sync_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME}) 
+include_directories(gm_par_sync_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_par_sync_std PRIVATE barrier benchmark coloralgo_gm_par_sync_std graphrepresentation_csr)
-target_link_libraries(gm_par_sync_std barrier benchmark coloralgo_gm_par_sync_std graphrepresentation_csr)
+target_link_libraries(gm_par_sync_std barrier benchmark coloralgo_gm_par_sync_std graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_seq_sync_imp main.cpp)
 # target_compile_definitions(gm_seq_sync_imp PUBLIC ${D_COLORALGO_GM_SEQ_SYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(gm_seq_sync_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME}) 
+include_directories(gm_seq_sync_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_seq_sync_imp PRIVATE barrier benchmark coloralgo_gm_seq_sync_imp graphrepresentation_csr)
-target_link_libraries(gm_seq_sync_imp barrier benchmark coloralgo_gm_seq_sync_imp graphrepresentation_csr)
+target_link_libraries(gm_seq_sync_imp barrier benchmark coloralgo_gm_seq_sync_imp graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_seq_async_std main.cpp)
 # target_compile_definitions(gm_seq_async_std PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_STD} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(gm_seq_async_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME}) 
+include_directories(gm_seq_async_std ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_seq_async_std PRIVATE barrier benchmark coloralgo_gm_seq_async_std graphrepresentation_csr)
-target_link_libraries(gm_seq_async_std barrier benchmark coloralgo_gm_seq_async_std graphrepresentation_csr)
+target_link_libraries(gm_seq_async_std barrier benchmark coloralgo_gm_seq_async_std graphrepresentation_csr OpenMP::OpenMP_CXX)
 
 add_executable(gm_seq_async_imp main.cpp)
 # target_compile_definitions(gm_seq_async_imp PUBLIC ${D_COLORALGO_GM_SEQ_ASYNC_IMP} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(gm_seq_async_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME}) 
+include_directories(gm_seq_async_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_seq_async_imp PRIVATE barrier benchmark coloralgo_gm_seq_async_imp graphrepresentation_csr)
-target_link_libraries(gm_seq_async_imp barrier benchmark coloralgo_gm_seq_async_imp graphrepresentation_csr)
+target_link_libraries(gm_seq_async_imp barrier benchmark coloralgo_gm_seq_async_imp graphrepresentation_csr OpenMP::OpenMP_CXX)
 #end target definition
 
 

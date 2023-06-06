@@ -2,53 +2,53 @@ Graph Coloring - v2022.9.26
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 
-Loading graph from /home/cardone/Desktop/graphs/gra/email_enron.gra
+Loading graph from /home/cardone/Desktop/graphs/gra/atmosmodd.gra
 Graph succesfully loaded from file.
-V: 36692, E: 367662, maxD: 1383, minD: 1, avgD: 10.0202
+V: 1270432, E: 8814880, maxD: 7, minD: 4, avgD: 6.93849
 ========================================================
-1	num-cols: 121 	time: 0.014916 	
+1	num-cols: 13 	time: 0.000865 	
 ========================================================
-2	num-cols: 124 	time: 0.015666 	
+2	num-cols: 14 	time: 0.000883 	
 ========================================================
-3	num-cols: 118 	time: 0.015709 	
+3	num-cols: 13 	time: 0.000908 	
 ========================================================
-4	num-cols: 122 	time: 0.016955 	
+4	num-cols: 12 	time: 0.000852 	
 ========================================================
-5	num-cols: 111 	time: 0.01534 	
+5	num-cols: 13 	time: 0.000898 	
 ========================================================
-6	num-cols: 122 	time: 0.015503 	
+6	num-cols: 13 	time: 0.000882 	
 ========================================================
-7	num-cols: 121 	time: 0.014587 	
+7	num-cols: 13 	time: 0.000884 	
 ========================================================
-8	num-cols: 115 	time: 0.013383 	
+8	num-cols: 13 	time: 0.000874 	
 ========================================================
-9	num-cols: 112 	time: 0.014414 	
+9	num-cols: 13 	time: 0.000866 	
 ========================================================
-10	num-cols: 111 	time: 0.01265 	
+10	num-cols: 13 	time: 0.00087 	
 ========================================================
-11	num-cols: 127 	time: 0.015983 	
+11	num-cols: 12 	time: 0.000832 	
 ========================================================
-12	num-cols: 119 	time: 0.014269 	
+12	num-cols: 12 	time: 0.000848 	
 ========================================================
-13	num-cols: 116 	time: 0.014873 	
+13	num-cols: 13 	time: 0.000891 	
 ========================================================
-14	num-cols: 116 	time: 0.014223 	
+14	num-cols: 14 	time: 0.000927 	
 ========================================================
-15	num-cols: 120 	time: 0.014854 	
+15	num-cols: 13 	time: 0.000873 	
 ========================================================
-16	num-cols: 116 	time: 0.01423 	
+16	num-cols: 13 	time: 0.000879 	
 ========================================================
-17	num-cols: 121 	time: 0.014418 	
+17	num-cols: 13 	time: 0.000873 	
 ========================================================
-18	num-cols: 119 	time: 0.014624 	
+18	num-cols: 13 	time: 0.00087 	
 ========================================================
-19	num-cols: 112 	time: 0.014606 	
+19	num-cols: 13 	time: 0.000879 	
 ========================================================
-20	num-cols: 115 	time: 0.014898 	
+20	num-cols: 13 	time: 0.000892 	
 ========================================================
-Load time: 0.030083
-Avg preprocess time: 0.00558155
-Avg process time: 0.0148051
-Avg postprocess time: 0.0052651
-Avg total time: 0.0557347
-Avg number colors: 118
+Load time: 2.4419
+Avg preprocess time: 0.259407
+Avg process time: 0.0008773
+Avg postprocess time: 0.334786
+Avg total time: 3.03697
+Avg number colors: 13
