@@ -69,9 +69,12 @@ void JonesPlassmann::reset() {
   // std::random_device rd;
   // std::mt19937 g(rd());
   // std::shuffle(this->vWeights.begin(), this->vWeights.end(), g);
-  for (int x = vWeights.size(); x > 0; x--) {
-    int idx = rand() % x;
-    std::swap(vWeights[x], vWeights[idx]);
+  constexpr int MAX_DECR = 2;
+  for (int decr = 1; decr < MAX_DECR; decr++) {
+    for (int x = vWeights.size(); x > decr; x -= decr) {
+      int idx = rand() % x;
+      std::swap(vWeights[x], vWeights[idx]);
+    }
   }
   this->nIterations = 0;
 
