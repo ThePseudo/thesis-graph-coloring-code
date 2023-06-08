@@ -1,11 +1,11 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 
 Loading graph from /home/cardone/Desktop/graphs/gra/rgg_n_2_18_s0.gra
 Graph succesfully loaded from file.
 V: 262144, E: 3094566, maxD: 31, minD: 0, avgD: 11.8048
-Init time [ms]: 150.067
+Init time [ms]: 148.473
 ========================================================
 1	num-cols: 26 	========================================================
 2	num-cols: 26 	========================================================
@@ -18,25 +18,25 @@ Init time [ms]: 150.067
 9	num-cols: 26 	========================================================
 10	num-cols: 26 	========================================================
 11	num-cols: 26 	========================================================
-12	num-cols: 23 	========================================================
-13	num-cols: 23 	========================================================
-14	num-cols: 23 	========================================================
-15	num-cols: 23 	========================================================
-16	num-cols: 23 	========================================================
-17	num-cols: 23 	========================================================
-18	num-cols: 23 	========================================================
-19	num-cols: 23 	========================================================
-20	num-cols: 23 	========================================================
+12	num-cols: 26 	========================================================
+13	num-cols: 26 	========================================================
+14	num-cols: 26 	========================================================
+15	num-cols: 26 	========================================================
+16	num-cols: 26 	========================================================
+17	num-cols: 26 	========================================================
+18	num-cols: 26 	========================================================
+19	num-cols: 26 	========================================================
+20	num-cols: 26 	========================================================
 Timings [ms]
-Avg random vector initialization time: 14.6138
-Avg allocation time: 0.2774
-Avg upload time: 1.56555
-Avg process time: 0.6164
-Avg download time: 0.1804
-Avg total time: 2.63975
-Inner total time (start to end function): 109.877
-Reset total time: 292.276
-Process total time: 52.795
-Avg number colors: 25
-Test time [ms]:89.196
-Program duration [ms]: 724.338
+Avg random vector initialization time: 1.5862
+Avg allocation time: 0.2658
+Avg upload time: 1.30645
+Avg process time: 0.5896
+Avg download time: 0.16675
+Avg total time: 2.3286
+Inner total time (start to end function): 125.256
+Reset total time: 31.724
+Process total time: 46.572
+Avg number colors: 26
+Test time [ms]:97.266
+Program duration [ms]: 472.003

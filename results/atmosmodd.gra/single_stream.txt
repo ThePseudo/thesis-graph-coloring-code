@@ -1,11 +1,11 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) 
 
 Loading graph from /home/cardone/Desktop/graphs/gra/atmosmodd.gra
 Graph succesfully loaded from file.
 V: 1270432, E: 8814880, maxD: 7, minD: 4, avgD: 6.93849
-Init time [ms]: 496.66
+Init time [ms]: 468.875
 ========================================================
 1	num-cols: 18 	========================================================
 2	num-cols: 18 	========================================================
@@ -23,20 +23,20 @@ Init time [ms]: 496.66
 14	num-cols: 18 	========================================================
 15	num-cols: 18 	========================================================
 16	num-cols: 18 	========================================================
-17	num-cols: 20 	========================================================
-18	num-cols: 20 	========================================================
-19	num-cols: 20 	========================================================
-20	num-cols: 20 	========================================================
+17	num-cols: 18 	========================================================
+18	num-cols: 18 	========================================================
+19	num-cols: 18 	========================================================
+20	num-cols: 18 	========================================================
 Timings [ms]
-Avg random vector initialization time: 34.081
-Avg allocation time: 0.3273
-Avg upload time: 3.98845
-Avg process time: 1.37065
-Avg download time: 0.5061
-Avg total time: 6.1925
-Inner total time (start to end function): 222.767
-Reset total time: 681.62
-Process total time: 123.85
+Avg random vector initialization time: 6.65005
+Avg allocation time: 0.3171
+Avg upload time: 3.8917
+Avg process time: 1.3537
+Avg download time: 0.5171
+Avg total time: 6.0796
+Inner total time (start to end function): 220.451
+Reset total time: 133.001
+Process total time: 121.592
 Avg number colors: 18
-Test time [ms]:207.923
-Program duration [ms]: 1792.69
+Test time [ms]:219.575
+Program duration [ms]: 1202.53

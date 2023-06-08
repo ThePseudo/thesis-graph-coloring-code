@@ -1,15 +1,15 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 
 Loading graph from /home/cardone/Desktop/graphs/gra/offshore.gra
 Graph succesfully loaded from file.
 V: 259789, E: 4242673, maxD: 31, minD: 5, avgD: 16.3312
-Init time [ms]: 199.917
+Init time [ms]: 204.804
 ========================================================
-1	num-cols: 25 	========================================================
-2	num-cols: 25 	========================================================
-3	num-cols: 25 	========================================================
+1	num-cols: 23 	========================================================
+2	num-cols: 23 	========================================================
+3	num-cols: 23 	========================================================
 4	num-cols: 23 	========================================================
 5	num-cols: 23 	========================================================
 6	num-cols: 23 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 199.917
 19	num-cols: 23 	========================================================
 20	num-cols: 23 	========================================================
 Timings [ms]
-Avg random vector initialization time: 15.3179
-Avg allocation time: 0.2898
-Avg upload time: 2.2148
-Avg process time: 0.82675
-Avg download time: 0.1903
-Avg total time: 3.52165
-Inner total time (start to end function): 159.654
-Reset total time: 306.359
-Process total time: 70.433
+Avg random vector initialization time: 1.5029
+Avg allocation time: 0.2599
+Avg upload time: 1.70775
+Avg process time: 0.8113
+Avg download time: 0.17065
+Avg total time: 2.9496
+Inner total time (start to end function): 135.452
+Reset total time: 30.058
+Process total time: 58.992
 Avg number colors: 23
-Test time [ms]:129.664
-Program duration [ms]: 881.642
+Test time [ms]:144.28
+Program duration [ms]: 593.441

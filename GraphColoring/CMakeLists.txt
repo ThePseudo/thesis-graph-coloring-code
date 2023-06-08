@@ -11,9 +11,6 @@ set(INCLUDE_DIRS	barrier
 					graphrepresentation/adjacencymatrix
 					graphrepresentation/csr
 )
-
-find_package(OpenMP REQUIRED)
-
 # start source files definition
 set(SRC_BARRIER barrier/barrier.cpp)
 set(SRC_BENCHMARK benchmark/benchmark.cpp)

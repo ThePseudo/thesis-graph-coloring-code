@@ -1,11 +1,11 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) 
 
 Loading graph from /home/cardone/Desktop/graphs/gra/G3_circuit.gra
 Graph succesfully loaded from file.
 V: 1585478, E: 7660826, maxD: 6, minD: 2, avgD: 4.83187
-Init time [ms]: 457.008
+Init time [ms]: 446.9
 ========================================================
 1	num-cols: 14 	========================================================
 2	num-cols: 14 	========================================================
@@ -20,23 +20,23 @@ Init time [ms]: 457.008
 11	num-cols: 14 	========================================================
 12	num-cols: 14 	========================================================
 13	num-cols: 14 	========================================================
-14	num-cols: 16 	========================================================
-15	num-cols: 16 	========================================================
-16	num-cols: 16 	========================================================
-17	num-cols: 16 	========================================================
-18	num-cols: 16 	========================================================
-19	num-cols: 16 	========================================================
-20	num-cols: 16 	========================================================
+14	num-cols: 14 	========================================================
+15	num-cols: 14 	========================================================
+16	num-cols: 14 	========================================================
+17	num-cols: 14 	========================================================
+18	num-cols: 14 	========================================================
+19	num-cols: 18 	========================================================
+20	num-cols: 18 	========================================================
 Timings [ms]
-Avg random vector initialization time: 42.1443
-Avg allocation time: 0.40325
-Avg upload time: 4.23395
-Avg process time: 1.15225
-Avg download time: 0.68275
-Avg total time: 6.4722
-Inner total time (start to end function): 233.511
-Reset total time: 842.886
-Process total time: 129.444
-Avg number colors: 15
-Test time [ms]:260.74
-Program duration [ms]: 2050.57
+Avg random vector initialization time: 8.3313
+Avg allocation time: 0.3035
+Avg upload time: 3.81255
+Avg process time: 1.1207
+Avg download time: 0.6187
+Avg total time: 5.85545
+Inner total time (start to end function): 211.705
+Reset total time: 166.626
+Process total time: 117.109
+Avg number colors: 14
+Test time [ms]:243.719
+Program duration [ms]: 1297.95

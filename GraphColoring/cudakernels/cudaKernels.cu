@@ -16,6 +16,7 @@
 #include <set>
 #include <vector>
 #include <chrono>
+#include <curand.h>
 
 #define CUDA_SAFE_CALL(ans) { cudaSafeCheck((ans), __FILE__, __LINE__);}
 inline void cudaSafeCheck(cudaError_t call, const char *file, int line, bool abort=true){

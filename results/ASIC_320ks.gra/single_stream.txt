@@ -1,11 +1,11 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) 
 
 Loading graph from /home/cardone/Desktop/graphs/gra/ASIC_320ks.gra
 Graph succesfully loaded from file.
 V: 321671, E: 1827807, maxD: 412, minD: 1, avgD: 5.68223
-Init time [ms]: 101.449
+Init time [ms]: 101.702
 ========================================================
 1	num-cols: 18 	========================================================
 2	num-cols: 18 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 101.449
 19	num-cols: 18 	========================================================
 20	num-cols: 18 	========================================================
 Timings [ms]
-Avg random vector initialization time: 15.3172
-Avg allocation time: 0.27745
-Avg upload time: 0.9832
-Avg process time: 2.78975
-Avg download time: 0.20235
-Avg total time: 4.25275
-Inner total time (start to end function): 158.294
-Reset total time: 306.344
-Process total time: 85.055
+Avg random vector initialization time: 1.66905
+Avg allocation time: 0.2525
+Avg upload time: 0.90275
+Avg process time: 2.55305
+Avg download time: 0.1953
+Avg total time: 3.9036
+Inner total time (start to end function): 157.821
+Reset total time: 33.381
+Process total time: 78.072
 Avg number colors: 18
-Test time [ms]:77.87
-Program duration [ms]: 715.747
+Test time [ms]:75.14
+Program duration [ms]: 446.117

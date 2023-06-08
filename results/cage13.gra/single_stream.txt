@@ -1,19 +1,19 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) 
 
 Loading graph from /home/cardone/Desktop/graphs/gra/cage13.gra
 Graph succesfully loaded from file.
 V: 445315, E: 7479343, maxD: 39, minD: 3, avgD: 16.7956
-Init time [ms]: 346.01
+Init time [ms]: 339.531
 ========================================================
-1	num-cols: 38 	========================================================
-2	num-cols: 38 	========================================================
-3	num-cols: 38 	========================================================
-4	num-cols: 38 	========================================================
-5	num-cols: 38 	========================================================
-6	num-cols: 38 	========================================================
-7	num-cols: 38 	========================================================
+1	num-cols: 37 	========================================================
+2	num-cols: 37 	========================================================
+3	num-cols: 37 	========================================================
+4	num-cols: 37 	========================================================
+5	num-cols: 37 	========================================================
+6	num-cols: 37 	========================================================
+7	num-cols: 37 	========================================================
 8	num-cols: 37 	========================================================
 9	num-cols: 37 	========================================================
 10	num-cols: 37 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 346.01
 19	num-cols: 37 	========================================================
 20	num-cols: 37 	========================================================
 Timings [ms]
-Avg random vector initialization time: 17.4995
-Avg allocation time: 0.2812
-Avg upload time: 3.04435
-Avg process time: 3.09975
-Avg download time: 0.234
-Avg total time: 6.6593
-Inner total time (start to end function): 206.595
-Reset total time: 349.989
-Process total time: 133.186
+Avg random vector initialization time: 2.32245
+Avg allocation time: 0.26265
+Avg upload time: 2.8982
+Avg process time: 3.0693
+Avg download time: 0.23585
+Avg total time: 6.466
+Inner total time (start to end function): 207.028
+Reset total time: 46.449
+Process total time: 129.32
 Avg number colors: 37
-Test time [ms]:169.375
-Program duration [ms]: 1196.03
+Test time [ms]:194.265
+Program duration [ms]: 903.187

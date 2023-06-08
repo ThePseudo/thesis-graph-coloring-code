@@ -1,32 +1,17 @@
-cmake_minimum_required(VERSION 3.13.2)
+cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CUDA_ARCHITECTURES 80)
 
 project(GraphColoring
-		VERSION 2022.09.26
+		VERSION 1.0.0
 		LANGUAGES CUDA CXX)
 
-# begin /* Suppress all warnings from gcc */
-# option(ENABLE_WARNINGS "Deprecated declarations warning flag." OFF)
-# if (ENABLE_WARNINGS)
-#   # moderngpu will give auto_ptr warning.
-# else (ENABLE_WARNINGS)
-#   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-#   add_definitions ("-w")
-# endif (ENABLE_WARNINGS)
-# end /* Suppress all warnings from gcc */
-
-# set(CMAKE_CXX_STANDARD 11)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -fPIC")
-
-# option(CMAKE_VERBOSE_MAKEFILE OFF)
-
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_C_STANDARD 20)
 find_package(Threads REQUIRED)
+find_package(OpenMP REQUIRED)
 
-# # begin /* Find and set CUDA arch */
-set(REQUIRED_CUDA_VERSION 9.0)
+set(REQUIRED_CUDA_VERSION 12.0)
 FIND_PACKAGE(CUDA ${REQUIRED_CUDA_VERSION} REQUIRED)
 # # /* enables relocatable device code linking */
 SET(CUDA_SEPARABLE_COMPILATION ON)

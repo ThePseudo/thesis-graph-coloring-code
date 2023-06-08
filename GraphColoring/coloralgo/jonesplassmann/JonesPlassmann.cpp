@@ -53,29 +53,50 @@ void JonesPlassmann::init() {
 #endif
 }
 
+uint32_t LFSR(uint32_t prev_state) {
+  uint32_t lfsr = prev_state;
+  uint32_t bit = 0;
+  for (int i = 0; i < 8 * sizeof(bit); i++) {
+    bit |= (((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1u) << i;
+    lfsr = (lfsr >> 1) | (bit << 15);
+  }
+  return bit;
+}
+static unsigned int g_seed;
+
+inline void fast_srand(int seed) { g_seed = seed; }
+
+inline int fast_rand(void) {
+  g_seed = (214013 * g_seed + 2531011);
+  return (g_seed >> 16) & 0x7FFF;
+}
+
 void JonesPlassmann::reset() {
   __super::reset();
 
   // Benchmark &bm = *Benchmark::getInstance(__super::resetCount);
   // bm.sampleTime();
 
-  srand(static_cast<unsigned>(time(0)));
+  // srand(static_cast<unsigned>(time(0)));
+  fast_srand(static_cast<int>(time(NULL)));
 
-#pragma omp parallel for
+  constexpr uint32_t START_STATE = 0xACE1u;
+  auto prev_state = START_STATE;
+  // #pragma omp parallel for
   for (int i = 0; i < this->adj().nV(); ++i) {
-    this->vWeights[i] = i;
+    vWeights[i] = fast_rand();
     this->nWaits[i] = 0;
   }
   // std::random_device rd;
   // std::mt19937 g(rd());
   // std::shuffle(this->vWeights.begin(), this->vWeights.end(), g);
-  constexpr int MAX_DECR = 2;
-  for (int decr = 1; decr < MAX_DECR; decr++) {
-    for (int x = vWeights.size(); x > decr; x -= decr) {
-      int idx = rand() % x;
-      std::swap(vWeights[x], vWeights[idx]);
-    }
-  }
+  // constexpr int MAX_DECR = 2;
+  // for (int decr = 1; decr < MAX_DECR; decr++) {
+  //  for (int x = vWeights.size(); x > decr; x -= decr) {
+  //    int idx = rand() % x;
+  //    std::swap(vWeights[x], vWeights[idx]);
+  //  }
+  //}
   this->nIterations = 0;
 
   // bm.sampleTimeToFlag(5);

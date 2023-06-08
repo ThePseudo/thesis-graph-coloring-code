@@ -1,22 +1,22 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 
 Loading graph from /home/cardone/Desktop/graphs/gra/thermal2.gra
 Graph succesfully loaded from file.
 V: 1228045, E: 8580313, maxD: 11, minD: 1, avgD: 6.98697
-Init time [ms]: 465.279
+Init time [ms]: 461.6
 ========================================================
-1	num-cols: 13 	========================================================
-2	num-cols: 13 	========================================================
-3	num-cols: 13 	========================================================
-4	num-cols: 13 	========================================================
-5	num-cols: 13 	========================================================
-6	num-cols: 13 	========================================================
-7	num-cols: 13 	========================================================
-8	num-cols: 13 	========================================================
-9	num-cols: 13 	========================================================
-10	num-cols: 13 	========================================================
+1	num-cols: 12 	========================================================
+2	num-cols: 12 	========================================================
+3	num-cols: 12 	========================================================
+4	num-cols: 12 	========================================================
+5	num-cols: 12 	========================================================
+6	num-cols: 12 	========================================================
+7	num-cols: 12 	========================================================
+8	num-cols: 12 	========================================================
+9	num-cols: 12 	========================================================
+10	num-cols: 12 	========================================================
 11	num-cols: 12 	========================================================
 12	num-cols: 12 	========================================================
 13	num-cols: 12 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 465.279
 19	num-cols: 12 	========================================================
 20	num-cols: 12 	========================================================
 Timings [ms]
-Avg random vector initialization time: 32.9938
-Avg allocation time: 0.32545
-Avg upload time: 3.8906
-Avg process time: 0.73015
-Avg download time: 0.5
-Avg total time: 5.4462
-Inner total time (start to end function): 201.191
-Reset total time: 659.877
-Process total time: 108.924
-Avg number colors: 13
-Test time [ms]:407.667
-Program duration [ms]: 2031.01
+Avg random vector initialization time: 7.01855
+Avg allocation time: 0.30865
+Avg upload time: 3.8481
+Avg process time: 0.7102
+Avg download time: 0.51515
+Avg total time: 5.3821
+Inner total time (start to end function): 204.471
+Reset total time: 140.371
+Process total time: 107.642
+Avg number colors: 12
+Test time [ms]:462.542
+Program duration [ms]: 1565.3

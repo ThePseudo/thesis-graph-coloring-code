@@ -1,11 +1,11 @@
-Graph Coloring - v2022.9.26
+Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann (CUDA) 
 
 Loading graph from /home/cardone/Desktop/graphs/gra/ecology2.gra
 Graph succesfully loaded from file.
 V: 999999, E: 4995991, maxD: 5, minD: 3, avgD: 4.996
-Init time [ms]: 301.617
+Init time [ms]: 285.896
 ========================================================
 1	num-cols: 15 	========================================================
 2	num-cols: 15 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 301.617
 19	num-cols: 15 	========================================================
 20	num-cols: 15 	========================================================
 Timings [ms]
-Avg random vector initialization time: 29.0365
-Avg allocation time: 0.2787
-Avg upload time: 2.54195
-Avg process time: 0.7691
-Avg download time: 0.41365
-Avg total time: 4.0034
-Inner total time (start to end function): 157.35
-Reset total time: 580.729
-Process total time: 80.068
+Avg random vector initialization time: 5.2619
+Avg allocation time: 0.2642
+Avg upload time: 2.45585
+Avg process time: 0.7711
+Avg download time: 0.4153
+Avg total time: 3.90645
+Inner total time (start to end function): 155.67
+Reset total time: 105.238
+Process total time: 78.129
 Avg number colors: 15
-Test time [ms]:136.555
-Program duration [ms]: 1314.39
+Test time [ms]:141.052
+Program duration [ms]: 811.266
