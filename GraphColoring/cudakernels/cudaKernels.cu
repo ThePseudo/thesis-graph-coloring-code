@@ -47,7 +47,7 @@ size_t calc_cusparse_memory_occupancy(int const first, int const last, const int
 }
 
 int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, cudaStream_t stream);
-__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, char* finished);
+__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, bool* finished);
 
 //int launch_kernel_coop(int n, const int* dAo, const int* dAc, const int* dRandoms, int* dColors, int* colors);
 //__global__ void color_jpl_coop_kernel(int n, const int* Ao, const int* Ac, const int* randoms, int* colors);
@@ -95,9 +95,9 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		CUDA_SAFE_CALL(cudaMallocAsync(&dAo, (last - first + 1) * sizeof(*dAo), stream_mem1));
 		CUDA_SAFE_CALL(cudaMallocAsync(&dAc, (Ao[last] - Ao[first]) * sizeof(*dAc), stream_mem2));
 		CUDA_SAFE_CALL(cudaMallocAsync(&dRandoms, (last - first) * sizeof(*dRandoms), stream_mem3));
-		cudaStreamSynchronize(stream_mem1);
-		cudaStreamSynchronize(stream_mem2);
-		cudaStreamSynchronize(stream_mem3);
+		//cudaStreamSynchronize(stream_mem1);
+		//cudaStreamSynchronize(stream_mem2);
+		//cudaStreamSynchronize(stream_mem3);
 		//bm.sampleTimeToFlag(1);
 		auto end = std::chrono::high_resolution_clock::now();
 		NewBenchmark::get().ms_allocation += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
@@ -106,7 +106,7 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dAo, Ao + first, (last - first + 1) * sizeof(*Ao), cudaMemcpyHostToDevice, stream_mem1));
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dAc, Ac + Ao[first], (Ao[last] - Ao[first]) * sizeof(*Ac), cudaMemcpyHostToDevice, stream_mem2));
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dRandoms, randoms + first, (last - first) * sizeof(*randoms), cudaMemcpyHostToDevice, stream_mem3));
-		cudaStreamSynchronize(stream_mem1);
+		//cudaStreamSynchronize(stream_mem1);
 		cudaStreamSynchronize(stream_mem2);
 		cudaStreamSynchronize(stream_mem3);
 		end = std::chrono::high_resolution_clock::now();
@@ -156,10 +156,10 @@ int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRan
 	// Get raw pointer to device array
 	int* dColors = thrust::raw_pointer_cast(dvColors.data());
 
-	char finished = true;
-	char trulyFinished = false;
-	char* dFinished;
-	CUDA_SAFE_CALL(cudaMallocAsync(&dFinished, sizeof(char), stream));
+	constexpr bool finished = true;
+	bool trulyFinished = false;
+	bool* dFinished;
+	CUDA_SAFE_CALL(cudaMallocAsync(&dFinished, sizeof(finished), stream));
 	for (c = 0; !trulyFinished; ++c) {
 		CUDA_SAFE_CALL(cudaMemcpyAsync(dFinished, &finished,  sizeof(finished), cudaMemcpyHostToDevice, stream));
 		// Launch coloring iteration kernel
@@ -169,7 +169,7 @@ int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRan
 
 		// Count non-colored vertices on device
 		//left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
-		CUDA_SAFE_CALL(cudaMemcpyAsync(&trulyFinished, dFinished, sizeof(char), cudaMemcpyDeviceToHost, stream));
+		CUDA_SAFE_CALL(cudaMemcpyAsync(&trulyFinished, dFinished, sizeof(finished), cudaMemcpyDeviceToHost, stream));
 		//cudaStreamSynchronize(stream);
 	}
 	CUDA_SAFE_CALL(cudaFree(dFinished));
@@ -177,39 +177,48 @@ int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRan
 	return c;
 }
 
-__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, char *finished) {
+__global__ void color_jpl_kernel(const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, bool *finished) {
+	// Ao: row pointers
+	// Ac: column indices
+	struct Node {
+		int color;
+		int neighbours;
+		int next_neighbours;
+	};
+	const int base_neighbour = Ao[0];
+	__shared__ Node node;
 	for (int i = threadIdx.x + blockIdx.x * blockDim.x;
 		i < last - first;
 		i += blockDim.x * gridDim.x)
 	{
-
-		int color = c;
+		// ignore nodes colored earlier
+		if (colors[i] != -1) continue;
+		node = Node {
+			c, Ao[i], Ao[i + 1]
+		};
 		// true if you have max random
 		bool localmax = true;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
 		// true if you have min random
 		bool localmin = true;
-		color *= 2;
+		node.color *= 2;
 #endif
 
-		// ignore nodes colored earlier
-		if (colors[i] != -1) continue;
-
 		// look at neighbors to check their random number
-		for (int k = Ao[i]; k < Ao[i + 1]; k++) {
-			int j = Ac[k - Ao[0]] - first;
+		for (int k = node.neighbours; k < node.next_neighbours; k++) {
+			int j = Ac[k - base_neighbour] - first;
 
 			// ignore nodes colored earlier (and yourself)
-			if (j < 0 || j >= last - first || color_jpl_ingore_neighbor(color, i, j, colors[j])) continue;
+			if (j < 0 || j >= last - first || color_jpl_ingore_neighbor(node.color, i, j, colors[j])) continue;
 
 			int ir, jr;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-			ir = randoms[(i + (color<<1)) % (last - first)];
-			jr = randoms[(j + (color<<1)) % (last - first)];
+			ir = randoms[(i + (node.color << 1)) % (last - first)];
+			jr = randoms[(j + (node.color << 1)) % (last - first)];
 #endif
 #ifdef COLOR_MAX_INDEPENDENT_SET
-			ir = randoms[(i + color) % (last - first)];
-			jr = randoms[(j + color) % (last - first)];
+			ir = randoms[(i + node.color) % (last - first)];
+			jr = randoms[(j + node.color) % (last - first)];
 #endif
 
 			localmax &= ir > jr;
@@ -220,11 +229,11 @@ __global__ void color_jpl_kernel(const int first, const int last, const int c, c
 		// assign color if you have the maximum (or minimum) random number
 		bool assigned_color = true;
 #ifdef COLOR_MIN_MAX_INDEPENDENT_SET
-		assigned_color = color_jpl_assign_color(color, &colors[i], localmax, localmin);
+		assigned_color = color_jpl_assign_color(node.color, &colors[i], localmax, localmin);
 #elif defined(COLOR_MAX_INDEPENDENT_SET)
-		assigned_color = color_jpl_assign_color(color, &colors[i], localmax);
+		assigned_color = color_jpl_assign_color(node.color, &colors[i], localmax);
 #endif
-		if (!assigned_color && *finished) {
+		if (!assigned_color) {
 			*finished = false;
 		}
 	}
