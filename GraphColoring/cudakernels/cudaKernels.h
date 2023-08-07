@@ -3,6 +3,8 @@
 
 // #include "configuration.h"
 // #include "benchmark.h"
+#include <iostream>
+#include <vector>
 
 struct NewBenchmark {
   double ms_per_randomization = 0;
@@ -11,6 +13,7 @@ struct NewBenchmark {
   double ms_execute = 0;
   double ms_transfer_to_cpu = 0;
   double ms_total_process = 0;
+  std::vector<std::vector<uint64_t>> colored;
 
   static NewBenchmark &get() {
     static NewBenchmark bm = NewBenchmark();

@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/ASIC_320ks.gra
 Graph succesfully loaded from file.
 V: 321671, E: 1506136, maxD: 411, minD: 0, avgD: 4.68223
-Init time [ms]: 70.492
+Init time [ms]: 70.831
 ========================================================
 1	num-cols: 15 	========================================================
 2	num-cols: 15 	========================================================
@@ -28,15 +28,37 @@ Init time [ms]: 70.492
 19	num-cols: 15 	========================================================
 20	num-cols: 15 	========================================================
 Timings [ms]
-Avg random vector initialization time: 1.63985
-Avg allocation time: 0.25385
-Avg upload time: 0.8107
-Avg process time: 1.57315
-Avg download time: 0.19215
-Avg total time: 2.82985
-Inner total time (start to end function): 131.319
-Reset total time: 32.797
-Process total time: 56.597
+Avg random vector initialization time: 1.60955
+Avg allocation time: 0.2438
+Avg upload time: 0.79885
+Avg process time: 1.68545
+Avg download time: 0.18885
+Avg total time: 2.91695
+Inner total time (start to end function): 137.059
+Reset total time: 32.191
+Process total time: 58.339
 Avg number colors: 15
-Test time [ms]:67.736
-Program duration [ms]: 378.534
+Colors per iteration:
+iter 0: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 1: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 2: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 3: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 4: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 5: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 6: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 7: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 8: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 9: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 10: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 11: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 12: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 13: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 14: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 15: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 16: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 17: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 18: 157719 249363 294184 314508 320624 321585 321670 321671
+iter 19: 157719 249363 294184 314508 320624 321585 321670 321671
+
+Test time [ms]:59.265
+Program duration [ms]: 363.004

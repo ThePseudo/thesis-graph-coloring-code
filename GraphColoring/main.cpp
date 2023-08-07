@@ -240,7 +240,7 @@ int main(int argc, char **argv) {
   //                 std::accumulate(n_colors.begin(), n_colors.end(), 0.0f) /
   //                 num_runs)
   //          << std::endl;
-  auto bm = NewBenchmark::get();
+  auto &bm = NewBenchmark::get();
   std::cout << "Timings [ms]" << std::endl;
   std::cout << "Avg random vector initialization time: "
             << reset_time / (float)num_runs << std::endl;
@@ -264,6 +264,16 @@ int main(int argc, char **argv) {
                    std::accumulate(n_colors.begin(), n_colors.end(), 0.0f) /
                    num_runs)
             << std::endl;
+  std::cout << "Colors per iteration:" << std::endl;
+  int count = 0;
+  for (const auto &iter : bm.colored) {
+    std::cout << "iter " << count++ << ":";
+    for (const auto &color : iter) {
+      std::cout << " " << color;
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
 
   // std::cout << "Load time: " <<
   // G.printExecutionInfo();

@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/apache2.gra
 Graph succesfully loaded from file.
 V: 715176, E: 2986244, maxD: 6, minD: 0, avgD: 4.17554
-Init time [ms]: 143.026
+Init time [ms]: 141.686
 ========================================================
 1	num-cols: 12 	========================================================
 2	num-cols: 12 	========================================================
@@ -28,15 +28,37 @@ Init time [ms]: 143.026
 19	num-cols: 12 	========================================================
 20	num-cols: 12 	========================================================
 Timings [ms]
-Avg random vector initialization time: 3.73755
-Avg allocation time: 0.259
-Avg upload time: 1.58665
-Avg process time: 0.29535
-Avg download time: 0.3264
-Avg total time: 2.4674
-Inner total time (start to end function): 130.014
-Reset total time: 74.751
-Process total time: 49.348
+Avg random vector initialization time: 3.72765
+Avg allocation time: 0.2551
+Avg upload time: 1.5801
+Avg process time: 0.8743
+Avg download time: 0.3229
+Avg total time: 3.0324
+Inner total time (start to end function): 138.016
+Reset total time: 74.553
+Process total time: 60.648
 Avg number colors: 12
-Test time [ms]:100.66
-Program duration [ms]: 580.577
+Colors per iteration:
+iter 0: 349606 512831 650616 708117 715054 715176
+iter 1: 349606 512831 650616 708117 715054 715176
+iter 2: 349606 512831 650616 708117 715054 715176
+iter 3: 349606 512831 650616 708117 715054 715176
+iter 4: 349606 512831 650616 708117 715054 715176
+iter 5: 349606 512831 650616 708117 715054 715176
+iter 6: 349606 512831 650616 708117 715054 715176
+iter 7: 349606 512831 650616 708117 715054 715176
+iter 8: 349391 512740 650948 708143 715035 715176
+iter 9: 349391 512740 650948 708143 715035 715176
+iter 10: 349391 512740 650948 708143 715035 715176
+iter 11: 349391 512740 650948 708143 715035 715176
+iter 12: 349391 512740 650948 708143 715035 715176
+iter 13: 349391 512740 650948 708143 715035 715176
+iter 14: 349391 512740 650948 708143 715035 715176
+iter 15: 349391 512740 650948 708143 715035 715176
+iter 16: 349391 512740 650948 708143 715035 715176
+iter 17: 349391 512740 650948 708143 715035 715176
+iter 18: 349391 512740 650948 708143 715035 715176
+iter 19: 349391 512740 650948 708143 715035 715176
+
+Test time [ms]:100.198
+Program duration [ms]: 563.591

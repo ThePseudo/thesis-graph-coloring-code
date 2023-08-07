@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/parabolic_fem.gra
 Graph succesfully loaded from file.
 V: 525825, E: 3148800, maxD: 6, minD: 2, avgD: 5.9883
-Init time [ms]: 136.369
+Init time [ms]: 135.967
 ========================================================
 1	num-cols: 12 	========================================================
 2	num-cols: 12 	========================================================
@@ -28,15 +28,37 @@ Init time [ms]: 136.369
 19	num-cols: 12 	========================================================
 20	num-cols: 12 	========================================================
 Timings [ms]
-Avg random vector initialization time: 2.7321
-Avg allocation time: 0.2557
-Avg upload time: 1.5783
-Avg process time: 0.38815
-Avg download time: 0.2716
-Avg total time: 2.49375
-Inner total time (start to end function): 125.397
-Reset total time: 54.642
-Process total time: 49.875
+Avg random vector initialization time: 2.7174
+Avg allocation time: 0.2574
+Avg upload time: 1.57855
+Avg process time: 0.9544
+Avg download time: 0.27205
+Avg total time: 3.0624
+Inner total time (start to end function): 135.098
+Reset total time: 54.348
+Process total time: 61.248
 Avg number colors: 12
-Test time [ms]:89.767
-Program duration [ms]: 514.165
+Colors per iteration:
+iter 0: 150913 306479 453824 519398 525741 525825
+iter 1: 150913 306479 453824 519398 525741 525825
+iter 2: 150913 306479 453824 519398 525741 525825
+iter 3: 150913 306479 453824 519398 525741 525825
+iter 4: 150913 306479 453824 519398 525741 525825
+iter 5: 150913 306479 453824 519398 525741 525825
+iter 6: 150913 306479 453824 519398 525741 525825
+iter 7: 150913 306479 453824 519398 525741 525825
+iter 8: 150913 306479 453824 519398 525741 525825
+iter 9: 150913 306479 453824 519398 525741 525825
+iter 10: 150913 306479 453824 519398 525741 525825
+iter 11: 150913 306479 453824 519398 525741 525825
+iter 12: 150913 306479 453824 519398 525741 525825
+iter 13: 150913 306479 453824 519398 525741 525825
+iter 14: 150913 306479 453824 519398 525741 525825
+iter 15: 150913 306479 453824 519398 525741 525825
+iter 16: 150913 306479 453824 519398 525741 525825
+iter 17: 150913 306479 453824 519398 525741 525825
+iter 18: 150913 306479 453824 519398 525741 525825
+iter 19: 150913 306479 453824 519398 525741 525825
+
+Test time [ms]:89.999
+Program duration [ms]: 544.272

@@ -3,6 +3,7 @@
 #include <thrust/count.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
+#include <thrust/execution_policy.h>
 
 //#include <cuda_runtime_api.h>
 //#include <cuda.h>
@@ -141,7 +142,9 @@ int color_jpl(int const n, const int* Ao, const int* Ac, int* colors, const int*
 	return needConflictCheck ? -c : c;
 }
 
+
 int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRandoms, thrust::device_vector<int>& dvColors, cudaStream_t stream) {
+	NewBenchmark::get().colored.push_back(std::vector<uint64_t>());
 	int c = -1;	// Number of colors used
 	int left = last - first;	// Number of non-colored vertices
 
@@ -166,12 +169,15 @@ int launch_kernel(int const first, int const last, int* dAo, int* dAc, int* dRan
 		//std::cout << "To GPU!" << std::endl;
 		color_jpl_kernel<<<nb, nt, 0, stream>>>(first, last, c, dAo, dAc, dRandoms, dColors, dFinished);
 		//cudaDeviceSynchronize();	// Not necessary, but useful to categoryze berchmark
-
 		// Count non-colored vertices on device
 		//left = (int)thrust::count(dvColors.begin(), dvColors.end(), -1);
 		CUDA_SAFE_CALL(cudaMemcpyAsync(&trulyFinished, dFinished, sizeof(finished), cudaMemcpyDeviceToHost, stream));
-		//cudaStreamSynchronize(stream);
+		cudaStreamSynchronize(stream);
+		auto greaterOrEqualZero = thrust::placeholders::_1 >= 0;
+		int n_colors = (int)thrust::count_if(dvColors.begin(), dvColors.end(), greaterOrEqualZero);
+		NewBenchmark::get().colored.back().emplace_back(n_colors);
 	}
+
 	CUDA_SAFE_CALL(cudaFree(dFinished));
 
 	return c;
