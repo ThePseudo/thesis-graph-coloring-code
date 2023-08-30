@@ -39,12 +39,11 @@ int launch_kernel(const int first, const int last, kp::Manager &mgr,
                   std::shared_ptr<kp::TensorT<int>> tColors,
                   std::shared_ptr<kp::TensorT<int>> tFinished,
                   std::vector<uint32_t> &shader) {
-  const uint nt = 256; // Number of threads per block to be launched
-  const uint nb =
-      (last - first + nt - 1) / nt; // Number of blocks to be launched
+  uint32_t nt = 256; // Number of threads per block to be launched
+  uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
 
   std::shared_ptr<kp::Algorithm> algo = mgr.algorithm(
-      {tAo, tAc, tRandoms, tColors, tFinished}, {shader}, {}, {}, {0, 10, 0});
+      {tAo, tAc, tRandoms, tColors, tFinished}, {shader}, {}, {}, {0, 0, 0});
   int c = -1;
   bool finished = false;
   int left = last - first;
@@ -57,7 +56,7 @@ int launch_kernel(const int first, const int last, kp::Manager &mgr,
         ->record<kp::OpTensorSyncLocal>({tFinished})
         ->eval();
     finished = tFinished->data()[0];
-    std::cout << finished << std::endl;
+    // std::cout << finished << std::endl;
   }
   return c;
 }

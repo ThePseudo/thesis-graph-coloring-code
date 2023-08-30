@@ -34,10 +34,6 @@ layout(push_constant) uniform PushConstants {
     int current_color;
 } push;
 
-layout(constant_id = 0) const uint DIMENSIONS_X = 0;
-layout(constant_id = 1) const uint DIMENSIONS_Y = 0;
-layout(constant_id = 2) const uint DIMENSIONS_Z = 0;
-
 bool color_jpl_ignore_neighbor(in int c, in uint i, in int j, in int jc)
 {
     return ((jc != -1) && (jc != c) && (jc != c + 1)) || (i == j);
@@ -52,28 +48,25 @@ bool color_jpl_assign_color(in int c, in uint index, in bool localmax, in bool l
 
 void main()
 {
-    ivec3 indices = ivec3(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
     const int base_neighbour = Ao[0];
-    uint index = indices.x + indices.y * DIMENSIONS_X;
-    Node node;
-    if (colors[indices.x + indices.y * DIMENSIONS_X] != -1) return;
-    node.color = push.current_color;
-    node.neighbours = Ao[index];
-    node.next_neighbours = Ao[index + 1];
-    bool localmax = true;
-    bool localmin = true;
-    node.color *= 2;
-    for(int k = node.neighbours; k < node.next_neighbours; k++) {
-        int j = Ac[k - base_neighbour] - push.first;
-        bool ignore = color_jpl_ignore_neighbor(node.color, index, j, colors[j]);
-        if(j < 0 || (j >= push.last - push.first) || ignore) continue;
-        int ir = randoms[(index + (node.color << 1)) % (push.last - push.first)];
-        int jr = randoms[(j + (node.color << 1)) % (push.last - push.first)];
-        localmax = localmax && (ir > jr);
-        localmin = localmin && (ir < jr);
-    }
-    bool assigned_color = color_jpl_assign_color(node.color, index, localmax, localmin);
-    if(!assigned_color) {
-        finished[0] = 0;
+    for(uint index = gl_LocalInvocationIndex.x; index < push.last - push.first; index += gl_NumWorkGroups.x) {
+        if (colors[index] != -1) continue;
+        int color = push.current_color;
+        bool localmax = true;
+        bool localmin = true;
+        color *= 2;
+        for(int k = Ao[index]; k < Ao[index + 1]; k++) {
+            int j = Ac[k - base_neighbour] - push.first;
+            bool ignore = color_jpl_ignore_neighbor(color, index, j, colors[j]);
+            if(j < 0 || (j >= push.last - push.first) || ignore) continue;
+            int ir = randoms[(index + (color << 1)) % (push.last - push.first)];
+            int jr = randoms[(j + (color << 1)) % (push.last - push.first)];
+            localmax = localmax && (ir > jr);
+            localmin = localmin && (ir < jr);
+        }
+        bool assigned_color = color_jpl_assign_color(push.current_color, index, localmax, localmin);
+        if(!assigned_color) {
+            finished[0] = 0;
+        }
     }
 }

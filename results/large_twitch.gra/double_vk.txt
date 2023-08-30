@@ -1,0 +1,82 @@
+Graph Coloring - v1.0.0
+Graph Representation: Compressed Sparse Row
+Coloring Algorithm: Parallel Jones-Plassmann
+
+Loading graph from /home/cardone/Desktop/graphs/gra/large_twitch.gra
+Graph succesfully loaded from file.
+V: 168114, E: 13595114, maxD: 35279, minD: 1, avgD: 80.8684
+Init time [ms]: 479.722
+========================================================
+1	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+2	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+3	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+4	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+5	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+6	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+7	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+8	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+9	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+10	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+11	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+12	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+13	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+14	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+15	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+16	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+17	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+18	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+19	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+20	
+There was an error while assigning colors. 6797557 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+Timings [ms]
+Avg random vector initialization time: 0.8963
+Avg allocation time: 2.07145
+Avg upload time: 0.4752
+Avg process time: 54.3173
+Avg download time: 0.24635
+Avg total time: 57.1103
+Inner total time (start to end function): 0
+Reset total time: 17.926
+Process total time: 1142.21
+Avg number colors: 1
+Test time [ms]:1461.41
+Program duration [ms]: 4161.04
