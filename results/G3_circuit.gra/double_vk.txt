@@ -1,0 +1,12 @@
+Graph Coloring - v1.0.0
+Graph Representation: Compressed Sparse Row
+Coloring Algorithm: Parallel Jones-Plassmann
+
+Loading graph from /home/cardone/Desktop/graphs/gra/G3_circuit.gra
+Graph succesfully loaded from file.
+V: 1585478, E: 6075348, maxD: 5, minD: 1, avgD: 3.83187
+Init time [ms]: 306.347
+========================================================
+1	[Aug 30 2023 14:10:48] [debug] [/home/calabrese/prove_cuda/GraphColoring/GraphColoring/vulkan_kernels/kompute/src/Manager.cpp:319] Using physical device index 0 found NVIDIA GeForce RTX 3070
+Shader shaders/coloring.comp.spv loaded. Size: 854
+Shader size: 854

@@ -1,0 +1,202 @@
+Graph Coloring - v1.0.0
+Graph Representation: Compressed Sparse Row
+Coloring Algorithm: Parallel Jones-Plassmann
+
+Loading graph from /home/cardone/Desktop/graphs/gra/apache2.gra
+Graph succesfully loaded from file.
+V: 715176, E: 2986244, maxD: 6, minD: 0, avgD: 4.17554
+Init time [ms]: 148.663
+========================================================
+1	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+2	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+3	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+4	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+5	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+6	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+7	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+8	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+9	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+10	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+11	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+12	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+13	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+14	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+15	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+16	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+17	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+18	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+19	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+20	0
+0
+0
+0
+0
+1
+
+There was an error while assigning colors. 1493122 pairs of verteces have the same color.
+num-cols: 1 	========================================================
+Timings [ms]
+Avg random vector initialization time: 3.9248
+Avg allocation time: 5.48975
+Avg upload time: 1.1726
+Avg process time: 7.7689
+Avg download time: 0.30695
+Avg total time: 14.7382
+Inner total time (start to end function): 0
+Reset total time: 78.496
+Process total time: 294.764
+Avg number colors: 1
+Test time [ms]:261.275
+Program duration [ms]: 1764.1

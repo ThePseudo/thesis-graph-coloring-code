@@ -24,7 +24,7 @@
 #include "CompressedSparseRow.h"
 #endif
 
-#include "benchmark.h"
+#include "./benchmark.h"
 
 #include <algorithm>
 #include <cmath>

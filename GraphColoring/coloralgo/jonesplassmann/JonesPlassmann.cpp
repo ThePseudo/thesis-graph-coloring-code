@@ -2,7 +2,12 @@
 
 // #include "benchmark.h"
 
+#ifdef VULKAN
+#include "../vulkan_kernels/vulkanKernels.h"
+#else
 #include "cudaKernels.h"
+#endif
+
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
@@ -103,8 +108,10 @@ void JonesPlassmann::reset() {
 }
 
 const int JonesPlassmann::startColoring() {
-#if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) &&     \
-    defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
+#if (defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) &&    \
+     defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM))
+  return this->colorWithCuda();
+#elifdef VULKAN
   return this->colorWithCuda();
 #else
   return this->solve();
@@ -251,10 +258,9 @@ void JonesPlassmann::colorWhileWaiting(int const first, int const last,
   } while (again);
 }
 
-// QUA CI SONO I MILLISECONDI CHE CI PERDIAMO!
-#if defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) &&     \
-    defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)
-#include "cudaKernels.h"
+#if (defined(COLORING_ALGORITHM_JP) && defined(GRAPH_REPRESENTATION_CSR) &&    \
+     defined(PARALLEL_GRAPH_COLOR) && defined(USE_CUDA_ALGORITHM)) ||          \
+    defined(VULKAN)
 const int JonesPlassmann::colorWithCuda() {
   int const n = this->adj().nV();
   const int *Ao = this->adj().getRowPointers();
