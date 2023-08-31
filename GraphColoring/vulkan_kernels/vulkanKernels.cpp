@@ -48,7 +48,7 @@ int launch_kernel(const int first, const int last, kp::Manager &mgr,
   int c = -1;
   bool finished = false;
   int left = last - first;
-  // tFinished->setData({1});
+  tFinished->setData({1});
   auto seq = mgr.sequence()
                  ->record<kp::OpTensorSyncDevice>({tFinished})
                  ->record<kp::OpAlgoDispatch>(
@@ -65,7 +65,7 @@ int launch_kernel(const int first, const int last, kp::Manager &mgr,
                     ->record<kp::OpTensorSyncLocal>({tFinished});
     seq->evalAwait();
     finished = tFinished->data()[0];
-    // tFinished->setData({1});
+    tFinished->setData({1});
     seq = seq1;
   }
   return c;
@@ -93,8 +93,7 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
       std::vector<int32_t>(randoms - first, randoms + last - first));
   auto tColors =
       mgr.tensorT(std::vector<int32_t>(colors - first, colors - first + last));
-  auto tFinished =
-      mgr.tensorT<int32_t>(std::vector<int32_t>(tColors->size(), 1));
+  auto tFinished = mgr.tensorT<int32_t>({1});
   auto end = std::chrono::high_resolution_clock::now();
   NewBenchmark::get().ms_allocation +=
       std::chrono::duration_cast<std::chrono::microseconds>(end - start)
@@ -103,7 +102,7 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
 
   start = std::chrono::high_resolution_clock::now();
   mgr.sequence()
-      ->record<kp::OpTensorSyncDevice>({tAo, tAc, tRandoms, tColors, tFinished})
+      ->record<kp::OpTensorSyncDevice>({tAo, tAc, tRandoms, tColors})
       ->eval();
   end = std::chrono::high_resolution_clock::now();
   NewBenchmark::get().ms_transfer_to_gpu +=

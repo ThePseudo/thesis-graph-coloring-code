@@ -5,5 +5,20 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/ASIC_320ks.gra
 Graph succesfully loaded from file.
 V: 321671, E: 1506136, maxD: 411, minD: 0, avgD: 4.68223
-Init time [ms]: 74.306
+Init time [ms]: 74.072
 ========================================================
+1	num-cols: 17 	========================================================
+2	num-cols: 17 	========================================================
+Timings [ms]
+Avg random vector initialization time: 1.7225
+Avg allocation time: 6.418
+Avg upload time: 1.0935
+Avg process time: 9.8865
+Avg download time: 0.1695
+Avg total time: 17.5675
+Inner total time (start to end function): 0
+Reset total time: 3.445
+Process total time: 35.135
+Avg number colors: 17
+Test time [ms]:6.898
+Program duration [ms]: 230.373

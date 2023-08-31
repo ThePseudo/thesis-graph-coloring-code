@@ -5,5 +5,20 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/af_shell3.gra
 Graph succesfully loaded from file.
 V: 504855, E: 17084020, maxD: 39, minD: 19, avgD: 33.8395
-Init time [ms]: 614.043
+Init time [ms]: 608.202
 ========================================================
+1	num-cols: 45 	========================================================
+2	num-cols: 45 	========================================================
+Timings [ms]
+Avg random vector initialization time: 2.655
+Avg allocation time: 45.1855
+Avg upload time: 6.3865
+Avg process time: 90.767
+Avg download time: 0.443
+Avg total time: 142.782
+Inner total time (start to end function): 0
+Reset total time: 5.31
+Process total time: 285.564
+Avg number colors: 45
+Test time [ms]:28.147
+Program duration [ms]: 1093.41
