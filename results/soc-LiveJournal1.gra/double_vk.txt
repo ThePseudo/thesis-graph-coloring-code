@@ -2,4 +2,4 @@ Graph Coloring - v1.0.0
 Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann
 
-Loading graph from /home/cardone/Desktop/graphs/gra/rgg_n_2_20_s0.gra
+Loading graph from /home/cardone/Desktop/graphs/gra/soc-LiveJournal1.gra

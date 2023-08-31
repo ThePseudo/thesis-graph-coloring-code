@@ -46,7 +46,7 @@ foreach(GLSL ${GLSL_SOURCE_FILES})
     add_custom_command(
             OUTPUT ${SPIRV}
             COMMAND ${CMAKE_COMMAND} -E make_directory "${APP_OUTPUT_DIR}"
-            COMMAND glslc -O ${GLSL} -o ${SPIRV}
+            COMMAND glslang -gVS -V ${GLSL} -o ${SPIRV}
             DEPENDS ${GLSL})
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach(GLSL)

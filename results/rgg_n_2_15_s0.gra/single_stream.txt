@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA)
 Loading graph from /home/cardone/Desktop/graphs/gra/rgg_n_2_15_s0.gra
 Graph succesfully loaded from file.
 V: 32768, E: 320480, maxD: 24, minD: 0, avgD: 9.78027
-Init time [ms]: 12.446
+Init time [ms]: 12.742
 ========================================================
 1	num-cols: 20 	========================================================
 2	num-cols: 20 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 12.446
 19	num-cols: 20 	========================================================
 20	num-cols: 20 	========================================================
 Timings [ms]
-Avg random vector initialization time: 0.1723
-Avg allocation time: 0.2584
-Avg upload time: 0.1696
-Avg process time: 0.33325
-Avg download time: 0.02665
-Avg total time: 0.7879
-Inner total time (start to end function): 89.035
-Reset total time: 3.446
-Process total time: 15.758
+Avg random vector initialization time: 0.1755
+Avg allocation time: 0.2726
+Avg upload time: 0.1756
+Avg process time: 0.3726
+Avg download time: 0.0276
+Avg total time: 0.8484
+Inner total time (start to end function): 75.326
+Reset total time: 3.51
+Process total time: 16.968
 Avg number colors: 20
-Test time [ms]:10.388
-Program duration [ms]: 123.319
+Test time [ms]:10.649
+Program duration [ms]: 109.61

@@ -5,20 +5,8 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/email_enron.gra
 Graph succesfully loaded from file.
 V: 36692, E: 367662, maxD: 1383, minD: 1, avgD: 10.0202
-Init time [ms]: 14.49
+Init time [ms]: 14.549
 ========================================================
-1	num-cols: 115 	========================================================
-2	num-cols: 115 	========================================================
-Timings [ms]
-Avg random vector initialization time: 0.1985
-Avg allocation time: 2.011
-Avg upload time: 0.4425
-Avg process time: 25.842
-Avg download time: 0.0845
-Avg total time: 28.38
-Inner total time (start to end function): 0
-Reset total time: 0.397
-Process total time: 56.76
-Avg number colors: 115
-Test time [ms]:1.182
-Program duration [ms]: 169.343
+1	num-cols: 120 	========================================================
+2	num-cols: 120 	========================================================
+3	num-cols: 120 	========================================================

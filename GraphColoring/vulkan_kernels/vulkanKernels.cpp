@@ -32,36 +32,26 @@ std::vector<uint32_t> loadShaderFromFile(const char *fileName) {
   return result;
 }
 
-int launch_kernel(const int first, const int last, kp::Manager &mgr,
-                  std::shared_ptr<kp::TensorT<int32_t>> tAo,
+int launch_kernel(const int first, const int last, const int nt,
+                  kp::Manager &mgr, std::shared_ptr<kp::TensorT<int32_t>> tAo,
                   std::shared_ptr<kp::TensorT<int32_t>> tAc,
                   std::shared_ptr<kp::TensorT<int32_t>> tRandoms,
                   std::shared_ptr<kp::TensorT<int32_t>> tColors,
                   std::shared_ptr<kp::TensorT<int32_t>> tFinished,
-                  std::vector<uint32_t> &shader) {
-  uint32_t nt = last - first; // Number of threads per block to be launched
-  uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
-  nb = 1;
-  std::shared_ptr<kp::Algorithm> algo =
-      mgr.algorithm({tAo, tAc, tRandoms, tColors, tFinished}, {shader},
-                    {nt, nb}, {}, {0, 0, 0, 0});
-  int c = -1;
+                  std::shared_ptr<kp::Algorithm> algo) {
+  int c = 0;
   bool finished = false;
   int left = last - first;
   tFinished->setData({1});
   auto seq = mgr.sequence()
                  ->record<kp::OpTensorSyncDevice>({tFinished})
-                 ->record<kp::OpAlgoDispatch>(
-                     algo, std::vector<int32_t>{static_cast<int32_t>(nt), first,
-                                                last, c})
+                 ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c})
                  ->record<kp::OpTensorSyncLocal>({tFinished});
-  for (c = 0; !finished; c++) {
+  for (c = 1; !finished; c++) {
     seq->evalAsync();
     auto seq1 = mgr.sequence()
                     ->record<kp::OpTensorSyncDevice>({tFinished})
-                    ->record<kp::OpAlgoDispatch>(
-                        algo, std::vector<int32_t>{static_cast<int32_t>(nt),
-                                                   first, last, c})
+                    ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c})
                     ->record<kp::OpTensorSyncLocal>({tFinished});
     seq->evalAwait();
     finished = tFinished->data()[0];
@@ -74,8 +64,8 @@ int launch_kernel(const int first, const int last, kp::Manager &mgr,
 int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
               const int *randoms, int resetCount) {
   int c = -1;
-  int first = 0;
-  int last = n;
+  const uint32_t first = 0;
+  const uint32_t last = n;
   bool needConflictCheck = false;
   auto start_proc = std::chrono::high_resolution_clock::now();
   kp::Manager mgr;
@@ -83,6 +73,9 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
   if (shader.empty()) {
     throw std::runtime_error("Shader empty!");
   }
+  const uint32_t nt =
+      last - first / 100; // Number of threads per block to be launched
+  uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
 
   auto start = std::chrono::high_resolution_clock::now();
   auto tAo =
@@ -99,7 +92,9 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
       std::chrono::duration_cast<std::chrono::microseconds>(end - start)
           .count() /
       1000.0f;
-
+  auto specs = std::vector<uint32_t>{nt, first, last};
+  std::shared_ptr<kp::Algorithm> algo = mgr.algorithm(
+      {tAo, tAc, tRandoms, tColors, tFinished}, {shader}, {nt, nb}, specs, {0});
   start = std::chrono::high_resolution_clock::now();
   mgr.sequence()
       ->record<kp::OpTensorSyncDevice>({tAo, tAc, tRandoms, tColors})
@@ -110,8 +105,8 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
           .count() /
       1000.0f;
   start = std::chrono::high_resolution_clock::now();
-  c += launch_kernel(first, last, mgr, tAo, tAc, tRandoms, tColors, tFinished,
-                     shader);
+  c += launch_kernel(first, last, nt, mgr, tAo, tAc, tRandoms, tColors,
+                     tFinished, algo);
   end = std::chrono::high_resolution_clock::now();
   NewBenchmark::get().ms_execute +=
       std::chrono::duration_cast<std::chrono::microseconds>(end - start)

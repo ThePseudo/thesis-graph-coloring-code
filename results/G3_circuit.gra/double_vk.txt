@@ -3,22 +3,3 @@ Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann
 
 Loading graph from /home/cardone/Desktop/graphs/gra/G3_circuit.gra
-Graph succesfully loaded from file.
-V: 1585478, E: 6075348, maxD: 5, minD: 1, avgD: 3.83187
-Init time [ms]: 316.003
-========================================================
-1	num-cols: 10 	========================================================
-2	num-cols: 10 	========================================================
-Timings [ms]
-Avg random vector initialization time: 8.643
-Avg allocation time: 22.244
-Avg upload time: 3.86
-Avg process time: 21.4365
-Avg download time: 0.668
-Avg total time: 48.2085
-Inner total time (start to end function): 0
-Reset total time: 17.286
-Process total time: 96.417
-Avg number colors: 10
-Test time [ms]:24.982
-Program duration [ms]: 639.593

@@ -238,3 +238,459 @@ Vanilla on single: rgg_n_2_23_s0.gra...
 Vanilla on single: rgg_n_2_24_s0.gra...
 Vanilla on single: thermal2.gra...
 Vanilla on single: thermomech_dK.gra...
+mkdir: cannot create directory ‘results’: File exists
+Stream on vk double: af_shell3.gra...
+mkdir: cannot create directory ‘results/af_shell3.gra’: File exists
+mkdir: cannot create directory ‘results’: File exists
+Stream on vk double: af_shell3.gra...
+mkdir: cannot create directory ‘results/af_shell3.gra’: File exists
+
+real	0m5,237s
+user	0m1,857s
+sys	0m1,818s
+Stream on vk double: apache2.gra...
+mkdir: cannot create directory ‘results/apache2.gra’: File exists
+
+real	0m2,090s
+user	0m0,988s
+sys	0m0,899s
+Stream on vk double: ASIC_320ks.gra...
+mkdir: cannot create directory ‘results/ASIC_320ks.gra’: File exists
+
+real	0m1,593s
+user	0m0,632s
+sys	0m0,829s
+Stream on vk double: atmosmodd.gra...
+mkdir: cannot create directory ‘results/atmosmodd.gra’: File exists
+
+real	0m3,297s
+user	0m1,673s
+sys	0m1,177s
+Stream on vk double: cage13.gra...
+mkdir: cannot create directory ‘results/cage13.gra’: File exists
+
+real	0m2,741s
+user	0m1,073s
+sys	0m1,065s
+Stream on vk double: ecology2.gra...
+mkdir: cannot create directory ‘results/ecology2.gra’: File exists
+
+real	0m2,459s
+user	0m1,262s
+sys	0m0,953s
+Stream on vk double: email_enron.gra...
+mkdir: cannot create directory ‘results/email_enron.gra’: File exists
+
+real	0m1,490s
+user	0m0,259s
+sys	0m0,865s
+Stream on vk double: email-Enron.gra...
+mkdir: cannot create directory ‘results/email-Enron.gra’: File exists
+
+real	0m1,506s
+user	0m0,361s
+sys	0m0,787s
+Stream on vk double: FEM_3D_thermal2.gra...
+mkdir: cannot create directory ‘results/FEM_3D_thermal2.gra’: File exists
+
+real	0m1,744s
+user	0m0,668s
+sys	0m0,794s
+Stream on vk double: G3_circuit.gra...
+mkdir: cannot create directory ‘results/G3_circuit.gra’: File exists
+
+real	0m3,359s
+user	0m1,845s
+sys	0m1,111s
+Stream on vk double: hollywood-2009.gra...
+mkdir: cannot create directory ‘results/hollywood-2009.gra’: File exists
+
+real	3m6,153s
+user	0m14,579s
+sys	0m12,706s
+Stream on vk double: indochina-2004.gra...
+mkdir: cannot create directory ‘results/indochina-2004.gra’: File exists
+
+real	22m57,505s
+user	0m47,833s
+sys	0m38,720s
+Stream on vk double: large_twitch.gra...
+mkdir: cannot create directory ‘results/large_twitch.gra’: File exists
+
+real	0m40,991s
+user	0m2,590s
+sys	0m3,101s
+Stream on vk double: offshore.gra...
+mkdir: cannot create directory ‘results/offshore.gra’: File exists
+
+real	0m1,910s
+user	0m0,853s
+sys	0m0,904s
+Stream on vk double: parabolic_fem.gra...
+mkdir: cannot create directory ‘results/parabolic_fem.gra’: File exists
+
+real	0m2,004s
+user	0m1,027s
+sys	0m0,878s
+Stream on vk double: qg.order100.gra...
+mkdir: cannot create directory ‘results/qg.order100.gra’: File exists
+
+real	0m2,187s
+user	0m0,542s
+sys	0m0,898s
+Stream on vk double: rgg_n_2_15_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_15_s0.gra’: File exists
+
+real	0m1,165s
+user	0m0,474s
+sys	0m0,719s
+Stream on vk double: rgg_n_2_16_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_16_s0.gra’: File exists
+
+real	0m1,255s
+user	0m0,457s
+sys	0m0,836s
+Stream on vk double: rgg_n_2_17_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_17_s0.gra’: File exists
+
+real	0m1,388s
+user	0m0,599s
+sys	0m0,835s
+Stream on vk double: rgg_n_2_18_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_18_s0.gra’: File exists
+
+real	0m1,818s
+user	0m0,836s
+sys	0m0,876s
+Stream on vk double: rgg_n_2_19_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_19_s0.gra’: File exists
+
+real	0m2,602s
+user	0m1,200s
+sys	0m1,044s
+Stream on vk double: rgg_n_2_20_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_20_s0.gra’: File exists
+
+real	0m4,670s
+user	0m2,304s
+sys	0m1,493s
+Stream on vk double: rgg_n_2_21_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_21_s0.gra’: File exists
+
+real	0m8,609s
+user	0m4,625s
+sys	0m2,235s
+Stream on vk double: rgg_n_2_22_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_22_s0.gra’: File exists
+
+real	0m16,031s
+user	0m8,585s
+sys	0m3,724s
+Stream on vk double: rgg_n_2_23_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_23_s0.gra’: File exists
+
+real	0m32,103s
+user	0m16,866s
+sys	0m7,315s
+Stream on vk double: rgg_n_2_24_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_24_s0.gra’: File exists
+
+real	1m4,603s
+user	0m33,335s
+sys	0m14,396s
+Stream on vk double: soc-LiveJournal1.gra...
+mkdir: cannot create directory ‘results/soc-LiveJournal1.gra’: File exists
+
+real	1m1,579s
+user	0m14,282s
+sys	0m6,317s
+Stream on vk double: thermal2.gra...
+mkdir: cannot create directory ‘results/thermal2.gra’: File exists
+
+real	0m3,430s
+user	0m1,946s
+sys	0m1,071s
+Stream on vk double: thermomech_dK.gra...
+mkdir: cannot create directory ‘results/thermomech_dK.gra’: File exists
+
+real	0m1,691s
+user	0m0,786s
+sys	0m0,850s
+Stream on single: af_shell3.gra...
+Stream on single: apache2.gra...
+Stream on single: ASIC_320ks.gra...
+Stream on single: atmosmodd.gra...
+Stream on single: cage13.gra...
+Stream on single: ecology2.gra...
+Stream on single: email_enron.gra...
+Stream on single: email-Enron.gra...
+Stream on single: FEM_3D_thermal2.gra...
+Stream on single: G3_circuit.gra...
+Stream on single: hollywood-2009.gra...
+Stream on single: indochina-2004.gra...
+Stream on single: large_twitch.gra...
+Stream on single: offshore.gra...
+Stream on single: parabolic_fem.gra...
+Stream on single: qg.order100.gra...
+Stream on single: rgg_n_2_15_s0.gra...
+Stream on single: rgg_n_2_16_s0.gra...
+Stream on single: rgg_n_2_17_s0.gra...
+Stream on single: rgg_n_2_18_s0.gra...
+Stream on single: rgg_n_2_19_s0.gra...
+Stream on single: rgg_n_2_20_s0.gra...
+Stream on single: rgg_n_2_21_s0.gra...
+Stream on single: rgg_n_2_22_s0.gra...
+Stream on single: rgg_n_2_23_s0.gra...
+Stream on single: rgg_n_2_24_s0.gra...
+Stream on single: soc-LiveJournal1.gra...
+Stream on single: thermal2.gra...
+Stream on single: thermomech_dK.gra...
+mkdir: cannot create directory ‘results’: File exists
+Stream on vk double: af_shell3.gra...
+mkdir: cannot create directory ‘results/af_shell3.gra’: File exists
+
+real	0m6,721s
+user	0m1,900s
+sys	0m1,972s
+Stream on vk double: apache2.gra...
+mkdir: cannot create directory ‘results/apache2.gra’: File exists
+
+real	0m2,661s
+user	0m0,987s
+sys	0m0,915s
+Stream on vk double: ASIC_320ks.gra...
+mkdir: cannot create directory ‘results/ASIC_320ks.gra’: File exists
+
+real	0m1,918s
+user	0m0,617s
+sys	0m0,843s
+Stream on vk double: atmosmodd.gra...
+mkdir: cannot create directory ‘results/atmosmodd.gra’: File exists
+
+real	0m4,653s
+user	0m1,897s
+sys	0m1,190s
+Stream on vk double: cage13.gra...
+mkdir: cannot create directory ‘results/cage13.gra’: File exists
+Terminated
+
+real	0m2,826s
+user	0m0,848s
+sys	0m0,906s
+Stream on vk double: ecology2.gra...
+mkdir: cannot create directory ‘results/ecology2.gra’: File exists
+Terminated
+
+real	0m0,769s
+user	0m0,378s
+sys	0m0,229s
+Stream on vk double: email_enron.gra...
+mkdir: cannot create directory ‘results/email_enron.gra’: File exists
+Terminated
+
+real	0m0,247s
+user	0m0,068s
+sys	0m0,129s
+Stream on vk double: email-Enron.gra...
+mkdir: cannot create directory ‘results/email-Enron.gra’: File exists
+Terminated
+
+real	0m0,223s
+user	0m0,060s
+sys	0m0,120s
+Stream on vk double: FEM_3D_thermal2.gra...
+mkdir: cannot create directory ‘results/FEM_3D_thermal2.gra’: File exists
+Terminated
+
+real	0m0,179s
+user	0m0,126s
+sys	0m0,053s
+Stream on vk double: G3_circuit.gra...
+mkdir: cannot create directory ‘results/G3_circuit.gra’: File exists
+Terminated
+
+real	0m0,224s
+user	0m0,212s
+sys	0m0,012s
+Stream on vk double: hollywood-2009.gra...
+mkdir: cannot create directory ‘results/hollywood-2009.gra’: File exists
+Terminated
+
+real	0m0,236s
+user	0m0,208s
+sys	0m0,028s
+Stream on vk double: indochina-2004.gra...
+mkdir: cannot create directory ‘results/indochina-2004.gra’: File exists
+Terminated
+
+real	0m0,357s
+user	0m0,312s
+sys	0m0,044s
+Stream on vk double: large_twitch.gra...
+mkdir: cannot create directory ‘results/large_twitch.gra’: File exists
+Terminated
+
+real	0m0,220s
+user	0m0,204s
+sys	0m0,016s
+Stream on vk double: offshore.gra...
+mkdir: cannot create directory ‘results/offshore.gra’: File exists
+Terminated
+
+real	0m0,227s
+user	0m0,151s
+sys	0m0,072s
+Stream on vk double: parabolic_fem.gra...
+mkdir: cannot create directory ‘results/parabolic_fem.gra’: File exists
+Terminated
+
+real	0m0,141s
+user	0m0,118s
+sys	0m0,024s
+Stream on vk double: qg.order100.gra...
+mkdir: cannot create directory ‘results/qg.order100.gra’: File exists
+Terminated
+
+real	0m0,196s
+user	0m0,082s
+sys	0m0,070s
+Stream on vk double: rgg_n_2_15_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_15_s0.gra’: File exists
+Terminated
+
+real	0m0,180s
+user	0m0,052s
+sys	0m0,131s
+Stream on vk double: rgg_n_2_16_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_16_s0.gra’: File exists
+Terminated
+
+real	0m0,172s
+user	0m0,091s
+sys	0m0,082s
+Stream on vk double: rgg_n_2_17_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_17_s0.gra’: File exists
+Terminated
+
+real	0m0,196s
+user	0m0,104s
+sys	0m0,095s
+Stream on vk double: rgg_n_2_18_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_18_s0.gra’: File exists
+Terminated
+
+real	0m0,173s
+user	0m0,127s
+sys	0m0,044s
+Stream on vk double: rgg_n_2_19_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_19_s0.gra’: File exists
+Terminated
+
+real	0m0,198s
+user	0m0,189s
+sys	0m0,008s
+Stream on vk double: rgg_n_2_20_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_20_s0.gra’: File exists
+Terminated
+
+real	0m0,173s
+user	0m0,157s
+sys	0m0,016s
+Stream on vk double: rgg_n_2_21_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_21_s0.gra’: File exists
+Terminated
+
+real	0m0,172s
+user	0m0,144s
+sys	0m0,028s
+Stream on vk double: rgg_n_2_22_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_22_s0.gra’: File exists
+Terminated
+
+real	0m0,177s
+user	0m0,165s
+sys	0m0,012s
+Stream on vk double: rgg_n_2_23_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_23_s0.gra’: File exists
+Terminated
+
+real	0m0,179s
+user	0m0,163s
+sys	0m0,016s
+Stream on vk double: rgg_n_2_24_s0.gra...
+mkdir: cannot create directory ‘results/rgg_n_2_24_s0.gra’: File exists
+Terminated
+
+real	0m0,197s
+user	0m0,169s
+sys	0m0,028s
+Stream on vk double: soc-LiveJournal1.gra...
+mkdir: cannot create directory ‘results/soc-LiveJournal1.gra’: File exists
+Terminated
+
+real	0m0,169s
+user	0m0,149s
+sys	0m0,020s
+Stream on vk double: thermal2.gra...
+mkdir: cannot create directory ‘results/thermal2.gra’: File exists
+Terminated
+
+real	0m0,196s
+user	0m0,164s
+sys	0m0,032s
+Stream on vk double: thermomech_dK.gra...
+mkdir: cannot create directory ‘results/thermomech_dK.gra’: File exists
+Terminated
+
+real	0m0,188s
+user	0m0,119s
+sys	0m0,063s
+Stream on single: af_shell3.gra...
+Stream on single: apache2.gra...
+Stream on single: ASIC_320ks.gra...
+Stream on single: atmosmodd.gra...
+Stream on single: cage13.gra...
+Stream on single: ecology2.gra...
+Stream on single: email_enron.gra...
+Stream on single: email-Enron.gra...
+Stream on single: FEM_3D_thermal2.gra...
+Stream on single: G3_circuit.gra...
+Stream on single: hollywood-2009.gra...
+Terminated
+Stream on single: indochina-2004.gra...
+Terminated
+Stream on single: large_twitch.gra...
+Terminated
+Stream on single: offshore.gra...
+Terminated
+Stream on single: parabolic_fem.gra...
+Terminated
+Stream on single: qg.order100.gra...
+Terminated
+Stream on single: rgg_n_2_15_s0.gra...
+Stream on single: rgg_n_2_16_s0.gra...
+Terminated
+Stream on single: rgg_n_2_17_s0.gra...
+Terminated
+Stream on single: rgg_n_2_18_s0.gra...
+Terminated
+Stream on single: rgg_n_2_19_s0.gra...
+Terminated
+Stream on single: rgg_n_2_20_s0.gra...
+Terminated
+Stream on single: rgg_n_2_21_s0.gra...
+Terminated
+Stream on single: rgg_n_2_22_s0.gra...
+Terminated
+Stream on single: rgg_n_2_23_s0.gra...
+Terminated
+Stream on single: rgg_n_2_24_s0.gra...
+Terminated
+Stream on single: soc-LiveJournal1.gra...
+Terminated
+Stream on single: thermal2.gra...
+Terminated
+Stream on single: thermomech_dK.gra...
+Terminated
+./run_tests.sh: line 39: syntax error near unexpected token `fi'
+./run_tests.sh: line 39: `fi'

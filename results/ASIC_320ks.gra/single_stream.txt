@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA)
 Loading graph from /home/cardone/Desktop/graphs/gra/ASIC_320ks.gra
 Graph succesfully loaded from file.
 V: 321671, E: 1506136, maxD: 411, minD: 0, avgD: 4.68223
-Init time [ms]: 70.737
+Init time [ms]: 71.328
 ========================================================
 1	num-cols: 18 	========================================================
 2	num-cols: 18 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 70.737
 19	num-cols: 18 	========================================================
 20	num-cols: 18 	========================================================
 Timings [ms]
-Avg random vector initialization time: 1.63535
-Avg allocation time: 0.25035
-Avg upload time: 0.79635
-Avg process time: 3.0728
-Avg download time: 0.19055
-Avg total time: 4.31005
-Inner total time (start to end function): 144.98
-Reset total time: 32.707
-Process total time: 86.201
+Avg random vector initialization time: 1.7131
+Avg allocation time: 0.2606
+Avg upload time: 0.8168
+Avg process time: 3.11225
+Avg download time: 0.19285
+Avg total time: 4.3825
+Inner total time (start to end function): 150.743
+Reset total time: 34.262
+Process total time: 87.65
 Avg number colors: 18
-Test time [ms]:62.888
-Program duration [ms]: 382.138
+Test time [ms]:62.007
+Program duration [ms]: 392.529
