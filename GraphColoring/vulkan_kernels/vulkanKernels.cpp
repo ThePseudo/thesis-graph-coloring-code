@@ -74,8 +74,9 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
     throw std::runtime_error("Shader empty!");
   }
   const uint32_t nt =
-      last - first / 100; // Number of threads per block to be launched
+      last - first; // Number of threads per block to be launched
   uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
+  nb = 1;
 
   auto start = std::chrono::high_resolution_clock::now();
   auto tAo =

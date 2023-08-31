@@ -6,8 +6,6 @@ struct Node {
 	int next_neighbours;
 };
 
-//const int first, const int last, const int c, const int* Ao, const int* Ac, const int* randoms, int* colors, bool *finished
-
 layout(set = 0, binding = 0) buffer InAoBuffer {
     int Ao[];
 };
@@ -46,37 +44,33 @@ bool color_jpl_ignore_neighbor(in const int c, in uint i, in const uint j, in co
     return ((jc != -1) && (jc != c) && (jc != c + 1)) || (i == j);
 }
 
-bool color_jpl_assign_color(in const int c, in const uint index, in const bool localmax, in const bool localmin)
+bool color_jpl_assign_color(in const int color, in const uint index, in const ivec2 local_max_min_color)
 {
-    if(localmin) {
-        colors[index] = c + 1;
+    if(bool(local_max_min_color.x + local_max_min_color.y))
+    {
+        colors[index] = ((color + 1) * local_max_min_color.y + color * local_max_min_color.x) / (local_max_min_color.x + local_max_min_color.y);
+        return true;
     }
-    if(localmax) {
-        colors[index] = c;
-    }
-    return localmax || localmin;
+    return false;
 }
 
 void main()
 {
+    bool local_finished = true;
     for(uint index = gl_GlobalInvocationID.y * xSize + gl_GlobalInvocationID.x; index < last - first; index += xSize) {
         if (colors[index] != -1) break;
-        int color = push.current_color;
-        bool localmax = true;
-        bool localmin = true;
-        color *= 2;
-        for(int k = Ao[index]; k < Ao[index + 1]; k++) {
-            const uint j = Ac[k - Ao[0]] - first;
-            const bool ignore = color_jpl_ignore_neighbor(color, index, j, colors[j]);
+        ivec2 local_max_min_color = ivec2(1, 1);
+        const ivec4 base_current_next_color = ivec4(Ao[0], Ao[index], Ao[index + 1], push.current_color * 2);
+        for(int k = base_current_next_color.y; k < base_current_next_color.z; k++) {
+            const uint j = Ac[k - base_current_next_color.x] - first;
+            const bool ignore = color_jpl_ignore_neighbor(base_current_next_color.w, index, j, colors[j]);
             if(j < 0 || (j >= last - first) || ignore) continue;
-            const int ir = randoms[(index + (color << 1)) % (last - first)];
-            const int jr = randoms[(j + (color << 1)) % (last - first)];
-            localmax = localmax && (ir > jr);
-            localmin = localmin && (ir < jr);
+            const ivec2 i_jr = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j + (base_current_next_color.w << 1)) % (last - first)]);
+            local_max_min_color = local_max_min_color * ivec2(int(i_jr.x > i_jr.y), int(i_jr.x < i_jr.y));
         }
-        const bool assigned_color = color_jpl_assign_color(color, index, localmax, localmin);
-        if(!assigned_color) {
-            finished[0] = 0;
-        }
+        local_finished = local_finished && color_jpl_assign_color(base_current_next_color.w, index, local_max_min_color);
+    }
+    if(!local_finished) {
+        finished[0] = 0;
     }
 }
