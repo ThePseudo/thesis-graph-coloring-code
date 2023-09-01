@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/atmosmodd.gra
 Graph succesfully loaded from file.
 V: 1270432, E: 7544448, maxD: 6, minD: 3, avgD: 5.93849
-Init time [ms]: 334.693
+Init time [ms]: 329.343
 ========================================================
 1	num-cols: 15 	========================================================
 2	num-cols: 15 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 334.693
 19	num-cols: 15 	========================================================
 20	num-cols: 15 	========================================================
 Timings [ms]
-Avg random vector initialization time: 6.9007
-Avg allocation time: 18.8575
-Avg upload time: 4.0177
-Avg process time: 15.7054
-Avg download time: 0.51275
-Avg total time: 39.0933
+Avg random vector initialization time: 6.8674
+Avg allocation time: 18.5681
+Avg upload time: 4.0086
+Avg process time: 15.0503
+Avg download time: 0.51195
+Avg total time: 38.139
 Inner total time (start to end function): 0
-Reset total time: 138.014
-Process total time: 781.866
+Reset total time: 137.348
+Process total time: 762.781
 Avg number colors: 15
-Test time [ms]:228.34
-Program duration [ms]: 3309.58
+Test time [ms]:228.156
+Program duration [ms]: 3241.95

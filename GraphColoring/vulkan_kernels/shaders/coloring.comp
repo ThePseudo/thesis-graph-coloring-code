@@ -75,6 +75,7 @@ void main()
             i_jr[1] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.y + (base_current_next_color.w << 1)) % (last - first)]);
             i_jr[2] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.z + (base_current_next_color.w << 1)) % (last - first)]);
             i_jr[3] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.w + (base_current_next_color.w << 1)) % (last - first)]);
+
             if (!(j.x < 0 || (j.x >= last - first) || ignore.x)) {
                 local_max_min_color = local_max_min_color * ivec2(int(i_jr[0].x > i_jr[0].y), int(i_jr[0].x < i_jr[0].y));
             }
