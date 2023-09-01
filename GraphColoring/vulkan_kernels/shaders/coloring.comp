@@ -61,12 +61,39 @@ void main()
         if (colors[index] != -1) break;
         ivec2 local_max_min_color = ivec2(1, 1);
         const ivec4 base_current_next_color = ivec4(Ao[0], Ao[index], Ao[index + 1], push.current_color * 2);
-        for(int k = base_current_next_color.y; k < base_current_next_color.z; k++) {
-            const uint j = Ac[k - base_current_next_color.x] - first;
-            const bool ignore = color_jpl_ignore_neighbor(base_current_next_color.w, index, j, colors[j]);
-            if(j < 0 || (j >= last - first) || ignore) continue;
-            const ivec2 i_jr = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j + (base_current_next_color.w << 1)) % (last - first)]);
-            local_max_min_color = local_max_min_color * ivec2(int(i_jr.x > i_jr.y), int(i_jr.x < i_jr.y));
+        for(int k = base_current_next_color.y; k < base_current_next_color.z; k += 4) {
+            uvec4 j = uvec4(Ac[k - base_current_next_color.x], Ac[k - base_current_next_color.x + 1], Ac[k - base_current_next_color.x + 2], Ac[k - base_current_next_color.x + 3]) - first;
+            bvec4 ignore = bvec4(
+                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.x, colors[j.x]),
+                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.y, colors[j.y]),
+                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.z, colors[j.z]),
+                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.w, colors[j.w])
+            );
+
+            ivec2 i_jr[4];
+            i_jr[0] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.x + (base_current_next_color.w << 1)) % (last - first)]);
+            i_jr[1] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.y + (base_current_next_color.w << 1)) % (last - first)]);
+            i_jr[2] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.z + (base_current_next_color.w << 1)) % (last - first)]);
+            i_jr[3] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.w + (base_current_next_color.w << 1)) % (last - first)]);
+            if (!(j.x < 0 || (j.x >= last - first) || ignore.x)) {
+                local_max_min_color = local_max_min_color * ivec2(int(i_jr[0].x > i_jr[0].y), int(i_jr[0].x < i_jr[0].y));
+            }
+
+            if (k + 1 > base_current_next_color.z) break;
+            if (!(j.y < 0 || (j.y >= last - first) || ignore.y)) {
+                local_max_min_color = local_max_min_color * ivec2(int(i_jr[1].x > i_jr[1].y), int(i_jr[1].x < i_jr[1].y));
+            }
+
+            if (k + 1 > base_current_next_color.z) break;
+            if (!(j.z < 0 || (j.z >= last - first) || ignore.z)) {
+                local_max_min_color = local_max_min_color * ivec2(int(i_jr[2].x > i_jr[2].y), int(i_jr[2].x < i_jr[2].y));
+            }
+
+            if (k + 1 > base_current_next_color.z) break;
+            if (!(j.w < 0 || (j.w >= last - first) || ignore.w)) {
+                local_max_min_color = local_max_min_color * ivec2(int(i_jr[3].x > i_jr[3].y), int(i_jr[3].x < i_jr[3].y));
+            }
+
         }
         local_finished = local_finished && color_jpl_assign_color(base_current_next_color.w, index, local_max_min_color);
     }

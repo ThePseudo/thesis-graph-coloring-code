@@ -3,3 +3,11 @@ Graph Representation: Compressed Sparse Row
 Coloring Algorithm: Parallel Jones-Plassmann
 
 Loading graph from /home/cardone/Desktop/graphs/gra/indochina-2004.gra
+Graph succesfully loaded from file.
+V: 7414866, E: 301969638, maxD: 256425, minD: 0, avgD: 40.7249
+Init time [ms]: 10529.2
+========================================================
+1	num-cols: 6985 	========================================================
+2	num-cols: 6969 	========================================================
+3	num-cols: 6969 	========================================================
+4	num-cols: 7459 	========================================================
