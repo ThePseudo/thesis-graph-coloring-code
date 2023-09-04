@@ -1,11 +1,5 @@
 #version 460
 
-struct Node {
-    int color;
-	int neighbours;
-	int next_neighbours;
-};
-
 layout(set = 0, binding = 0) buffer InAoBuffer {
     int Ao[];
 };
@@ -26,6 +20,8 @@ layout(set = 0, binding = 4) buffer OutFinished {
     int finished[];
 };
 
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
 layout(push_constant) uniform PushConstants {
     int current_color;
 } push;
@@ -34,14 +30,14 @@ layout(constant_id = 0) const uint xSize = 0;
 layout(constant_id = 1) const uint first = 0;
 layout(constant_id = 2) const uint last = 0;
 
-float rand(vec2 co)
+bvec4 color_jpl_ignore_neighbor(in const int c, in uint i, in const uvec4 j, in const vec4 jc)
 {
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-
-bool color_jpl_ignore_neighbor(in const int c, in uint i, in const uint j, in const int jc)
-{
-    return ((jc != -1) && (jc != c) && (jc != c + 1)) || (i == j);
+    return bvec4(
+        ((jc.x != -1) && (jc.x != c) && (jc.x != c + 1)) || (i == j.x),
+        ((jc.y != -1) && (jc.y != c) && (jc.y != c + 1)) || (i == j.y),
+        ((jc.z != -1) && (jc.z != c) && (jc.z != c + 1)) || (i == j.z),
+        ((jc.w != -1) && (jc.w != c) && (jc.w != c + 1)) || (i == j.w)
+        );
 }
 
 bool color_jpl_assign_color(in const int color, in const uint index, in const ivec2 local_max_min_color)
@@ -57,48 +53,34 @@ bool color_jpl_assign_color(in const int color, in const uint index, in const iv
 void main()
 {
     bool local_finished = true;
-    for(uint index = gl_GlobalInvocationID.y * xSize + gl_GlobalInvocationID.x; index < last - first; index += xSize) {
+    int current_color = push.current_color;
+    for (uint index = gl_GlobalInvocationID.y * xSize + gl_GlobalInvocationID.x; index < last - first; index += xSize) {
         if (colors[index] != -1) break;
-        ivec2 local_max_min_color = ivec2(1, 1);
-        const ivec4 base_current_next_color = ivec4(Ao[0], Ao[index], Ao[index + 1], push.current_color * 2);
-        for(int k = base_current_next_color.y; k < base_current_next_color.z; k += 4) {
-            uvec4 j = uvec4(Ac[k - base_current_next_color.x], Ac[k - base_current_next_color.x + 1], Ac[k - base_current_next_color.x + 2], Ac[k - base_current_next_color.x + 3]) - first;
-            bvec4 ignore = bvec4(
-                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.x, colors[j.x]),
-                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.y, colors[j.y]),
-                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.z, colors[j.z]),
-                color_jpl_ignore_neighbor(base_current_next_color.w, index, j.w, colors[j.w])
-            );
+        current_color *= 2;
+        ivec2 local_max_min = ivec2(1, 1);
+        const ivec3 base_current_next = ivec3(Ao[0], Ao[index], Ao[index + 1]);
+
+        for (int k = base_current_next.y; k < base_current_next.z; k += 4) {
+            uvec4 j = uvec4(Ac[k - base_current_next.x], Ac[k - base_current_next.x + 1], Ac[k - base_current_next.x + 2], Ac[k - base_current_next.x + 3]) - first;
+            ivec4 current_colors = ivec4(colors[j.x], colors[j.y], colors[j.z], colors[j.w]);
+            bvec4 ignore = color_jpl_ignore_neighbor(current_color, index, j, current_colors);
 
             ivec2 i_jr[4];
-            i_jr[0] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.x + (base_current_next_color.w << 1)) % (last - first)]);
-            i_jr[1] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.y + (base_current_next_color.w << 1)) % (last - first)]);
-            i_jr[2] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.z + (base_current_next_color.w << 1)) % (last - first)]);
-            i_jr[3] = ivec2(randoms[(index + (base_current_next_color.w << 1)) % (last - first)], randoms[(j.w + (base_current_next_color.w << 1)) % (last - first)]);
-
-            if (!(j.x < 0 || (j.x >= last - first) || ignore.x)) {
-                local_max_min_color = local_max_min_color * ivec2(int(i_jr[0].x > i_jr[0].y), int(i_jr[0].x < i_jr[0].y));
+            for (int i = 0; i < 4; i++) {
+                i_jr[i] = ivec2(randoms[(index + (current_color << 1)) % (last - first)], randoms[(j[i] + (current_color << 1)) % (last - first)]);
             }
-
-            if (k + 1 > base_current_next_color.z) break;
-            if (!(j.y < 0 || (j.y >= last - first) || ignore.y)) {
-                local_max_min_color = local_max_min_color * ivec2(int(i_jr[1].x > i_jr[1].y), int(i_jr[1].x < i_jr[1].y));
+            for (int i = 0; i < 4; i++) {
+                //if (k + i >= base_current_next.z) break;
+                if (!(j[i] < 0 || (j[i] >= last - first) || ignore[i])) {
+                    local_max_min = local_max_min * ivec2(int(i_jr[i].x > i_jr[i].y), int(i_jr[i].x < i_jr[i].y));
+                }
             }
-
-            if (k + 1 > base_current_next_color.z) break;
-            if (!(j.z < 0 || (j.z >= last - first) || ignore.z)) {
-                local_max_min_color = local_max_min_color * ivec2(int(i_jr[2].x > i_jr[2].y), int(i_jr[2].x < i_jr[2].y));
-            }
-
-            if (k + 1 > base_current_next_color.z) break;
-            if (!(j.w < 0 || (j.w >= last - first) || ignore.w)) {
-                local_max_min_color = local_max_min_color * ivec2(int(i_jr[3].x > i_jr[3].y), int(i_jr[3].x < i_jr[3].y));
-            }
-
         }
-        local_finished = local_finished && color_jpl_assign_color(base_current_next_color.w, index, local_max_min_color);
+
+        local_finished = local_finished && color_jpl_assign_color(current_color, index, local_max_min);
     }
-    if(!local_finished) {
+
+    if (!local_finished) {
         finished[0] = 0;
     }
 }

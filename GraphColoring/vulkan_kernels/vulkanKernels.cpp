@@ -46,13 +46,20 @@ int launch_kernel(const int first, const int last, const int nt,
   auto seq = mgr.sequence()
                  ->record<kp::OpTensorSyncDevice>({tFinished})
                  ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c})
+                 ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 1})
+                 ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 2})
+                 ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 3})
                  ->record<kp::OpTensorSyncLocal>({tFinished});
-  for (c = 1; !finished; c++) {
+  for (c = 4; !finished; c += 4) {
     seq->evalAsync();
-    auto seq1 = mgr.sequence()
-                    ->record<kp::OpTensorSyncDevice>({tFinished})
-                    ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c})
-                    ->record<kp::OpTensorSyncLocal>({tFinished});
+    auto seq1 =
+        mgr.sequence()
+            ->record<kp::OpTensorSyncDevice>({tFinished})
+            ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c})
+            ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 1})
+            ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 2})
+            ->record<kp::OpAlgoDispatch>(algo, std::vector<int32_t>{c + 3})
+            ->record<kp::OpTensorSyncLocal>({tFinished});
     seq->evalAwait();
     finished = tFinished->data()[0];
     tFinished->setData({1});
@@ -74,7 +81,7 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
     throw std::runtime_error("Shader empty!");
   }
   const uint32_t nt =
-      last - first; // Number of threads per block to be launched
+      (last - first); // Number of threads per block to be launched
   uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
   nb = 1;
 
