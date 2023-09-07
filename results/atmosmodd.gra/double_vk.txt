@@ -5,12 +5,12 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/atmosmodd.gra
 Graph succesfully loaded from file.
 V: 1270432, E: 7544448, maxD: 6, minD: 3, avgD: 5.93849
-Init time [ms]: 333.879
+Init time [ms]: 335.55
 ========================================================
-1	num-cols: 15 	========================================================
-2	num-cols: 15 	========================================================
-3	num-cols: 15 	========================================================
-4	num-cols: 15 	========================================================
+1	num-cols: 14 	========================================================
+2	num-cols: 14 	========================================================
+3	num-cols: 14 	========================================================
+4	num-cols: 14 	========================================================
 5	num-cols: 15 	========================================================
 6	num-cols: 15 	========================================================
 7	num-cols: 15 	========================================================
@@ -25,18 +25,18 @@ Init time [ms]: 333.879
 16	num-cols: 15 	========================================================
 17	num-cols: 15 	========================================================
 18	num-cols: 15 	========================================================
-19	num-cols: 15 	========================================================
-20	num-cols: 15 	========================================================
+19	num-cols: 14 	========================================================
+20	num-cols: 14 	========================================================
 Timings [ms]
-Avg random vector initialization time: 6.8761
-Avg allocation time: 18.9911
-Avg upload time: 4.00555
-Avg process time: 11.8082
-Avg download time: 0.5295
-Avg total time: 35.3343
+Avg random vector initialization time: 6.8786
+Avg allocation time: 19.3784
+Avg upload time: 4.00385
+Avg process time: 13.0516
+Avg download time: 0.52385
+Avg total time: 36.9577
 Inner total time (start to end function): 0
-Reset total time: 137.522
-Process total time: 706.686
+Reset total time: 137.572
+Process total time: 739.155
 Avg number colors: 15
-Test time [ms]:228.484
-Program duration [ms]: 3215.8
+Test time [ms]:228.902
+Program duration [ms]: 3239.98

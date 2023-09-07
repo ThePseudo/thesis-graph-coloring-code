@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/ecology2.gra
 Graph succesfully loaded from file.
 V: 999999, E: 3995992, maxD: 4, minD: 2, avgD: 3.996
-Init time [ms]: 202.161
+Init time [ms]: 201.276
 ========================================================
 1	num-cols: 10 	========================================================
 2	num-cols: 10 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 202.161
 19	num-cols: 10 	========================================================
 20	num-cols: 10 	========================================================
 Timings [ms]
-Avg random vector initialization time: 5.46935
-Avg allocation time: 12.2657
-Avg upload time: 2.5946
-Avg process time: 6.15755
-Avg download time: 0.4217
-Avg total time: 21.4396
+Avg random vector initialization time: 5.4509
+Avg allocation time: 12.3769
+Avg upload time: 2.6005
+Avg process time: 7.1794
+Avg download time: 0.4404
+Avg total time: 22.5972
 Inner total time (start to end function): 0
-Reset total time: 109.387
-Process total time: 428.791
+Reset total time: 109.018
+Process total time: 451.945
 Avg number colors: 10
-Test time [ms]:149.134
-Program duration [ms]: 2535.63
+Test time [ms]:148.513
+Program duration [ms]: 2465.69

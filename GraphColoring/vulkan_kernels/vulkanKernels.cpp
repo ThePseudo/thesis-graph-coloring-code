@@ -80,6 +80,10 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
   if (shader.empty()) {
     throw std::runtime_error("Shader empty!");
   }
+  auto shader2 = loadShaderFromFile("shaders/degree_colors.comp.spv");
+  if (shader.empty()) {
+    throw std::runtime_error("Shader empty!");
+  }
   const uint32_t nt =
       (last - first); // Number of threads per block to be launched
   uint32_t nb = (last - first + nt - 1) / nt; // Number of blocks to be launched
@@ -102,7 +106,9 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
       1000.0f;
   auto specs = std::vector<uint32_t>{nt, first, last};
   std::shared_ptr<kp::Algorithm> algo = mgr.algorithm(
-      {tAo, tAc, tRandoms, tColors, tFinished}, {shader}, {nt, nb}, specs, {0});
+      {tAo, tAc, tRandoms, tColors, tFinished}, shader, {nt, nb}, specs, {0});
+  std::shared_ptr<kp::Algorithm> algo2 =
+      mgr.algorithm({tAo, tAc, tColors}, shader2);
   start = std::chrono::high_resolution_clock::now();
   mgr.sequence()
       ->record<kp::OpTensorSyncDevice>({tAo, tAc, tRandoms, tColors})
@@ -113,6 +119,7 @@ int color_jpl(int const n, const int *Ao, const int *Ac, int *colors,
           .count() /
       1000.0f;
   start = std::chrono::high_resolution_clock::now();
+  mgr.sequence()->record<kp::OpAlgoDispatch>(algo)->eval();
   c += launch_kernel(first, last, nt, mgr, tAo, tAc, tRandoms, tColors,
                      tFinished, algo);
   end = std::chrono::high_resolution_clock::now();
