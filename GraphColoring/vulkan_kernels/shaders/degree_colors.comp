@@ -13,14 +13,14 @@ layout(set = 0, binding = 2) buffer InOutColors {
 };
 
 
-layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 512, local_size_y = 1, local_size_z = 1) in;
 
 bool check(in uint index, in uint first, in uint last)
 {
     int current_color = colors[index];
     for(uint k = first; k < last; k++)
     {
-        if (current_color == colors[Ao[k]])
+        if (current_color == colors[Ao[k]] && Ao[k] > index)
         {
             return false;
         }
@@ -35,9 +35,17 @@ void main()
     colors[index] = int(dot(vec2(first_last), vec2(1.0, 1.0)) + 0.5);
     if (!check(index, first_last.x, first_last.y))
     {
-        colors[index] = abs(colors[index] - int(index));
+        colors[index]--;
     }
-        if (!check(index, first_last.x, first_last.y))
+    if (!check(index, first_last.x, first_last.y))
+    {
+        colors[index] = 0;
+    }
+    if (!check(index, first_last.x, first_last.y))
+    {
+        colors[index] = 1;
+    }
+    if (!check(index, first_last.x, first_last.y))
     {
         colors[index] = -1;
     }

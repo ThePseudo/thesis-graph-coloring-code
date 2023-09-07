@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann
 Loading graph from /home/cardone/Desktop/graphs/gra/FEM_3D_thermal2.gra
 Graph succesfully loaded from file.
 V: 147900, E: 3341400, maxD: 26, minD: 11, avgD: 22.5923
-Init time [ms]: 120.823
+Init time [ms]: 119.895
 ========================================================
 1	num-cols: 37 	========================================================
 2	num-cols: 37 	========================================================
@@ -26,17 +26,17 @@ Init time [ms]: 120.823
 17	num-cols: 37 	========================================================
 18	num-cols: 37 	========================================================
 19	num-cols: 37 	========================================================
-20	num-cols: 37 	========================================================
+20	num-cols: 36 	========================================================
 Timings [ms]
-Avg random vector initialization time: 0.8012
-Avg allocation time: 7.2261
-Avg upload time: 1.5644
-Avg process time: 4.19005
-Avg download time: 0.1289
-Avg total time: 13.1095
+Avg random vector initialization time: 0.7975
+Avg allocation time: 7.3415
+Avg upload time: 1.56315
+Avg process time: 4.0639
+Avg download time: 0.1364
+Avg total time: 13.105
 Inner total time (start to end function): 0
-Reset total time: 16.024
-Process total time: 262.189
+Reset total time: 15.95
+Process total time: 262.099
 Avg number colors: 37
-Test time [ms]:65
-Program duration [ms]: 1754.37
+Test time [ms]:64.86
+Program duration [ms]: 1772.2
