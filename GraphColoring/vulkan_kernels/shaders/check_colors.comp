@@ -1,0 +1,46 @@
+#version 460
+
+layout(set = 0, binding = 0) buffer InAoBuffer {
+    int Ao[];
+};
+
+layout(set = 0, binding = 1) buffer InAcBuffer {
+    int Ac[];
+};
+
+layout(set = 0, binding = 2) buffer InOutColors {
+    int colors[];
+};
+
+
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
+bool check(in uint index, in uint current_color, in uint first, in uint last)
+{
+    for(uint k = first; k < last; k++)
+    {
+        if (current_color > 0 && current_color == colors[Ac[k]] && index != Ac[k])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void main()
+{
+    uint index = gl_GlobalInvocationID.x;
+    uvec2 first_last = uvec2(Ao[index], Ao[index + 1]);
+    if(colors[index] > -1)
+    {
+        if (!check(index, colors[index], first_last.x, first_last.y))
+        {
+            colors[index] = -1;
+        }
+        if(colors[index] > -1)
+        {
+            colors[index] += (Ao.length() + 1);
+        }
+    }
+
+}

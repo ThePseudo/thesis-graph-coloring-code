@@ -36,6 +36,7 @@ message("Output shader dir: ${APP_OUTPUT_DIR}")
 set(GLSL_SOURCE_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/shaders/coloring.comp"
         "${CMAKE_CURRENT_SOURCE_DIR}/shaders/degree_colors.comp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders/check_colors.comp"
 )
 
 foreach(GLSL ${GLSL_SOURCE_FILES})
