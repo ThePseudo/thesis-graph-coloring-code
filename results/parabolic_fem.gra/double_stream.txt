@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/parabolic_fem.gra
 Graph succesfully loaded from file.
 V: 525825, E: 3148800, maxD: 6, minD: 2, avgD: 5.9883
-Init time [ms]: 136.369
+Init time [ms]: 139.997
 ========================================================
 1	num-cols: 12 	========================================================
 2	num-cols: 12 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 136.369
 19	num-cols: 12 	========================================================
 20	num-cols: 12 	========================================================
 Timings [ms]
-Avg random vector initialization time: 2.7321
-Avg allocation time: 0.2557
-Avg upload time: 1.5783
-Avg process time: 0.38815
-Avg download time: 0.2716
-Avg total time: 2.49375
-Inner total time (start to end function): 125.397
-Reset total time: 54.642
-Process total time: 49.875
+Avg random vector initialization time: 2.81145
+Avg allocation time: 0.282
+Avg upload time: 1.75825
+Avg process time: 0.3918
+Avg download time: 0.2631
+Avg total time: 2.69515
+Inner total time (start to end function): 113.895
+Reset total time: 56.229
+Process total time: 53.903
 Avg number colors: 12
-Test time [ms]:89.767
-Program duration [ms]: 514.165
+Test time [ms]:94.027
+Program duration [ms]: 514.351

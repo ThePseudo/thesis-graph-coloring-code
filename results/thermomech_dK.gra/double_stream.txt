@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/thermomech_dK.gra
 Graph succesfully loaded from file.
 V: 204316, E: 2641912, maxD: 19, minD: 6, avgD: 12.9305
-Init time [ms]: 101.98
+Init time [ms]: 101.832
 ========================================================
 1	num-cols: 20 	========================================================
 2	num-cols: 20 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 101.98
 19	num-cols: 20 	========================================================
 20	num-cols: 20 	========================================================
 Timings [ms]
-Avg random vector initialization time: 1.05065
-Avg allocation time: 0.26355
-Avg upload time: 1.0863
-Avg process time: 0.5516
-Avg download time: 0.1374
-Avg total time: 2.03885
-Inner total time (start to end function): 121.154
-Reset total time: 21.013
-Process total time: 40.777
+Avg random vector initialization time: 1.08715
+Avg allocation time: 0.2856
+Avg upload time: 1.20455
+Avg process time: 0.56445
+Avg download time: 0.14005
+Avg total time: 2.19465
+Inner total time (start to end function): 109.971
+Reset total time: 21.743
+Process total time: 43.893
 Avg number colors: 20
-Test time [ms]:66.126
-Program duration [ms]: 366.09
+Test time [ms]:73.83
+Program duration [ms]: 372.236

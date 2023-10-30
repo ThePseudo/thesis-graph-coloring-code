@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/apache2.gra
 Graph succesfully loaded from file.
 V: 715176, E: 2986244, maxD: 6, minD: 0, avgD: 4.17554
-Init time [ms]: 147.877
+Init time [ms]: 142.313
 ========================================================
 1	num-cols: 12 	========================================================
 2	num-cols: 12 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 147.877
 19	num-cols: 12 	========================================================
 20	num-cols: 12 	========================================================
 Timings [ms]
-Avg random vector initialization time: 3.75765
-Avg allocation time: 0.2664
-Avg upload time: 1.58975
-Avg process time: 0.2981
-Avg download time: 0.3249
-Avg total time: 2.47915
-Inner total time (start to end function): 113.704
-Reset total time: 75.153
-Process total time: 49.583
+Avg random vector initialization time: 3.8531
+Avg allocation time: 0.2868
+Avg upload time: 1.72895
+Avg process time: 0.30335
+Avg download time: 0.3326
+Avg total time: 2.6517
+Inner total time (start to end function): 115.009
+Reset total time: 77.062
+Process total time: 53.034
 Avg number colors: 12
-Test time [ms]:101.65
-Program duration [ms]: 558.784
+Test time [ms]:105.194
+Program duration [ms]: 573.573

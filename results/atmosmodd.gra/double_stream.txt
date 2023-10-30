@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/atmosmodd.gra
 Graph succesfully loaded from file.
 V: 1270432, E: 7544448, maxD: 6, minD: 3, avgD: 5.93849
-Init time [ms]: 330.578
+Init time [ms]: 328.657
 ========================================================
 1	num-cols: 13 	========================================================
 2	num-cols: 13 	========================================================
@@ -19,3 +19,24 @@ Init time [ms]: 330.578
 10	num-cols: 13 	========================================================
 11	num-cols: 13 	========================================================
 12	num-cols: 13 	========================================================
+13	num-cols: 13 	========================================================
+14	num-cols: 13 	========================================================
+15	num-cols: 13 	========================================================
+16	num-cols: 13 	========================================================
+17	num-cols: 13 	========================================================
+18	num-cols: 13 	========================================================
+19	num-cols: 13 	========================================================
+20	num-cols: 13 	========================================================
+Timings [ms]
+Avg random vector initialization time: 6.7631
+Avg allocation time: 0.3188
+Avg upload time: 3.7243
+Avg process time: 0.60195
+Avg download time: 0.52205
+Avg total time: 5.1671
+Inner total time (start to end function): 186.439
+Reset total time: 135.262
+Process total time: 103.342
+Avg number colors: 13
+Test time [ms]:220.518
+Program duration [ms]: 1152.64

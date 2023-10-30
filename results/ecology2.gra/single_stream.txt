@@ -5,9 +5,9 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA)
 Loading graph from /home/cardone/Desktop/graphs/gra/ecology2.gra
 Graph succesfully loaded from file.
 V: 999999, E: 3995992, maxD: 4, minD: 2, avgD: 3.996
-Init time [ms]: 192.402
+Init time [ms]: 197.775
 ========================================================
-1	num-cols: 14 	========================================================
+1	num-cols: 15 	========================================================
 2	num-cols: 15 	========================================================
 3	num-cols: 15 	========================================================
 4	num-cols: 15 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 192.402
 19	num-cols: 15 	========================================================
 20	num-cols: 15 	========================================================
 Timings [ms]
-Avg random vector initialization time: 5.33345
-Avg allocation time: 0.26495
-Avg upload time: 2.1399
-Avg process time: 0.7095
-Avg download time: 0.4226
-Avg total time: 3.53695
-Inner total time (start to end function): 128.952
-Reset total time: 106.669
-Process total time: 70.739
+Avg random vector initialization time: 5.36425
+Avg allocation time: 0.2877
+Avg upload time: 2.2686
+Avg process time: 0.71065
+Avg download time: 0.42295
+Avg total time: 3.6899
+Inner total time (start to end function): 141.35
+Reset total time: 107.285
+Process total time: 73.798
 Avg number colors: 15
-Test time [ms]:139.506
-Program duration [ms]: 687.803
+Test time [ms]:144.968
+Program duration [ms]: 714.86

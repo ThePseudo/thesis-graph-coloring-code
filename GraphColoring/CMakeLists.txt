@@ -122,20 +122,12 @@ set(D_GRAPHREPRESENTATION_CSR	GRAPH_REPRESENTATION_CSR
 								GRAPH_REPR_T=CompressedSparseRow
 )
 
-set(D_COLORALGO_JP_PAR_VK	PARALLEL_GRAPH_COLOR
-							COLORING_ALGORITHM_JP
-							PARTITION_VERTICES_BY_EDGE_NUM
-							COLORING_ALGO_T=JonesPlassmann
-							VULKAN
-)
 # end compile definitions
 
 # start libraries definition
 add_library(coloralgo_jp_vk_par STATIC EXCLUDE_FROM_ALL ${SRC_COLORALGO})
 target_compile_definitions(coloralgo_jp_vk_par PUBLIC ${D_COLORALGO_JP_PAR_VK} ${D_GRAPHREPRESENTATION_CSR})
 target_link_libraries(coloralgo_jp_vk_par benchmark barrier ${CMAKE_THREAD_LIBS_INIT} OpenMP::OpenMP_CXX)
-
-add_subdirectory(vulkan_kernels)
 
 add_library(barrier STATIC EXCLUDE_FROM_ALL ${SRC_BARRIER})
 
@@ -312,14 +304,6 @@ add_executable(gm_seq_async_imp main.cpp)
 include_directories(gm_seq_async_imp ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 target_link_directories(gm_seq_async_imp PRIVATE barrier benchmark coloralgo_gm_seq_async_imp graphrepresentation_csr)
 target_link_libraries(gm_seq_async_imp barrier benchmark coloralgo_gm_seq_async_imp graphrepresentation_csr OpenMP::OpenMP_CXX)
-
-add_executable(jp_vk_double main.cpp)
-# target_compile_definitions(jp_cuda_double PUBLIC ${D_COLORALGO_JP_CUDA_DOUBLE} ${D_GRAPHREPRESENTATION_CSR})
-include_directories(jp_vk_double ${INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
-target_link_directories(jp_vk_double PRIVATE barrier benchmark colorvk coloralgo_jp_vk_par graphrepresentation_csr)
-target_link_libraries(jp_vk_double barrier benchmark colorvk coloralgo_jp_vk_par graphrepresentation_csr OpenMP::OpenMP_CXX)
-#end target definition
-
 
 configure_file(GraphColoringConfig.h.in GraphColoringConfig.h)
 set_directory_properties( PROPERTIES COMPILE_DEFINITIONS "" )

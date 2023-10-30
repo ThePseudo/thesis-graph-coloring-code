@@ -5,7 +5,7 @@ Coloring Algorithm: Parallel Jones-Plassmann (CUDA) Min-Max Independent Sets
 Loading graph from /home/cardone/Desktop/graphs/gra/ecology2.gra
 Graph succesfully loaded from file.
 V: 999999, E: 3995992, maxD: 4, minD: 2, avgD: 3.996
-Init time [ms]: 192.999
+Init time [ms]: 199.118
 ========================================================
 1	num-cols: 10 	========================================================
 2	num-cols: 10 	========================================================
@@ -28,15 +28,15 @@ Init time [ms]: 192.999
 19	num-cols: 10 	========================================================
 20	num-cols: 10 	========================================================
 Timings [ms]
-Avg random vector initialization time: 5.2258
-Avg allocation time: 0.2551
-Avg upload time: 2.12145
-Avg process time: 0.3255
-Avg download time: 0.41465
-Avg total time: 3.1167
-Inner total time (start to end function): 144.091
-Reset total time: 104.516
-Process total time: 62.334
+Avg random vector initialization time: 5.38095
+Avg allocation time: 0.2843
+Avg upload time: 2.3049
+Avg process time: 0.3294
+Avg download time: 0.4278
+Avg total time: 3.3464
+Inner total time (start to end function): 133.042
+Reset total time: 107.619
+Process total time: 66.928
 Avg number colors: 10
-Test time [ms]:139.11
-Program duration [ms]: 738.833
+Test time [ms]:145.806
+Program duration [ms]: 769.227
