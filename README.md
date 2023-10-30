@@ -15,4 +15,4 @@ make
 ```
 
 ### Timings
-Streams are expressed in milliseconds, no-streams in seconds
+Streams are expressed in milliseconds, no-streams in seconds.
