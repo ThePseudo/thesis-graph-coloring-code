@@ -20,7 +20,7 @@ layout(set = 0, binding = 4) buffer OutFinished {
     int finished[];
 };
 
-layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 layout(push_constant) uniform PushConstants {
     int current_color;
@@ -33,21 +33,19 @@ layout(constant_id = 2) const uint last = 0;
 bvec4 color_jpl_ignore_neighbor(in const int c, in uint i, in const uvec4 j, in const vec4 jc)
 {
     return bvec4(
-        ((jc.x != -1) && (jc.x != c) && (jc.x != c + 1)) || (i == j.x),
-        ((jc.y != -1) && (jc.y != c) && (jc.y != c + 1)) || (i == j.y),
-        ((jc.z != -1) && (jc.z != c) && (jc.z != c + 1)) || (i == j.z),
-        ((jc.w != -1) && (jc.w != c) && (jc.w != c + 1)) || (i == j.w)
+        (int(jc.x != -1) & int(jc.x != c) & int(jc.x != c + 1)) | int(i == j.x),
+        (int(jc.y != -1) & int(jc.y != c) & int(jc.y != c + 1)) | int(i == j.y),
+        (int(jc.z != -1) & int(jc.z != c) & int(jc.z != c + 1)) | int(i == j.z),
+        (int(jc.w != -1) & int(jc.w != c) & int(jc.w != c + 1)) | int(i == j.w)
         );
 }
 
 bool color_jpl_assign_color(in const int color, in const uint index, in const ivec2 local_max_min_color)
 {
-    if(bool(local_max_min_color.x + local_max_min_color.y))
-    {
-        colors[index] = ((color + 1) * local_max_min_color.y + color * local_max_min_color.x) / (local_max_min_color.x + local_max_min_color.y);
-        return true;
-    }
-    return false;
+    const ivec2 color_choice = ivec2(colors[index], ((color + 1) * local_max_min_color.y + color * local_max_min_color.x) / (local_max_min_color.x + local_max_min_color.y));
+    const bool idx = bool(local_max_min_color.x + local_max_min_color.y);
+    colors[index] = color_choice[int(idx)];
+    return idx;
 }
 
 void main()
@@ -66,12 +64,13 @@ void main()
             bvec4 ignore = color_jpl_ignore_neighbor(current_color, index, j, current_colors);
 
             ivec2 i_jr[4];
+            const int index_shift = 4;
             for (int i = 0; i < 4; i++) {
-                i_jr[i] = ivec2(randoms[(index + (current_color << 1)) % (last - first)], randoms[(j[i] + (current_color << 1)) % (last - first)]);
+                i_jr[i] = ivec2(randoms[(index + (current_color << index_shift)) % (last - first)], randoms[(j[i] + (current_color << index_shift)) % (last - first)]);
             }
             for (int i = 0; i < 4; i++) {
                 //if (k + i >= base_current_next.z) break;
-                if (!(j[i] < 0 || (j[i] >= last - first) || ignore[i])) {
+                if (int(j[i] < 0) + int(j[i] >= last - first) + int(ignore[i]) == 0) {
                     local_max_min = local_max_min * ivec2(int(i_jr[i].x > i_jr[i].y), int(i_jr[i].x < i_jr[i].y));
                 }
             }

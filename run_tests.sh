@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cp -R ./build/GraphColoring/vulkan_kernels/shaders .
+
 mkdir results
 #./build/GraphColoring/jp_cuda_double -r 20 /home/cardone/Desktop/graphs/gra/apache2.gra > /dev/null
 #for graph in /home/cardone/Desktop/graphs/gra/* ; do
